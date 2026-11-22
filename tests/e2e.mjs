@@ -26,6 +26,10 @@ await page.getByRole('heading', { level: 1 }).first().waitFor();
 const faq = page.getByRole('link', { name: /^FAQ$/ }).or(page.getByRole('button', { name: /^FAQ$/ })).first();
 if (await faq.count()) { await faq.click(); await page.waitForTimeout(600); }
 
+// 1b. First visit to the app auto-loads the cardiac example (once)
+await go('#/app/today');
+assert(/furosemide/i.test(await page.textContent('body')), 'first visit did not auto-load the cardiac example');
+
 // 2. Load each example from Scan and visit every view
 await go('#/app/scan');
 const examples = page.getByRole('button', { name: /cardiac|heart|ear infection|diabetes/i });

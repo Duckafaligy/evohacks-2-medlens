@@ -77,7 +77,7 @@ function UploadPanel({ onImage }) {
 
 export default function Scan() {
   const { tr, lang, setRaw, go } = useApp();
-  const [tab, setTab] = useState('camera');
+  const [tab, setTab] = useState(() => (window.location.hash.endsWith('/paste') ? 'paste' : 'upload'));
   const [text, setText] = useState('');
   const [draft, setDraft] = useState('');
   const [example, setExample] = useState(null);

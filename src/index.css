@@ -54,7 +54,7 @@ h1, h2, h3, strong, b { font-weight: 600; }
 html.senior { font-size: 20px; --btn-h: 3.2rem; }
 html.senior body { --color-ink-2: #1F2A3C; --color-line: #9AA6B6; --color-control: #6B7686; }
 
-:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; border-radius: 6px; }
+:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 
 .btn { min-height: var(--btn-h); }
 .grad-calm { background: var(--grad-calm); }

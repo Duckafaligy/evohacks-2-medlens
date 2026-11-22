@@ -16,6 +16,7 @@ import { t } from './data/i18n.js';
 import { planFromHash } from './lib/share.js';
 import { restorePlan, loadExample } from './lib/app.js';
 import { stop } from './lib/speech.js';
+import * as cabinet from './lib/cabinet.js';
 
 const VIEWS = { today: Today, scan: Scan, cabinet: Cabinet, translate: Translate, safety: Safety, calendar: Calendar, quiz: Quiz };
 
@@ -29,6 +30,16 @@ const write = (k, v) => {
 // A shared #plan= link restores into the cabinet once, before first render.
 const sharedPlan = planFromHash();
 if (sharedPlan && restorePlan(sharedPlan)) window.location.replace('#/app/today');
+
+/** First visit to /app with an empty cabinet loads the cardiac example, once ever. */
+function maybeSeed() {
+  if (!window.location.hash.startsWith('#/app') || read('medlens.seeded', '') === '1') return false;
+  write('medlens.seeded', '1');
+  if (cabinet.list().length) return false;
+  write('medlens.raw', loadExample('cardiac'));
+  return true;
+}
+maybeSeed();
 
 export default function App() {
   const hash = useHash();
@@ -61,6 +72,13 @@ export default function App() {
   const View = view && VIEWS[view];
 
   useEffect(() => { window.scrollTo(0, 0); }, [view]);
+
+  // Entering the app later from the homepage also seeds (once).
+  useEffect(() => {
+    const on = () => { if (maybeSeed()) setRawState(read('medlens.raw', '')); };
+    window.addEventListener('hashchange', on);
+    return () => window.removeEventListener('hashchange', on);
+  }, []);
 
   return (
     <AppCtx.Provider value={ctx}>

@@ -1,36 +1,71 @@
 import { Fragment, useState } from 'react';
 import {
-  AlertTriangle, ArrowRight, Check, ChevronLeft, ChevronRight, Droplet, Utensils, Clock, Ban, ScanLine, Printer,
+  AlertTriangle, ArrowRight, Check, ChevronLeft, ChevronRight, Droplet, Utensils, Clock, Ban, ScanLine, Printer, Heart, Baby, Lock, Activity, Volume2,
 } from 'lucide-react';
 import { useApp, useCabinet, useInteractions, useNow } from '../components/ctx.js';
 import { Button, Chip, FoodChips } from '../components/ui.jsx';
 import * as cabinet from '../lib/cabinet.js';
-import { SLOTS, slotTime, nextDose, localDay, colorFor, activeOn, slotMinutes } from '../lib/app.js';
+import { SLOTS, slotTime, nextDose, localDay, colorFor, activeOn, slotMinutes, scheduleSpeech } from '../lib/app.js';
 import { SCENARIOS } from '../data/scenarios.js';
+import { INTERACTION_RULES } from '../data/fallback.js';
+import { speak } from '../lib/speech.js';
 
 const fmtDur = (min) => `${Math.floor(min / 60)}h ${String(min % 60).padStart(2, '0')}m`;
 const clock = (d) => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
+const EX_ICON = { cardiac: Heart, pediatric: Baby, 'diabetes-warfarin': Droplet };
+const EX_TONE = { cardiac: 'bg-primary-soft text-primary', pediatric: 'bg-safe-soft text-safe', 'diabetes-warfarin': 'bg-info-soft text-info' };
+const ruleCount = (sc) => {
+  const g = sc.meds.map((m) => m.generic);
+  return g.flatMap((a, i) => g.slice(i + 1).map((b) => [a, b].sort().join('+'))).filter((k) => INTERACTION_RULES[k] && INTERACTION_RULES[k].severity !== 'Low').length;
+};
+
 function Empty() {
   const { tr, lang, go, tryExample } = useApp();
   return (
-    <div className="grad-calm rise rounded-lg p-8 md:p-12">
-      <h2 className="text-h2">{tr('emptyTitle')}</h2>
-      <p className="mt-2 text-lead text-ink-2">{tr('emptyBody')}</p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Button onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('navScan')}</Button>
-        {SCENARIOS.map((s) => (
-          <Button key={s.id} variant="secondary" onClick={() => tryExample(s.id)}>{s.title[lang]}</Button>
-        ))}
-      </div>
+    <div className="grid items-start gap-6 xl:grid-cols-[1fr_420px]">
+      <section className="rise rounded-lg border border-line bg-surface p-8 md:p-10" aria-labelledby="empty-h">
+        <span className="grid size-16 place-items-center rounded-md bg-primary-soft text-primary" aria-hidden="true"><ScanLine className="size-7" /></span>
+        <h2 id="empty-h" className="mt-6 text-h2">{tr('emptyTitle')}</h2>
+        <p className="mt-2 max-w-[65ch] text-lead leading-relaxed text-ink-2">{tr('emptyLong')}</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Button onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('scanTitle')}</Button>
+          <Button variant="secondary" onClick={() => { window.location.hash = '#/app/scan/paste'; }}>{tr('tabPaste')}</Button>
+        </div>
+        <p className="mt-6 flex items-center gap-2 text-ink-2"><Lock className="size-4 text-safe" aria-hidden="true" />{tr('staysOnDevice')}</p>
+      </section>
+      <section aria-labelledby="ex-h">
+        <h2 id="ex-h" className="mb-3 text-h3">{tr('tryExample')}</h2>
+        <ul className="space-y-3">
+          {SCENARIOS.map((sc, i) => {
+            const Icon = EX_ICON[sc.id] || Heart;
+            const k = ruleCount(sc);
+            return (
+              <li key={sc.id} className="rise" style={{ '--i': i }}>
+                <button type="button" onClick={() => tryExample(sc.id)}
+                  className="flex w-full items-center gap-4 rounded-lg border border-line bg-surface p-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-md">
+                  <span className={`grid size-11 shrink-0 place-items-center rounded-md ${EX_TONE[sc.id]}`} aria-hidden="true"><Icon className="size-5" /></span>
+                  <span className="flex-1">
+                    <span className="block font-semibold">{sc.title[lang]}</span>
+                    <span className="text-small text-ink-2">{tr('nMeds', { n: sc.meds.length })}{k ? ` · ${tr('nWarnings', { n: k })}` : ''}</span>
+                  </span>
+                  <ChevronRight className="size-5 text-ink-2" aria-hidden="true" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
     </div>
   );
 }
 
-/** One short hint per med: food rule first, then water. */
+/** One short hint per med: a drug-specific rule, else food, else water. */
+const HINTS = { lisinopril: [Activity, 'checkBpFirst'], atorvastatin: [Ban, 'limitGrapefruit'] };
 function Hint({ med }) {
   const { tr } = useApp();
-  const [Icon, key] = med.withFood === 'with' ? [Utensils, 'withFood']
+  const special = HINTS[med.generic];
+  const [Icon, key] = special ? special : med.withFood === 'with' ? [Utensils, 'withFood']
     : med.withFood === 'before' ? [Clock, 'beforeFood']
       : med.withFood === 'without' ? [Ban, 'emptyStomach']
         : med.water ? [Droplet, 'fullGlassWater'] : [null, null];
@@ -105,7 +140,7 @@ function MonthCalendar({ items, now }) {
 }
 
 export default function Today() {
-  const { tr, lang, go, openFridge } = useApp();
+  const { tr, lang, go, openFridge, senior } = useApp();
   const { items } = useCabinet();
   const now = useNow();
   const [offset, setOffset] = useState(0);
@@ -140,6 +175,7 @@ export default function Today() {
 
       <header>
         <h1 className="text-h2 md:text-h1">{tr(greet)}</h1>
+        {items.length === 0 && <p className="mt-1 text-lead text-ink-2">{tr('addFirst')}</p>}
         {total > 0 && isToday && (
           <p className="mt-1 text-lead text-ink-2">{total - doneCount > 0 ? tr('dosesLeft', { n: total - doneCount }) : tr('allDoneToday')}</p>
         )}
@@ -240,6 +276,12 @@ export default function Today() {
             ) : total > 0 && (
               <div className="grad-mint rounded-lg p-6 text-safe"><p className="text-h3">{tr('allDoneToday')}</p></div>
             ))}
+            {senior && (
+              <button type="button" onClick={() => speak(scheduleSpeech(items, lang), lang)}
+                className="btn flex w-full items-center justify-center gap-3 rounded-lg border-2 border-ink bg-surface px-5 text-lead font-semibold hover:bg-canvas">
+                <Volume2 className="size-5" aria-hidden="true" />{tr('readMyDay')}
+              </button>
+            )}
             <MonthCalendar items={items} now={now} />
           </aside>
         </div>
