@@ -12,8 +12,8 @@ page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 await page.goto(url, { waitUntil: 'networkidle' });
 await page.waitForFunction(() => typeof window.__medlensDemoSeek === 'function');
 await page.waitForTimeout(900); // hero rise-in
-const win = page.locator('section[aria-labelledby="hero-h"] .rise').last();
-for (const t of [1.6, 4.6, 7, 10]) {
+const win = page.locator('section[aria-labelledby="hero-h"] .rise').last().locator('div').first();
+for (const t of [1.5, 3.2, 4.8, 8, 9.5]) {
   await page.evaluate((v) => window.__medlensDemoSeek(v), t);
   await page.waitForTimeout(120);
   await win.screenshot({ path: `${out}/demo-${width}-t${t}.png` });

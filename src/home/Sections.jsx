@@ -18,7 +18,7 @@ const GRADE_AFTER = Math.max(1, Math.round(fkGrade(CARDIAC.meds.map((m) => m.pla
 export function Hero() {
   const { tryExample } = useApp();
   return (
-    <section aria-labelledby="hero-h" className="overflow-hidden px-4 pb-12 pt-[104px] md:pb-16 md:pt-[120px]"
+    <section aria-labelledby="hero-h" className="overflow-hidden px-4 pt-[104px] md:pt-[120px]"
       style={{ backgroundImage: 'linear-gradient(180deg, #FFFFFF 0%, #F3F7FD 70%, #EAF1FC 100%)' }}>
       <div className="mx-auto flex max-w-[1152px] flex-col items-center gap-[22px] pb-10 pt-6 text-center md:pt-14">
         <h1 id="hero-h" className="rise text-[44px] font-semibold leading-[48px] tracking-[-0.035em] text-black md:text-[72px] md:leading-[78px]">
