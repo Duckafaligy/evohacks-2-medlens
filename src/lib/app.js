@@ -99,7 +99,7 @@ export const localDay = (d = new Date()) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 /** One stable colour per medicine, shared by Today and Calendar. */
-export const MED_COLORS = ['#1849A9', '#0E6A80', '#12704F', '#A14A06', '#7A3FA0', '#B4232A'];
+export const MED_COLORS = ['#1849A9', '#0E6A80', '#12704F', '#46536A', '#7A3FA0', '#A14A06'];
 export const colorFor = (items, id) => MED_COLORS[Math.max(0, items.findIndex((i) => i.id === id)) % MED_COLORS.length];
 
 /** Is this med scheduled on `day` (YYYY-MM-DD)? Short courses run `days` days from when they were added. */
