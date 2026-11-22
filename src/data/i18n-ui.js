@@ -1,5 +1,10 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  medsPairs: ['{n} medicines, {p} pairs checked.', '{n} medicinas, {p} pares revisados.', '{n} médicaments, {p} paires vérifiées.', '{n} 种药，已检查 {p} 组。'],
+  needsCall: ['{n} pair needs a call to your doctor.', '{n} par necesita una llamada a su médico.', '{n} paire demande d’appeler votre médecin.', '有 {n} 组需要联系医生。'],
+  whatToDo: ['What to do', 'Qué hacer', 'Que faire', '该怎么做'],
+  fdaLabel: ['FDA label', 'Etiqueta FDA', 'Notice FDA', 'FDA 说明书'],
+  labelsSay: ['What the FDA labels say', 'Lo que dicen las etiquetas de la FDA', 'Ce que disent les notices de la FDA', 'FDA 说明书怎么说'],
   searchMeds: ['Search medicines', 'Buscar medicinas', 'Chercher un médicament', '搜索药物'],
   mode_day: ['Day', 'Día', 'Jour', '日'],
   mode_week: ['Week', 'Semana', 'Semaine', '周'],
