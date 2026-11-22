@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { AlertTriangle, ChevronDown, Info, ScanLine, ShieldCheck } from 'lucide-react';
 import { useApp, useCabinet, useInteractions, useNow } from '../components/ctx.js';
-import { Button } from '../components/ui.jsx';
+import { Button, EmptyPanel } from '../components/ui.jsx';
 import { pl, colorFor, cleanLabel } from '../lib/app.js';
 import { REDFLAGS } from '../data/redflags.js';
 
@@ -179,10 +179,9 @@ export default function Safety() {
       </header>
 
       {items.length === 0 ? (
-        <div className={`${CARD} p-8`}>
-          <p className="text-lead">{tr('safetyEmpty')}</p>
-          <Button className="mt-5" onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('navScan')}</Button>
-        </div>
+        <EmptyPanel Icon={ShieldCheck} title={tr('emptyTitle')} body={tr('safetyEmpty')}>
+          <Button onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('scanOrPaste')}</Button>
+        </EmptyPanel>
       ) : !res ? (
         <p className="text-ink-2" role="status">{tr('checking')}</p>
       ) : res.interactions.length === 0 ? (

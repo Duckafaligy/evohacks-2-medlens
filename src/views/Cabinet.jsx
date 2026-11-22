@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Pill, RotateCw, ScanLine, ShieldCheck, Trash2, X } from 'lucide-react';
 import { useApp, useCabinet } from '../components/ctx.js';
-import { Button } from '../components/ui.jsx';
+import { Button, EmptyPanel } from '../components/ui.jsx';
 import * as cabinet from '../lib/cabinet.js';
 import { pl, colorFor, softFor, activeOn, localDay, cleanLabel } from '../lib/app.js';
 
@@ -145,10 +145,9 @@ export default function Cabinet() {
       </header>
 
       {items.length === 0 ? (
-        <div className="rounded-lg border border-line bg-surface p-8">
-          <p className="text-lead">{tr('emptyTitle')}</p>
-          <Button className="mt-5" onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('navScan')}</Button>
-        </div>
+        <EmptyPanel Icon={Pill} title={tr('emptyTitle')} body={tr('emptyLong')}>
+          <Button onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('scanOrPaste')}</Button>
+        </EmptyPanel>
       ) : (
         <div className="flex flex-col items-start gap-6 lg:flex-row">
           <div className="flex min-w-0 flex-1 flex-wrap gap-4">

@@ -166,3 +166,15 @@ export function ProgressBar({ value, label, tone = 'primary', className = '' }) 
     </div>
   );
 }
+
+/** Empty state that teaches: icon, title, one plain sentence, actions. */
+export function EmptyPanel({ Icon, title, body, children }) {
+  return (
+    <div className="mx-auto w-full max-w-[560px] rounded-lg border border-dashed border-control bg-surface p-8 text-center sm:p-10">
+      <span className="mx-auto grid size-16 place-items-center rounded-full bg-primary-soft text-primary" aria-hidden="true"><Icon className="size-8" strokeWidth={1.6} /></span>
+      <h2 className="mt-4 text-h3 font-semibold">{title}</h2>
+      <p className="mx-auto mt-2 max-w-[48ch] leading-relaxed text-ink-2">{body}</p>
+      <div className="mt-6 flex flex-wrap justify-center gap-3">{children}</div>
+    </div>
+  );
+}
