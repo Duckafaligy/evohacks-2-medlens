@@ -276,22 +276,18 @@ function PillCard({ big }) {
   );
 }
 export function Senior() {
-  const [pos, setPos] = useState(50);
   return (
     <Section label="Senior Mode">
-      <div className="grid items-center gap-10 md:grid-cols-[1fr_1.2fr]">
+      <div className="grid items-center gap-10 md:grid-cols-[1fr_1.4fr]">
         <div>
           <h2 className="text-h2 leading-tight md:text-h1">Bigger when you need it.</h2>
           <p className="mt-4 text-lead text-ink-2">Senior Mode: larger text, stronger contrast, bigger buttons.</p>
         </div>
-        <div className="relative overflow-hidden rounded-lg border border-line bg-canvas">
-          <div className="grid h-80 place-items-center p-6"><div className="w-full max-w-xs"><PillCard /></div></div>
-          <div className="absolute inset-0 grid place-items-center bg-surface p-6" style={{ clipPath: `inset(0 0 0 ${pos}%)` }}><div className="w-full max-w-sm"><PillCard big /></div></div>
-          <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-ink" style={{ left: `${pos}%` }} aria-hidden="true">
-            <span className="absolute top-1/2 grid size-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-ink bg-surface text-[12px] font-semibold">⇆</span>
-          </div>
-          <input type="range" min="5" max="95" value={pos} onChange={(e) => setPos(Number(e.target.value))} aria-label="Compare standard and Senior Mode"
-            className="absolute inset-0 size-full cursor-ew-resize opacity-0" />
+        <div className="relative grid overflow-hidden rounded-lg border border-line bg-surface sm:grid-cols-2">
+          <div className="grid place-items-center bg-canvas p-6"><div className="w-full max-w-[220px]"><PillCard /></div></div>
+          <div className="grid place-items-center p-6"><div className="w-full"><PillCard big /></div></div>
+          <span className="absolute left-1/2 top-1/2 hidden size-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-ink bg-surface text-[12px] font-semibold sm:grid" aria-hidden="true">⇆</span>
+          <span className="absolute inset-y-0 left-1/2 hidden w-0.5 -translate-x-1/2 bg-ink sm:block" aria-hidden="true" />
         </div>
       </div>
     </Section>
