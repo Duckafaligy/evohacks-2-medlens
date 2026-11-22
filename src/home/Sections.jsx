@@ -21,82 +21,78 @@ const Section = ({ id, className = '', children, label }) => (
   </section>
 );
 
-const PrimaryCta = () => {
-  const { tryExample } = useApp();
-  return (
-    <div className="flex flex-wrap justify-center gap-3">
-      <a href="#/app/today" className="btn inline-flex items-center rounded-md bg-primary px-6 font-semibold text-white transition-transform hover:-translate-y-0.5 hover:bg-primary/90">Open MedLens</a>
-      <button type="button" onClick={() => tryExample(CARDIAC.id)} className="btn rounded-md border border-control bg-surface px-6 font-semibold text-ink transition-transform hover:-translate-y-0.5">Try an example</button>
-    </div>
-  );
-};
-
-/** macOS-style window controls for browser frames. */
 const DOT_SHADOW = { boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,.18)' };
-const WindowDots = () => (
-  <span className="flex shrink-0 gap-2">
-    {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => <span key={c} className="size-3 rounded-full" style={{ background: c, ...DOT_SHADOW }} />)}
-  </span>
-);
+/* 1. Hero — ported from Paper "Homepage · Desktop" › Hero (2NS-0). */
+const HERO_LINES = CARDIAC.raw.split('\n')
+  .filter((l) => /\bmg\b/.test(l))
+  .map((l) => (l.match(/^.*?\b(QD|BID|TID|QID|QHS|q\d+h)\b/) || [l])[0]);
+const isCode = (t) => /^[A-Za-z]{2,4}$|^q\d+h$/.test(t.term) && t.category !== 'unit';
 
-/* 1. Hero with a working mini translator */
 export function Hero() {
-  const lines = CARDIAC.raw.split('\n').filter((l) => /mg/.test(l));
-  const segs = lines.map((l) => highlightTerms(l));
+  const { tryExample } = useApp();
+  const segs = HERO_LINES.map((l) => highlightTerms(l));
   const [term, setTerm] = useState(() => segs.flat().find((s) => s.term?.term === 'BID')?.term);
   return (
-    <section className="grad-calm px-4 pb-16 pt-32 md:px-6 md:pt-40" aria-labelledby="hero-h">
-      <div className="mx-auto max-w-6xl text-center">
-        <h1 id="hero-h" className="rise text-h1 leading-[1.05] tracking-tight md:text-display">
-          Understand every prescription.
-          <em className="block text-primary">In plain words, in seconds.</em>
+    <section aria-labelledby="hero-h" className="overflow-hidden px-4 pt-[104px] md:pt-[120px]"
+      style={{ backgroundImage: 'linear-gradient(180deg, #FFFFFF 0%, #F3F7FD 70%, #EAF1FC 100%)' }}>
+      <div className="mx-auto flex max-w-[1152px] flex-col items-center gap-[22px] pb-10 pt-6 text-center md:pt-14">
+        <h1 id="hero-h" className="rise text-[44px] font-semibold leading-[48px] tracking-[-0.035em] text-black md:text-[72px] md:leading-[78px]">
+          Understand every prescription.<br />
+          <em className="text-primary">In plain words, in seconds.</em>
         </h1>
-        <p className="rise mx-auto mt-6 max-w-xl text-lead text-ink-2" style={{ '--i': 1 }}>
-          Scan a label or paste a note. MedLens explains each word, plans your day and checks <span className="text-primary underline decoration-primary/40 underline-offset-4">FDA warnings</span>.
+        <p className="rise max-w-[640px] text-[18px] leading-[28px] text-[#2A3547] md:text-[21px] md:leading-[32px]" style={{ '--i': 1 }}>
+          Scan a label or paste a note. MedLens explains each word, plans your day and checks <em className="text-primary">FDA warnings</em>.
         </p>
-        <div className="rise mt-8" style={{ '--i': 2 }}><PrimaryCta /></div>
-        <p className="mt-4 text-small text-ink-2">Free · No sign-up · Data from openFDA</p>
+        <div className="rise flex w-full flex-col gap-3 pt-1.5 sm:w-auto sm:flex-row" style={{ '--i': 2 }}>
+          <a href="#/app/today" className="inline-flex h-[58px] items-center justify-center rounded-[10px] bg-primary px-7 text-[18px] font-semibold leading-[22px] text-white transition hover:-translate-y-0.5 hover:bg-[#143d8f]">Open MedLens</a>
+          <button type="button" onClick={() => tryExample(CARDIAC.id)}
+            className="inline-flex h-[58px] items-center justify-center rounded-[10px] border-[1.5px] border-control bg-surface px-6 text-[18px] font-semibold leading-[22px] text-black transition hover:-translate-y-0.5 hover:border-ink-2">Try an example</button>
+        </div>
+        <p className="text-[15px] leading-[18px] text-ink-2">Free · No sign-up · Data from openFDA</p>
+      </div>
 
-        <div className="rise mx-auto mt-12 max-w-5xl overflow-hidden rounded-lg border border-line bg-surface text-left shadow-2xl shadow-primary/10" style={{ '--i': 3 }}>
-          <div className="flex items-center gap-3 border-b border-line bg-canvas px-4 py-2.5" aria-hidden="true">
-            <WindowDots />
-            <span className="mx-auto flex min-w-0 max-w-[70%] items-center gap-1.5 rounded-md bg-surface px-3 py-1 text-[12px] text-ink-2">
-              <Lock className="size-3 shrink-0" />
-              <span className="truncate">evohacks-2-medlens.vercel.app/#/app/translate</span>
+      <div className="rise mx-auto flex max-w-[1120px] flex-col rounded-t-[14px] border border-b-0 border-line bg-surface text-left"
+        style={{ '--i': 3, boxShadow: '0 -8px 40px #1849A91A' }}>
+        <div className="flex h-10 shrink-0 items-center gap-2 border-b border-[#EDF0F4] px-4" aria-hidden="true">
+          {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => <span key={c} className="size-2.5 shrink-0 rounded-full" style={{ background: c, ...DOT_SHADOW }} />)}
+          <span className="flex flex-1 justify-center pr-[54px]">
+            <span className="inline-flex max-w-full items-center gap-1.5 truncate rounded-md bg-canvas px-3 py-[3px] text-[13px] leading-4 text-ink-2">
+              <Lock className="size-3 shrink-0" />medlens.app/translate
             </span>
-            <span className="w-[52px] shrink-0" />
+          </span>
+        </div>
+        <div className="flex flex-col md:flex-row">
+          <div className="flex flex-1 flex-col gap-4 border-b border-[#EDF0F4] px-6 py-7 md:border-b-0 md:border-r md:px-8">
+            <p className="text-[15px] leading-[18px] text-ink-2">What the label says</p>
+            <div className="font-mono text-[16px] leading-[30px] text-black md:text-[20px] md:leading-[36px]">
+              {segs.map((line, n) => (
+                <p key={n} className="whitespace-pre-wrap">{line.map((s, k) => s.term && isCode(s.term) ? (
+                  <button key={k} type="button" onClick={() => setTerm(s.term)} aria-pressed={term?.term === s.term.term}
+                    className={`rounded-[4px] px-[2px] text-primary underline decoration-1 underline-offset-[5px] transition-colors ${term?.term === s.term.term ? 'bg-primary-soft' : 'hover:bg-primary-soft'}`}>
+                    {s.text}
+                  </button>
+                ) : <span key={k}>{s.text}</span>)}</p>
+              ))}
+            </div>
+            <div className="flex w-fit items-center gap-3 rounded-[10px] bg-[#F1F9F4] px-3.5 py-3">
+              <span className="text-[14px] leading-[18px] text-ink-2">Reading level</span>
+              <span className="text-[15px] leading-[18px] text-black"><span className="text-danger">Grade {GRADE_BEFORE}</span> → <span className="font-semibold text-safe">Grade {GRADE_AFTER}</span></span>
+            </div>
           </div>
-          <div className="grid md:grid-cols-2">
-            <div className="border-b border-line p-6 md:border-b-0 md:border-r">
-              <p className="text-small text-ink-2">What the label says</p>
-              <div className="mt-3 space-y-2 font-mono text-[15px]">
-                {segs.map((line, n) => (
-                  <p key={n}>{line.map((s, k) => s.term ? (
-                    <button key={k} type="button" onClick={() => setTerm(s.term)} aria-pressed={term?.term === s.term.term}
-                      className={`rounded-sm px-0.5 text-primary underline decoration-primary/50 underline-offset-4 transition-colors ${term?.term === s.term.term ? 'bg-primary text-white' : 'hover:bg-primary-soft'}`}>
-                      {s.text}
-                    </button>
-                  ) : <span key={k}>{s.text}</span>)}</p>
-                ))}
+          <div className="flex flex-1 flex-col gap-3.5 px-6 py-7 md:px-8">
+            <p className="text-[15px] leading-[18px] text-ink-2">What it means</p>
+            {term && (
+              <div key={term.term} className="pop flex flex-col gap-1 rounded-[10px] bg-primary-soft p-4" aria-live="polite">
+                <span className="font-mono text-[14px] leading-[18px] text-primary">{term.term}</span>
+                <span className="text-[22px] font-semibold leading-[28px] text-black">{term.plain.en}</span>
               </div>
-              <p className="mt-5 inline-flex items-center gap-2 rounded-sm bg-safe-soft px-2.5 py-1 text-small text-safe">
-                Reading level <span className="font-semibold text-caution">Grade {GRADE_BEFORE}</span> → <span className="font-semibold">Grade {GRADE_AFTER}</span>
-              </p>
-            </div>
-            <div className="p-6">
-              <p className="text-small text-ink-2">What it means</p>
-              {term && (
-                <div key={term.term} className="pop mt-3 rounded-md bg-primary-soft p-4" aria-live="polite">
-                  <p className="font-mono text-small text-primary">{term.term}</p>
-                  <p className="text-lead font-semibold">{term.plain.en}</p>
-                </div>
-              )}
-              <ul className="mt-4 space-y-2">
-                {CARDIAC.meds.map((m) => (
-                  <li key={m.id}><span className="font-semibold">{m.name} {m.dose}</span> <span className="text-ink-2">· {m.slots.map((s) => SLOT_WORDS[s]).join(' and ')}</span></li>
-                ))}
-              </ul>
-            </div>
+            )}
+            <ul className="flex flex-col gap-0.5 px-4 py-1">
+              {CARDIAC.meds.map((m) => (
+                <li key={m.id} className="text-[17px] font-semibold leading-[26px] text-black">{m.name} <span className="font-normal text-[#2A3547]">· {m.slots.map((s) => SLOT_WORDS[s]).join(' and ')}</span></li>
+              ))}
+              <li className="pt-1 text-[16px] leading-[22px] text-[#2A3547]">Edema means <em className="text-primary">swelling</em>, often in the legs.</li>
+            </ul>
           </div>
         </div>
       </div>
