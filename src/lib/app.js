@@ -21,6 +21,7 @@ export function addToCabinet(meds) {
       ...m,
       strength: m.strength ?? m.dose,
       pillsLeft: m.pillsLeft ?? (m.prn || isLiquid(m.dose) ? null : (m.slots?.length || 1) * 30),
+      supply: m.supply ?? (m.prn || isLiquid(m.dose) ? null : (m.slots?.length || 1) * 30),
     }));
   for (const s of saved) {
     if (!s.generic || s.recap) continue;
@@ -45,13 +46,19 @@ export function loadExample(id) {
   const missed = new Date();
   missed.setDate(missed.getDate() - 4);
   const missedDay = localDay(missed);
-  for (let back = 6; back >= 1; back--) {
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  for (let back = 6; back >= 0; back--) {
     const d = new Date();
     d.setDate(d.getDate() - back);
     const day = localDay(d);
     for (const m of saved) {
       for (const slot of m.slots || []) {
-        if (activeOn(m, day) && !(day === missedDay && slot === 'evening')) cabinet.markTaken(m.id, day, slot);
+        if (!activeOn(m, day) || (day === missedDay && slot === 'evening')) continue;
+        if (back === 0 && slotMinutes(slot) > nowMin) continue; // today: only doses already due
+        const at = new Date(d);
+        at.setHours(0, slotMinutes(slot) + 5, 0, 0); // taken 5 minutes after the dose time
+        cabinet.markTaken(m.id, day, slot, true, at.toISOString());
       }
     }
   }
@@ -137,3 +144,14 @@ export const slotMinutes = (slot) => {
   const [h, m] = SLOT_TIMES[slot].split(':').map(Number);
   return h * 60 + m;
 };
+
+/** Label text for people: drop "[see …]" and "( 5.1 )" refs, turn SHOUTED runs into sentence case. */
+export function cleanLabel(text) {
+  return (text || '')
+    .replace(/\[\s*see[^\]]*\]/gi, '')
+    .replace(/\(\s*[\d.,\s]+\)/g, '')
+    .replace(/\b([A-Z][A-Z0-9 ,:;'/-]{6,}[A-Z])\b/g, (m) => m.charAt(0) + m.slice(1).toLowerCase())
+    .replace(/\s+([.,;:])/g, '$1')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}

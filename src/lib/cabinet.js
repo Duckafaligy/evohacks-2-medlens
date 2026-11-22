@@ -108,8 +108,8 @@ export function remove(id) {
   commit({ ...state, items: state.items.filter((i) => i.id !== id) });
 }
 
-/** markTaken(id, '2026-11-22', 'morning', taken = true) — toggles a dose; 1 pill per dose off pillsLeft. */
-export function markTaken(id, dateISO = today(), slot, taken = true) {
+/** markTaken(id, '2026-11-22', 'morning', taken = true, atISO?) — toggles a dose; 1 pill per dose off pillsLeft. */
+export function markTaken(id, dateISO = today(), slot, taken = true, atISO) {
   const day = dateISO.slice(0, 10);
   const tag = `${id}|${slot}`;
   const cur = state.taken[day] ?? [];
@@ -121,7 +121,7 @@ export function markTaken(id, dateISO = today(), slot, taken = true) {
         ? withRefill({ ...i, pillsLeft: Math.max(0, Number(i.pillsLeft) + delta) })
         : i),
     taken: { ...state.taken, [day]: taken ? [...cur, tag] : cur.filter((x) => x !== tag) },
-    at: { ...(state.at || {}), [`${day}|${tag}`]: taken ? new Date().toISOString() : undefined },
+    at: { ...(state.at || {}), [`${day}|${tag}`]: taken ? atISO || new Date().toISOString() : undefined },
   });
 }
 

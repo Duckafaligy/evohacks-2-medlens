@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { AlertTriangle, ChevronDown, Info, ScanLine, ShieldCheck } from 'lucide-react';
 import { useApp, useCabinet, useInteractions, useNow } from '../components/ctx.js';
 import { Button } from '../components/ui.jsx';
-import { pl, colorFor } from '../lib/app.js';
+import { pl, colorFor, cleanLabel } from '../lib/app.js';
 import { REDFLAGS } from '../data/redflags.js';
 
 const SEV = {
@@ -13,16 +13,6 @@ const SEV = {
 };
 const CARD = 'rounded-lg border border-line bg-surface';
 
-/** Label text for people: drop "[see …]" and "( 5.1 )" refs, turn SHOUTED runs into sentence case. */
-function cleanLabel(text) {
-  return (text || '')
-    .replace(/\[\s*see[^\]]*\]/gi, '')
-    .replace(/\(\s*[\d.,\s]+\)/g, '')
-    .replace(/\b([A-Z][A-Z0-9 ,:;'/-]{6,}[A-Z])\b/g, (m) => m.charAt(0) + m.slice(1).toLowerCase())
-    .replace(/\s+([.,;:])/g, '$1')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
-}
 const splitFirst = (s) => {
   const m = (s || '').match(/^(.+?[.!?。])\s*(.*)$/s);
   return m ? [m[1], m[2]] : [s, ''];

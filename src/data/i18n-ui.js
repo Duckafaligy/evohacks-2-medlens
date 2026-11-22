@@ -1,5 +1,14 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  navCabinetTitle: ['My medicines', 'Mis medicinas', 'Mes médicaments', '我的药物'],
+  pillsLeftShort: ['pills left', 'pastillas', 'restantes', '剩余'],
+  ofN: ['of {n}', 'de {n}', 'sur {n}', '共 {n}'],
+  refill: ['Refill', 'Resurtir', 'Renouveler', '续药'],
+  nRefillSoon: ['{n} refill soon', '{n} por resurtir pronto', '{n} à renouveler bientôt', '{n} 种即将续药'],
+  activeMeds: ['Active', 'Activas', 'Actifs', '在用'],
+  pastMeds: ['Past', 'Anteriores', 'Passés', '已停用'],
+  noneHere: ['Nothing here yet.', 'Nada aquí todavía.', 'Rien ici pour l’instant.', '暂无内容。'],
+  sourceLine: ['Source: openFDA drug label', 'Fuente: etiqueta de openFDA', 'Source : notice openFDA', '来源：openFDA 药品说明书'],
   times: ['Times', 'Horarios', 'Heures', '时间'],
   nOfM: ['{n} of {m}', '{n} de {m}', '{n} sur {m}', '{n}/{m}'],
   dropLabel: ['Drop a photo of the label', 'Suelte una foto de la etiqueta', 'Déposez une photo de l’étiquette', '拖入标签照片'],
