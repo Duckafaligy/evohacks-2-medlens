@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ScanSearch, X } from 'lucide-react';
 import { useApp } from './ctx.js';
+import { GITHUB, OPENFDA } from '../data/links.js';
 
 const BTN = {
   primary: 'bg-primary text-white hover:bg-primary/90',
@@ -133,7 +134,6 @@ export function Drawer({ open, onClose, title, children }) {
   );
 }
 
-export const GITHUB = 'https://github.com/Duckafaligy/evohacks-2-medlens';
 
 export function Footer() {
   const { tr } = useApp();
@@ -147,10 +147,10 @@ export function Footer() {
         </p>
         <nav aria-label="Footer" className="flex flex-wrap items-center gap-5">
           <a className={link} href="#/app/today">{tr('navApp')}</a>
-          <a className={link} href="#/how">{tr('howItWorks')}</a>
-          <a className={link} href="#/privacy">{tr('privacy')}</a>
+          <a className={link} href="#/">{tr('howItWorks')}</a>
+          <a className={link} href="#/legal/privacy">{tr('privacy')}</a>
           <a className={link} href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
-          <a className="hover:underline" href="https://open.fda.gov/apis/drug/label/" target="_blank" rel="noreferrer">{tr('dataSource')}</a>
+          <a className="hover:underline" href={OPENFDA} target="_blank" rel="noreferrer">{tr('dataSource')}</a>
         </nav>
       </div>
       <p className="mt-4">© 2026 MedLens · {tr('builtFor')}</p>
