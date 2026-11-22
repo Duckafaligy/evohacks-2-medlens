@@ -165,6 +165,8 @@ export default function Today({ route }) {
   const nowIndex = isToday ? plan.findIndex((p) => slotMinutes(p.slot) > nowMin) : -2;
 
 
+  if (mode === 'week' && items.length) return <Calendar mode="week" onMode={setMode} />;
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
@@ -197,7 +199,7 @@ export default function Today({ route }) {
         </div>
       )}
 
-      {items.length > 0 && mode === 'week' ? <Calendar embedded /> : items.length === 0 ? <Empty /> : (
+      {items.length === 0 ? <Empty /> : (
         <div className="grid items-start gap-6 xl:grid-cols-[1fr_340px]">
           <section className="min-w-0 rounded-lg border border-line bg-surface p-5 md:p-7" aria-labelledby="plan-h">
             <div className="flex flex-wrap items-start justify-between gap-4">

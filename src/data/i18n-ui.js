@@ -1,5 +1,7 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  times: ['Times', 'Horarios', 'Heures', '时间'],
+  nOfM: ['{n} of {m}', '{n} de {m}', '{n} sur {m}', '{n}/{m}'],
   dropLabel: ['Drop a photo of the label', 'Suelte una foto de la etiqueta', 'Déposez une photo de l’étiquette', '拖入标签照片'],
   fileTypes: ['JPG, PNG or HEIC · up to 10 MB', 'JPG, PNG o HEIC · hasta 10 MB', 'JPG, PNG ou HEIC · jusqu’à 10 Mo', 'JPG、PNG 或 HEIC · 最大 10 MB'],
   choosePhoto: ['Choose a photo', 'Elegir una foto', 'Choisir une photo', '选择照片'],
