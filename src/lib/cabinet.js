@@ -3,10 +3,10 @@
 //
 // Item: { id, name, generic, strength, route, slots[], withFood, pillsLeft, perDay, refillDate,
 //         recap: { activeIngredients, purpose, howToTake, warnings, sideEffects, source }, scannedAt, lastScanned }
-// State: { items: Item[], taken: { 'YYYY-MM-DD': ['<id>|<slot>', ...] } }
+// State: { items: Item[], taken: { 'YYYY-MM-DD': ['<id>|<slot>', ...] }, at: { 'YYYY-MM-DD|<id>|<slot>': ISO time } }
 
 const KEY = 'medlens.cabinet.v1';
-const EMPTY = { items: [], taken: {} };
+const EMPTY = { items: [], taken: {}, at: {} };
 const listeners = new Set();
 let remote = null;
 let memory = null; // used when localStorage is unavailable (private mode, Node)
@@ -24,7 +24,7 @@ function load() {
     const raw = storage()?.getItem(KEY);
     if (raw) {
       const s = JSON.parse(raw);
-      return { items: Array.isArray(s.items) ? s.items : [], taken: s.taken && typeof s.taken === 'object' ? s.taken : {} };
+      return { items: Array.isArray(s.items) ? s.items : [], taken: s.taken && typeof s.taken === 'object' ? s.taken : {}, at: s.at && typeof s.at === 'object' ? s.at : {} };
     }
   } catch { /* corrupt or blocked -> start empty */ }
   return memory ?? EMPTY;
@@ -121,14 +121,16 @@ export function markTaken(id, dateISO = today(), slot, taken = true) {
         ? withRefill({ ...i, pillsLeft: Math.max(0, Number(i.pillsLeft) + delta) })
         : i),
     taken: { ...state.taken, [day]: taken ? [...cur, tag] : cur.filter((x) => x !== tag) },
+    at: { ...(state.at || {}), [`${day}|${tag}`]: taken ? new Date().toISOString() : undefined },
   });
 }
 
-/** takenOn('2026-11-22') -> [{ id, slot }] */
+/** takenOn('2026-11-22') -> [{ id, slot, at }]  (at = ISO time it was marked, if known) */
 export function takenOn(dateISO = today()) {
-  return (state.taken[dateISO.slice(0, 10)] ?? []).map((t) => {
+  const day = dateISO.slice(0, 10);
+  return (state.taken[day] ?? []).map((t) => {
     const i = t.lastIndexOf('|');
-    return { id: t.slice(0, i), slot: t.slice(i + 1) };
+    return { id: t.slice(0, i), slot: t.slice(i + 1), at: state.at?.[`${day}|${t}`] || null };
   });
 }
 
@@ -141,7 +143,7 @@ export async function setRemote(adapter) {
   if (remote?.pull) {
     try {
       const s = await remote.pull();
-      if (s && Array.isArray(s.items)) commit({ items: s.items, taken: s.taken || {} });
+      if (s && Array.isArray(s.items)) commit({ items: s.items, taken: s.taken || {}, at: s.at || {} });
     } catch { /* offline: keep local */ }
   }
 }

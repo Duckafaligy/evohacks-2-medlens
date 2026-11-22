@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Sun, CalendarDays, CircleHelp, ScanLine, Pill, Languages, ShieldCheck, Play, Pause, Square, ChevronRight, Menu,
 } from 'lucide-react';
@@ -7,6 +7,7 @@ import { Logo, Modal } from './ui.jsx';
 import { LANGS } from '../data/i18n.js';
 import { speak, pause, resume, stop, canSpeak } from '../lib/speech.js';
 import { scheduleSpeech } from '../lib/app.js';
+import { currentUser, onUser, signOut } from '../lib/auth.js';
 
 const GROUPS = [
   { key: 'groupDaily', items: [['today', Sun], ['calendar', CalendarDays], ['quiz', CircleHelp]] },
@@ -64,6 +65,8 @@ function ReadAloud() {
 
 function Preferences() {
   const { tr, lang, setLang, senior, setSenior, openAuth } = useApp();
+  const [user, setUser] = useState(() => currentUser());
+  useEffect(() => onUser(setUser), []);
   return (
     <div className="space-y-3">
       <div className="space-y-3 rounded-md border border-line bg-surface p-3">
@@ -97,10 +100,17 @@ function Preferences() {
         </div>
         <ReadAloud />
       </div>
-      <button type="button" onClick={openAuth} className="flex w-full items-center justify-between rounded-md px-3 py-2 text-small hover:bg-surface">
-        <span className="text-ink-2">{tr('guest')}</span>
-        <span className="flex items-center gap-1 font-semibold text-primary">{tr('saveToAccount')} <ChevronRight className="size-4" aria-hidden="true" /></span>
-      </button>
+      {user ? (
+        <div className="flex items-center justify-between gap-2 px-3 py-2 text-small">
+          <span className="truncate text-ink" title={user.email}>{user.email}</span>
+          <button type="button" onClick={() => signOut()} className="shrink-0 font-semibold text-primary hover:underline">{tr('signOut')}</button>
+        </div>
+      ) : (
+        <button type="button" onClick={openAuth} className="flex w-full items-center justify-between rounded-md px-3 py-2 text-small hover:bg-surface">
+          <span className="text-ink-2">{tr('guest')}</span>
+          <span className="flex items-center gap-1 font-semibold text-primary">{tr('saveToAccount')} <ChevronRight className="size-4" aria-hidden="true" /></span>
+        </button>
+      )}
     </div>
   );
 }

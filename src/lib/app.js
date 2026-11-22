@@ -97,3 +97,23 @@ export function scheduleSpeech(items, lang) {
 
 export const localDay = (d = new Date()) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+/** One stable colour per medicine, shared by Today and Calendar. */
+export const MED_COLORS = ['#1849A9', '#0E6A80', '#12704F', '#A14A06', '#7A3FA0', '#B4232A'];
+export const colorFor = (items, id) => MED_COLORS[Math.max(0, items.findIndex((i) => i.id === id)) % MED_COLORS.length];
+
+/** Is this med scheduled on `day` (YYYY-MM-DD)? Short courses run `days` days from when they were added. */
+export function activeOn(m, day) {
+  const start = localDay(new Date(m.scannedAt || Date.now()));
+  if (day < start) return false;
+  if (!m.days) return true;
+  const end = new Date(`${start}T12:00`);
+  end.setDate(end.getDate() + m.days - 1);
+  return day <= localDay(end);
+}
+
+/** Minutes since midnight for a slot. */
+export const slotMinutes = (slot) => {
+  const [h, m] = SLOT_TIMES[slot].split(':').map(Number);
+  return h * 60 + m;
+};

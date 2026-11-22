@@ -83,7 +83,8 @@ assert.equal(cabinet.list()[0].pillsLeft, 90);
 assert.ok(cabinet.list()[0].refillDate);
 cabinet.markTaken(c1.id, '2026-11-22', 'morning');
 cabinet.markTaken(c1.id, '2026-11-22', 'morning'); // idempotent
-assert.deepEqual(cabinet.takenOn('2026-11-22'), [{ id: c1.id, slot: 'morning' }]);
+assert.deepEqual(cabinet.takenOn('2026-11-22').map(({ id, slot }) => ({ id, slot })), [{ id: c1.id, slot: 'morning' }]);
+assert.ok(cabinet.takenOn('2026-11-22')[0].at);
 assert.equal(cabinet.list()[0].pillsLeft, 89);
 assert.notEqual(cabinet.getSnapshot(), snap0);
 assert.equal(ticks, 4);
