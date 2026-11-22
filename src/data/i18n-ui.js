@@ -1,5 +1,12 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  dropLabel: ['Drop a photo of the label', 'Suelte una foto de la etiqueta', 'Déposez une photo de l’étiquette', '拖入标签照片'],
+  fileTypes: ['JPG, PNG or HEIC · up to 10 MB', 'JPG, PNG o HEIC · hasta 10 MB', 'JPG, PNG ou HEIC · jusqu’à 10 Mo', 'JPG、PNG 或 HEIC · 最大 10 MB'],
+  choosePhoto: ['Choose a photo', 'Elegir una foto', 'Choisir une photo', '选择照片'],
+  or: ['or', 'o', 'ou', '或'],
+  sampleSub: ['Printed discharge note', 'Nota de alta impresa', 'Note de sortie imprimée', '打印的出院单'],
+  waitingShort: ['Waiting', 'En espera', 'En attente', '等待中'],
+  addPhotoToStart: ['Add a photo to start.', 'Agregue una foto para empezar.', 'Ajoutez une photo pour commencer.', '添加照片即可开始。'],
   scanOrPaste: ['Scan or paste', 'Escanear o pegar', 'Scanner ou coller', '扫描或粘贴'],
   myMeds: ['My medicines ({n})', 'Mis medicinas ({n})', 'Mes médicaments ({n})', '我的药物（{n}）'],
   dayView: ['Day', 'Día', 'Jour', '日'],
