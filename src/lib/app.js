@@ -34,6 +34,18 @@ export function addToCabinet(meds) {
   return saved;
 }
 
+/**
+ * Add the user's own medicines. If the cabinet only holds an example, the example is cleared first.
+ * Returns the previous snapshot when an example was replaced (for Undo), else null.
+ */
+export function addOwnMeds(meds) {
+  const before = cabinet.getSnapshot();
+  const onlyExample = before.items.length > 0 && before.items.every((i) => i.ex);
+  if (onlyExample) cabinet.clear();
+  addToCabinet(meds);
+  return onlyExample ? before : null;
+}
+
 /** Replace the cabinet with an example scenario. Returns its raw note text. */
 export function loadExample(id) {
   const sc = SCENARIOS.find((s) => s.id === id) || SCENARIOS[0];

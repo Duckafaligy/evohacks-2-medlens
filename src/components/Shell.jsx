@@ -1,5 +1,6 @@
 // App shell pieces ported from Paper (Today · Desktop): top bar, example switcher, slim footer.
-import { ScanLine } from 'lucide-react';
+import { useEffect } from 'react';
+import { ScanLine, X } from 'lucide-react';
 import { useApp, useCabinet } from './ctx.js';
 import { SCENARIOS } from '../data/scenarios.js';
 
@@ -44,5 +45,20 @@ export function AppFooter() {
       <p className="text-ink-2">{tr('footerNote')} · <a href="tel:911" className="hover:underline">{tr('emergencyShort')}</a></p>
       <a href="#/" className="font-semibold text-primary hover:underline">{tr('home')}</a>
     </footer>
+  );
+}
+
+/** Small bottom toast with an optional action (Undo). Closes itself after 8 s. */
+export function Toast({ text, actionLabel, onAction, onClose }) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 8000);
+    return () => clearTimeout(t);
+  }, [onClose]);
+  return (
+    <div role="status" className="pop fixed bottom-20 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-md bg-ink px-4 py-3 text-[15px] text-white shadow-xl md:bottom-6">
+      <span>{text}</span>
+      {actionLabel && <button type="button" onClick={() => { onAction?.(); onClose(); }} className="font-semibold text-[#8FB2F0] hover:underline">{actionLabel}</button>}
+      <button type="button" onClick={onClose} aria-label="Close" className="grid size-7 place-items-center rounded-sm hover:bg-white/10"><X className="size-4" /></button>
+    </div>
   );
 }

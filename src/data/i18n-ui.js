@@ -1,5 +1,8 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  exampleCleared: ['Example cleared. Showing your medicines.', 'Ejemplo borrado. Mostrando sus medicinas.', 'Exemple retiré. Voici vos médicaments.', '已清除示例，显示您的药物。'],
+  undo: ['Undo', 'Deshacer', 'Annuler', '撤销'],
+  plusMore: ['+{n} more', '+{n} más', '+{n} autres', '还有{n}种'],
   upcoming: ['Upcoming', 'Próxima', 'À venir', '待服'],
   markAll: ['Mark all taken', 'Marcar todas como tomadas', 'Tout marquer comme pris', '全部标记为已服'],
   prevMonth: ['Previous month', 'Mes anterior', 'Mois précédent', '上个月'],

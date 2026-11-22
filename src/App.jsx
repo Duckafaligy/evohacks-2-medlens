@@ -3,7 +3,7 @@ import { AppCtx, useHash } from './components/ctx.js';
 import Sidebar from './components/Sidebar.jsx';
 import FridgeCard from './components/FridgeCard.jsx';
 import AuthModal from './components/AuthModal.jsx';
-import { TopBar, AppFooter } from './components/Shell.jsx';
+import { TopBar, AppFooter, Toast } from './components/Shell.jsx';
 import Home from './views/Home.jsx';
 import Today from './views/Today.jsx';
 import Scan from './views/Scan.jsx';
@@ -47,6 +47,7 @@ export default function App() {
   const [raw, setRawState] = useState(() => read('medlens.raw', ''));
   const [fridge, setFridge] = useState(false);
   const [auth, setAuth] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
 
   const setLang = useCallback((l) => { stop(); setLangState(l); write('medlens.lang', l); }, []);
   const setSenior = useCallback((v) => { setSeniorState(v); write('medlens.senior', v ? '1' : '0'); }, []);
@@ -64,6 +65,7 @@ export default function App() {
     tryExample: (id, nav = true) => { setRaw(loadExample(id)); if (nav) window.location.hash = '#/app/today'; },
     openFridge: () => setFridge(true),
     openAuth: () => setAuth(true),
+    toast: (text, actionLabel, onAction) => setToastMsg({ text, actionLabel, onAction, id: Date.now() }),
   }), [lang, setLang, senior, setSenior, raw, setRaw]);
 
   const m = hash.match(/^#\/app\/?(\w*)/);
@@ -99,6 +101,7 @@ export default function App() {
       )}
       <FridgeCard open={fridge} onClose={() => setFridge(false)} />
       <AuthModal open={auth} onClose={() => setAuth(false)} />
+      {toastMsg && <Toast key={toastMsg.id} {...toastMsg} onClose={() => setToastMsg(null)} />}
     </AppCtx.Provider>
   );
 }

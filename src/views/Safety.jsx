@@ -13,6 +13,16 @@ const SEV = {
 };
 const CARD = 'rounded-lg border border-line bg-surface';
 
+/** First plain sentence of a label's indications, ≤110 chars, without bullets or 'X tablets are indicated for'. */
+function shortPurpose(text) {
+  let s = splitFirst(cleanLabel(text).replace(/[•●▪]|\s o\s/g, ' ').replace(/\s+/g, ' '))[0] || '';
+  s = s.replace(/^\d+(?:\.\d+)?\s*/, '').replace(/^(?:indications?(?: and usage)?|uses?|purpose)\s*:?\s*/i, '');
+  const hit = s.match(/\b(?:is|are) indicated (?:for|as|in)\s*:?\s*(?:the\s+)?/i) || s.match(/\bfor the\s+(?=treatment)/i);
+  if (hit) s = s.slice(hit.index + hit[0].length);
+  s = s.replace(/^treatment of\s+/i, 'Treats ').replace(/^[:\s–-]+/, '');
+  s = s.charAt(0).toUpperCase() + s.slice(1);
+  return s.length > 110 ? `${s.slice(0, 107).replace(/\s+\S*$/, '')}…` : s;
+}
 const splitFirst = (s) => {
   const m = (s || '').match(/^(.+?[.!?。])\s*(.*)$/s);
   return m ? [m[1], m[2]] : [s, ''];
@@ -44,10 +54,10 @@ function InteractionCard({ x, items }) {
         <h2 className="text-[22px] font-semibold leading-7 tracking-[-0.01em]">{title}</h2>
         {body && <p className="max-w-[65ch] text-[16px] leading-[22px] text-ink-2">{body}</p>}
       </div>
-      {x.severity !== 'Low' && (
+      {(x.action || x.severity !== 'Low') && (
         <div className="flex flex-col gap-2 border-t pt-3.5" style={{ borderColor: '#EBEFF4' }}>
           <p className="text-[15px] font-semibold leading-[18px]">{tr('whatToDo')}</p>
-          <p className="text-[15px] leading-5">✓ {tr(x.severity === 'High' ? 'actHigh' : 'actModerate')}</p>
+          <p className="text-[15px] leading-5">✓ {x.action ? pl(x.action, lang) : tr(x.severity === 'High' ? 'actHigh' : 'actModerate')}</p>
         </div>
       )}
       {x.excerpt && (
@@ -88,7 +98,7 @@ function LabelCard({ m }) {
   const { tr, lang } = useApp();
   const [more, setMore] = useState(false);
   const r = m.recap;
-  const purpose = pl(m.purpose, lang) || splitFirst(cleanLabel(r?.purpose))[0];
+  const purpose = pl(m.purpose, lang) || shortPurpose(r?.purpose);
   const text = cleanLabel(r ? (r.boxedWarning || r.warnings) : '');
   const src = r?.source === 'openfda' ? 'fdaLabel' : r?.source === 'snapshot' ? 'sourceSaved' : null;
   return (

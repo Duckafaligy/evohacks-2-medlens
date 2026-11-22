@@ -6,7 +6,8 @@ import { startCamera, stopCamera, captureFrame } from '../lib/camera.js';
 import { runOcr } from '../lib/ocr.js';
 import { parseText } from '../lib/parse.js';
 import { fkGrade } from '../lib/readability.js';
-import { addToCabinet, loadExample, pl, MED_COLORS } from '../lib/app.js';
+import { addOwnMeds, loadExample, pl, MED_COLORS } from '../lib/app.js';
+import * as cabinet from '../lib/cabinet.js';
 import { SCENARIOS } from '../data/scenarios.js';
 
 const foodText = (m, tr) => [({ with: tr('withFood'), before: tr('beforeFood'), without: tr('emptyStomach') })[m.withFood], m.water && tr('fullGlassWater')].filter(Boolean).join(', ');
@@ -102,7 +103,7 @@ function UploadPanel({ onImage }) {
 }
 
 export default function Scan() {
-  const { tr, lang, setRaw, go } = useApp();
+  const { tr, lang, raw, setRaw, go, toast } = useApp();
   const [tab, setTab] = useState(() => (window.location.hash.endsWith('/paste') ? 'paste' : 'upload'));
   const [text, setText] = useState('');
   const [draft, setDraft] = useState('');
@@ -133,7 +134,11 @@ export default function Scan() {
   };
   const add = (to = 'today') => {
     if (sc) loadExample(sc.id);
-    else addToCabinet(meds);
+    else {
+      const prevRaw = raw;
+      const undo = addOwnMeds(meds);
+      if (undo) toast(tr('exampleCleared'), tr('undo'), () => { cabinet.restore(undo); setRaw(prevRaw); });
+    }
     setRaw(text);
     go(to);
   };

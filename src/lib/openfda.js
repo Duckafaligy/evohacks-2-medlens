@@ -163,6 +163,7 @@ export async function checkInteractions(meds, opts = {}) {
         b: B.name || B.generic,
         severity: rule?.severity || 'Low',
         plain: rule?.plain || null,
+        action: rule?.action || null,
         excerpt: hit?.excerpt || '',
         source: rule ? (hit ? 'rule+fda' : 'rule') : 'fda',
         labelSource: hit ? (hitA ? labels[i] : labels[j]).source : null,

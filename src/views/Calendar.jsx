@@ -116,9 +116,10 @@ function DosePopover({ pop, items, today, onClose }) {
 /* ---------- blocks ---------- */
 function Block({ slot, meds, day, today, nowMin, wide, onOpen, tr, locale }) {
   const { taken, done, all, missed, future } = slotState(meds, slot, day, today, nowMin);
-  const rowsH = wide ? 24 + meds.length * 26 : 0;
-  const height = Math.max((meds.length >= 3 ? 1.5 : 1) * H - 1, rowsH);
-  const names = meds.map((m) => m.name.split(' ')[0]).join(', ');
+  const rowsH = 24 + meds.length * 26;
+  const shown = Math.min(meds.length, 3) + (meds.length > 3 ? 1 : 0); // up to 3 names + "+N more"
+  // exact content height: 15px time line + 2px gap + 13px per name line + 10px padding (+3px missed border)
+  const height = Math.max(H - 1, wide ? rowsH + 4 : 27 + 13 * shown + (missed ? 3 : 0));
   const label = `${tr(slot)} ${slotTime(slot)}: ${meds.map((m) => m.name).join(', ')}. ${missed ? tr('missed') : all ? tr('allTaken') : tr('nOfM', { n: done, m: meds.length })}`;
   const fg = missed ? '#0F1B2D' : '#FFFFFF';
   return (
@@ -151,7 +152,10 @@ function Block({ slot, meds, day, today, nowMin, wide, onOpen, tr, locale }) {
           })}
         </span>
       ) : (
-        <span className="text-[11px] leading-[13px]" style={{ color: fg }}>{names}</span>
+        <span className="flex min-w-0 flex-col text-[11px] leading-[13px]" style={{ color: fg }}>
+          {meds.slice(0, 3).map((m) => <span key={m.id} className="truncate">{m.name.split(' ')[0]}</span>)}
+          {meds.length > 3 && <span className="truncate opacity-90">{tr('plusMore', { n: meds.length - 3 })}</span>}
+        </span>
       )}
     </div>
   );

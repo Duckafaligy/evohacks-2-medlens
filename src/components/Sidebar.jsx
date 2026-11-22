@@ -48,16 +48,20 @@ function ReadAloud() {
       </button>
     );
   }
+  const ICON = 'grid size-9 shrink-0 place-items-center rounded-sm text-primary transition-colors duration-150 hover:bg-white';
   return (
-    <div className="flex items-center gap-2" role="group" aria-label={tr('readAloud')}>
-      <span className="flex flex-1 items-center gap-2 text-small font-semibold text-primary" aria-live="polite">
-        <span className={`size-2 rounded-full bg-primary ${state === 'speaking' ? 'animate-pulse' : ''}`} aria-hidden="true" />
-        {state === 'speaking' ? tr('speaking') : tr('paused')}
+    <div className="btn flex w-full items-center gap-1 rounded-md bg-primary-soft pl-3 pr-1" role="group" aria-label={tr('readAloud')}>
+      <span className="flex h-4 items-end gap-0.5" aria-hidden="true">
+        {[0, 1, 2, 3].map((k) => (
+          <span key={k} className={`w-[3px] rounded-sm bg-primary ${state === 'speaking' ? 'animate-pulse' : ''}`}
+            style={{ height: `${[60, 100, 45, 80][k]}%`, animationDelay: `${k * 150}ms` }} />
+        ))}
       </span>
+      <span className="flex-1 truncate pl-2 text-small font-semibold text-primary" aria-live="polite">{state === 'speaking' ? tr('speaking') : tr('paused')}</span>
       {state === 'speaking'
-        ? <button type="button" onClick={pause} aria-label={tr('pause')} className="btn grid w-12 place-items-center rounded-md bg-primary-soft text-primary"><Pause className="size-4" /></button>
-        : <button type="button" onClick={resume} aria-label={tr('resume')} className="btn grid w-12 place-items-center rounded-md bg-primary-soft text-primary"><Play className="size-4" /></button>}
-      <button type="button" onClick={stop} aria-label={tr('stopReading')} className="btn grid w-12 place-items-center rounded-md bg-primary-soft text-primary"><Square className="size-4" /></button>
+        ? <button type="button" onClick={pause} aria-label={tr('pause')} title={tr('pause')} className={ICON}><Pause className="size-4" /></button>
+        : <button type="button" onClick={resume} aria-label={tr('resume')} title={tr('resume')} className={ICON}><Play className="size-4" /></button>}
+      <button type="button" onClick={stop} aria-label={tr('stopReading')} title={tr('stopReading')} className={ICON}><Square className="size-3.5" /></button>
     </div>
   );
 }

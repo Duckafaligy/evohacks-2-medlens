@@ -148,5 +148,8 @@ export async function setRemote(adapter) {
   }
 }
 
+/** restore(snapshot) — put back a previous getSnapshot() (used by Undo). */
+export const restore = (snap) => commit({ items: snap.items || [], taken: snap.taken || {}, at: snap.at || {} });
+
 /** clear() — empties the cabinet (for demos/tests). */
 export const clear = () => commit(EMPTY);
