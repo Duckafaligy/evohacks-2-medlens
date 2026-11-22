@@ -1,43 +1,24 @@
 // Homepage sections (English copy). Composed in src/views/Home.jsx.
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Lock } from 'lucide-react';
 import { useApp } from '../components/ctx.js';
-import { highlightTerms } from '../lib/parse.js';
 import { fkGrade } from '../lib/readability.js';
 import { SCENARIOS } from '../data/scenarios.js';
 import { GLOSSARY } from '../data/glossary.js';
 import { LANGS } from '../data/i18n.js';
 import LABELS from '../data/labels-snapshot.json';
 import { useCount, useReveal } from './reveal.js';
+import HeroDemo from './HeroDemo.jsx';
 
 const CARDIAC = SCENARIOS[0];
 const GRADE_BEFORE = Math.round(fkGrade(CARDIAC.raw));
 const GRADE_AFTER = Math.max(1, Math.round(fkGrade(CARDIAC.meds.map((m) => m.plain.en).join(' '))));
-const SLOT_WORDS = { morning: 'each morning', noon: 'at noon', evening: 'each evening', bedtime: 'at bedtime' };
 
-const DOT_SHADOW = { boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,.18)' };
-/* 1. Hero — ported from Paper "Homepage · Desktop" › Hero (2NS-0). */
-const HERO_LINES = CARDIAC.raw.split('\n')
-  .filter((l) => /\bmg\b/.test(l))
-  .map((l) => (l.match(/^.*?\b(QD|BID|TID|QID|QHS|q\d+h)\b/) || [l])[0]);
-const HERO_TERMS = HERO_LINES.flatMap((l) => highlightTerms(l)).map((s) => s.term).filter(Boolean);
-const CYCLE = ['PO', 'QD', 'BID', 'QHS'].map((c) => HERO_TERMS.find((t) => t.term === c)).filter(Boolean);
-const isCode = (t) => /^[A-Za-z]{2,4}$|^q\d+h$/.test(t.term) && t.category !== 'unit';
-
+/* 1. Hero — ported from Paper "Homepage · Desktop" › Hero (2NS-0); the product window is a looping demo (HeroDemo.jsx). */
 export function Hero() {
   const { tryExample } = useApp();
-  const segs = HERO_LINES.map((l) => highlightTerms(l));
-  const [term, setTerm] = useState(() => segs.flat().find((s) => s.term?.term === 'BID')?.term);
-  const [auto, setAuto] = useState(true); // cycles PO → QD → BID → QHS every 2.8s until the user picks a word
-  useEffect(() => {
-    if (!auto || CYCLE.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
-    const id = setInterval(() => setTerm((t) => CYCLE[(CYCLE.findIndex((c) => c.term === t?.term) + 1) % CYCLE.length]), 2800);
-    return () => clearInterval(id);
-  }, [auto]);
-  const grade = useCount(GRADE_AFTER, true, { from: GRADE_BEFORE });
   return (
-    <section aria-labelledby="hero-h" className="overflow-hidden px-4 pt-[104px] md:pt-[120px]"
+    <section aria-labelledby="hero-h" className="overflow-hidden px-4 pb-12 pt-[104px] md:pb-16 md:pt-[120px]"
       style={{ backgroundImage: 'linear-gradient(180deg, #FFFFFF 0%, #F3F7FD 70%, #EAF1FC 100%)' }}>
       <div className="mx-auto flex max-w-[1152px] flex-col items-center gap-[22px] pb-10 pt-6 text-center md:pt-14">
         <h1 id="hero-h" className="rise text-[44px] font-semibold leading-[48px] tracking-[-0.035em] text-black md:text-[72px] md:leading-[78px]">
@@ -55,51 +36,7 @@ export function Hero() {
         <p className="text-[15px] leading-[18px] text-ink-2">Free · No sign-up · Data from openFDA</p>
       </div>
 
-      <div className="rise mx-auto flex max-w-[1120px] flex-col rounded-t-[14px] border border-b-0 border-line bg-surface text-left"
-        style={{ '--i': 3, boxShadow: '0 -8px 40px #1849A91A' }}>
-        <div className="flex h-10 shrink-0 items-center gap-2 border-b border-[#EDF0F4] px-4" aria-hidden="true">
-          {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => <span key={c} className="size-2.5 shrink-0 rounded-full" style={{ background: c, ...DOT_SHADOW }} />)}
-          <span className="flex flex-1 justify-center pr-[54px]">
-            <span className="inline-flex max-w-full items-center gap-1.5 truncate rounded-md bg-canvas px-3 py-[3px] text-[13px] leading-4 text-ink-2">
-              <Lock className="size-3 shrink-0" />medlens.app/translate
-            </span>
-          </span>
-        </div>
-        <div className="flex flex-col md:flex-row">
-          <div className="flex flex-1 flex-col gap-4 border-b border-[#EDF0F4] px-6 py-7 md:border-b-0 md:border-r md:px-8">
-            <p className="text-[15px] leading-[18px] text-ink-2">What the label says</p>
-            <div className="font-mono text-[16px] leading-[30px] text-black md:text-[20px] md:leading-[36px]">
-              {segs.map((line, n) => (
-                <p key={n} className="whitespace-pre-wrap">{line.map((s, k) => s.term && isCode(s.term) ? (
-                  <button key={k} type="button" onClick={() => { setAuto(false); setTerm(s.term); }} aria-pressed={term?.term === s.term.term}
-                    className={`rounded-[4px] px-[2px] text-primary underline decoration-1 underline-offset-[5px] transition-colors ${term?.term === s.term.term ? 'bg-primary-soft' : 'hover:bg-primary-soft'}`}>
-                    {s.text}
-                  </button>
-                ) : <span key={k}>{s.text}</span>)}</p>
-              ))}
-            </div>
-            <div className="flex w-fit items-center gap-3 rounded-[10px] bg-[#F1F9F4] px-3.5 py-3">
-              <span className="text-[14px] leading-[18px] text-ink-2">Reading level</span>
-              <span className="text-[15px] leading-[18px] text-black"><span className="text-danger">Grade {GRADE_BEFORE}</span> → <span className="font-semibold text-safe">Grade {grade}</span></span>
-            </div>
-          </div>
-          <div className="flex flex-1 flex-col gap-3.5 px-6 py-7 md:px-8">
-            <p className="text-[15px] leading-[18px] text-ink-2">What it means</p>
-            {term && (
-              <div key={term.term} className="pop flex flex-col gap-1 rounded-[10px] bg-primary-soft p-4" aria-live="polite">
-                <span className="font-mono text-[14px] leading-[18px] text-primary">{term.term}</span>
-                <span className="text-[22px] font-semibold leading-[28px] text-black">{term.plain.en}</span>
-              </div>
-            )}
-            <ul className="flex flex-col gap-0.5 px-4 py-1">
-              {CARDIAC.meds.map((m) => (
-                <li key={m.id} className="text-[17px] font-semibold leading-[26px] text-black">{m.name} <span className="font-normal text-[#2A3547]">· {m.slots.map((s) => SLOT_WORDS[s]).join(' and ')}</span></li>
-              ))}
-              <li className="pt-1 text-[16px] leading-[22px] text-[#2A3547]">Edema means <em className="text-primary">swelling</em>, often in the legs.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <div className="rise" style={{ '--i': 3 }}><HeroDemo /></div>
     </section>
   );
 }
