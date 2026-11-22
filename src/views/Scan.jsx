@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Camera, Upload, ImageUp, ArrowRight, Plus } from 'lucide-react';
 import { useApp } from '../components/ctx.js';
-import { Button, Card, Chip, FoodChips, ProgressBar } from '../components/ui.jsx';
+import { Button, Card, Chip, ProgressBar } from '../components/ui.jsx';
 import { startCamera, stopCamera, captureFrame } from '../lib/camera.js';
 import { runOcr } from '../lib/ocr.js';
 import { parseText } from '../lib/parse.js';
 import { fkGrade } from '../lib/readability.js';
-import { addToCabinet, loadExample, pl } from '../lib/app.js';
+import { addToCabinet, loadExample, pl, MED_COLORS } from '../lib/app.js';
 import { SCENARIOS } from '../data/scenarios.js';
+
+const foodText = (m, tr) => [({ with: tr('withFood'), before: tr('beforeFood'), without: tr('emptyStomach') })[m.withFood], m.water && tr('fullGlassWater')].filter(Boolean).join(', ');
 
 const TABS = [['camera', 'tabCamera'], ['upload', 'tabUpload'], ['paste', 'tabPaste']];
 
@@ -103,11 +105,11 @@ export default function Scan() {
     const s = SCENARIOS.find((x) => x.id === id);
     setExample(id); setText(s.raw); setDraft(s.raw); setTab('paste');
   };
-  const add = () => {
+  const add = (to = 'today') => {
     if (sc) loadExample(sc.id);
     else addToCabinet(meds);
     setRaw(text);
-    go('today');
+    go(to);
   };
 
   return (
@@ -170,31 +172,42 @@ export default function Scan() {
       </div>
 
       {text && (
-        <section aria-labelledby="results-h" className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 id="results-h" className="text-h3">{tr('foundMeds', { n: meds.length })}</h2>
-            {meds.length > 0 && (
-              <Chip tone="safe" className="text-body">{tr('gradeShift', { a: Math.round(before), b: Math.max(1, Math.round(after)) })}</Chip>
-            )}
-          </div>
-          {meds.length === 0 ? (
-            <Card><p>{tr('noMedsFound')}</p></Card>
-          ) : (
-            <>
-              <div className="grid gap-3 md:grid-cols-2">
+        <section aria-labelledby="results-h" className="rise grid gap-6 rounded-lg border border-line bg-surface p-6 md:p-8 lg:grid-cols-[1fr_300px]">
+          <div className="min-w-0">
+            <h2 id="results-h" className="sr-only">{tr('foundMeds', { n: meds.length })}</h2>
+            {meds.length === 0 ? <p>{tr('noMedsFound')}</p> : (
+              <div className="divide-y divide-line">
                 {meds.map((m, i) => (
-                  <Card key={m.id || i} className="rise" style={{ '--i': i }}>
-                    <p className="text-lead font-semibold">{m.name} {m.dose}</p>
-                    <p className="mt-1">{pl(m.plain, lang)}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {m.prn ? <Chip tone="primary">{tr('asNeeded')}</Chip> : m.slots.map((s) => <Chip key={s} tone="primary">{tr(s)}</Chip>)}
-                      <FoodChips med={m} />
-                    </div>
-                  </Card>
+                  <article key={m.id || i} className="py-4 first:pt-0 last:pb-0">
+                    <h3 className="flex items-center gap-2.5 text-h3">
+                      <span className="size-2.5 rounded-full" style={{ background: MED_COLORS[i % MED_COLORS.length] }} aria-hidden="true" />
+                      {m.name} {m.dose}
+                    </h3>
+                    <dl className="mt-3 grid grid-cols-[8rem_1fr] gap-x-6 gap-y-2">
+                      <dt className="text-small text-ink-2">{tr('howMuch')}</dt><dd>{m.dose || '—'}</dd>
+                      <dt className="text-small text-ink-2">{tr('whenLabel')}</dt>
+                      <dd>{m.prn ? tr('asNeeded') : m.slots.map((x) => tr(x)).join(' + ')}{m.days ? ` · ${m.days} ${tr('days')}` : ''}</dd>
+                      {foodText(m, tr) && <><dt className="text-small text-ink-2">{tr('howLabel')}</dt><dd>{foodText(m, tr)}</dd></>}
+                      <dt className="text-small text-ink-2">{tr('plainWords')}</dt><dd>{pl(m.plain, lang)}</dd>
+                    </dl>
+                  </article>
                 ))}
               </div>
-              <Button onClick={add}><Plus className="size-5" aria-hidden="true" />{tr('addToCabinet')}</Button>
-            </>
+            )}
+          </div>
+          {meds.length > 0 && (
+            <div className="space-y-4 lg:border-l lg:border-line lg:pl-6">
+              <div>
+                <p className="text-small text-ink-2">{tr('readability')}</p>
+                <p className="mt-2 flex items-center gap-2">
+                  <Chip tone="danger" className="text-body">{tr('gradeBefore', { n: Math.round(before) })}</Chip>
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                  <Chip tone="safe" className="text-body">{tr('gradeAfter', { n: Math.max(1, Math.round(after)) })}</Chip>
+                </p>
+              </div>
+              <Button onClick={() => add()} className="w-full"><Plus className="size-5" aria-hidden="true" />{tr('addToCabinet')}</Button>
+              <Button variant="secondary" className="w-full" onClick={() => add('translate')}>{tr('seeTranslation')}</Button>
+            </div>
           )}
         </section>
       )}

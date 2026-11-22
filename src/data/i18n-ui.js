@@ -1,5 +1,16 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  updatedOn: ['Updated {d}', 'Actualizado {d}', 'Mis à jour le {d}', '更新于 {d}'],
+  onlyIfNeeded: ['Only if needed', 'Solo si es necesario', 'Seulement si besoin', '需要时才用'],
+  notes: ['Notes', 'Notas', 'Notes', '备注'],
+  emergencyBar: ['Chest pain? Can’t breathe?', '¿Dolor de pecho? ¿No puede respirar?', 'Douleur à la poitrine ? Du mal à respirer ?', '胸痛？呼吸困难？'],
+  call911: ['Call 911', 'Llame al 911', 'Composez le 911', '拨打911'],
+  scanToOpenSub: ['See reminders, warnings and plain words on your phone.', 'Vea recordatorios, advertencias y palabras simples en su teléfono.', 'Rappels, mises en garde et mots simples sur votre téléphone.', '在手机上查看提醒、警告和通俗说明。'],
+  seeTranslation: ['See full translation', 'Ver traducción completa', 'Voir la traduction complète', '查看完整翻译'],
+  howMuch: ['How much', 'Cuánto', 'Combien', '剂量'],
+  whenLabel: ['When', 'Cuándo', 'Quand', '时间'],
+  howLabel: ['How', 'Cómo', 'Comment', '方法'],
+  plainWords: ['In plain words', 'En palabras simples', 'En mots simples', '通俗说明'],
   missed: ['Missed', 'Olvidada', 'Oubliée', '漏服'],
   onTime: ['{n}% on time', '{n}% a tiempo', '{n} % à l’heure', '{n}% 按时'],
   dosesLeft: ['{n} doses left today.', 'Quedan {n} dosis hoy.', 'Encore {n} doses aujourd’hui.', '今天还剩 {n} 剂。'],
