@@ -13,7 +13,7 @@ await page.goto(url, { waitUntil: 'networkidle' });
 await page.waitForFunction(() => typeof window.__medlensDemoSeek === 'function');
 await page.waitForTimeout(900); // hero rise-in
 const win = page.locator('section[aria-labelledby="hero-h"] .rise').last();
-for (const t of [1, 3, 5.5, 8.5, 11]) {
+for (const t of [1.6, 4.6, 7, 10]) {
   await page.evaluate((v) => window.__medlensDemoSeek(v), t);
   await page.waitForTimeout(120);
   await win.screenshot({ path: `${out}/demo-${width}-t${t}.png` });
