@@ -115,6 +115,10 @@ const STATS = [
   ['72%', 'of discharged patients could not list all their medicines.', 'Mayo Clinic Proceedings, 2005', 'Makaryus & Friedman, Mayo Clinic Proceedings, 2005'],
   ['1.5M+', 'ER visits each year for adverse drug events.', 'CDC', 'CDC, Medication Safety Program'],
 ];
+function StatNum({ n, run }) {
+  const [, num, suffix] = n.match(/^([\d.]+)(.*)$/);
+  return <>{useCount(parseFloat(num), run, { decimals: num.includes('.') ? 1 : 0 })}{suffix}</>;
+}
 export function Problem() {
   const [ref, on] = useReveal();
   return (
@@ -124,9 +128,9 @@ export function Problem() {
           Medicine labels are written for doctors. <em className="text-[#7FB0FF]">Patients pay the price.</em>
         </h2>
         <dl className="mt-7 grid gap-7 md:mt-14 md:grid-cols-3 md:gap-12">
-          {STATS.map(([n, text, srcM, srcD]) => (
-            <div key={n} className="flex flex-col gap-1.5 border-t border-[#2B3A52] pt-[18px] md:gap-3 md:pt-6">
-              <dt className="text-[48px] font-semibold leading-[52px] md:text-[72px] md:leading-[76px] md:tracking-[-0.03em]">{n}</dt>
+          {STATS.map(([n, text, srcM, srcD], i) => (
+            <div key={n} style={{ '--i': i + 1 }} className="rv flex flex-col gap-1.5 border-t border-[#2B3A52] pt-[18px] md:gap-3 md:pt-6">
+              <dt className="text-[48px] font-semibold leading-[52px] md:text-[72px] md:leading-[76px] md:tracking-[-0.03em]"><StatNum n={n} run={on} /></dt>
               <dd className="text-[17px] leading-[25px] text-[#DCE4F0] md:text-[19px] md:leading-[28px]">{text}</dd>
               <dd className="text-[13px] leading-4 text-[#8C9AB2]"><R m={srcM} d={srcD} /></dd>
             </div>
@@ -140,7 +144,7 @@ export function Problem() {
 /* 3. How it works */
 const STEP_TITLE = 'text-[22px] font-semibold leading-[28px] text-black';
 const STEP_TEXT = 'text-[17px] leading-[26px] text-ink-2';
-const STEP_CARD = 'h-[220px] shrink-0 rounded-[12px] transition-transform group-hover:-translate-y-1 md:h-[280px]';
+const STEP_CARD = 'h-[220px] shrink-0 rounded-[12px] transition-[translate] duration-[160ms] group-hover:-translate-y-0.5 md:h-[280px]';
 export function How() {
   const [ref, on] = useReveal();
   return (
@@ -148,7 +152,7 @@ export function How() {
       <div className={WRAP}>
         <h2 id="how-h" className={`rv ${H2} max-w-[640px] leading-[34px]`}>Scan. Understand. Remember.</h2>
         <div className="mt-6 grid items-start gap-6 md:mt-12 md:grid-cols-[1.2fr_1fr_1fr] md:gap-8">
-          <article className="group flex flex-col gap-2.5 md:gap-5">
+          <article style={{ '--i': 1 }} className="rv group flex flex-col gap-2.5 md:gap-5">
             <div className={`${STEP_CARD} relative flex items-center justify-center`} style={INK_GRAD} aria-hidden="true">
               <div className="flex h-[220px] w-[180px] items-center justify-center rounded-[12px] border-[3px] border-white">
                 <div className="flex h-[90px] w-[140px] flex-col gap-[7px] rounded-[6px] bg-[#FFFFFFEB] p-3">
@@ -158,13 +162,13 @@ export function How() {
                 </div>
               </div>
               <div className="absolute inset-x-5 bottom-[18px] h-1.5 rounded-[3px] bg-[#FFFFFF33]">
-                <div className="bar-fill h-1.5 w-[64%] rounded-[3px] bg-white" />
+                <div style={{ '--d': '240ms' }} className="fill-in h-1.5 w-[64%] rounded-[3px] bg-white" />
               </div>
             </div>
             <h3 className={STEP_TITLE}>Scan</h3>
             <p className={STEP_TEXT}>Point your camera at the label.</p>
           </article>
-          <article className="group flex flex-col gap-2.5 md:gap-5">
+          <article style={{ '--i': 2 }} className="rv group flex flex-col gap-2.5 md:gap-5">
             <div className={`${STEP_CARD} flex flex-col justify-center gap-3.5 bg-[#EAF1FC] p-7`} aria-hidden="true">
               <p className="font-mono text-[18px] font-medium leading-[22px] text-ink-2">
                 Metformin 500 mg PO <span className="font-semibold text-primary underline decoration-1">BID</span>
@@ -177,7 +181,7 @@ export function How() {
             <h3 className={STEP_TITLE}>Understand</h3>
             <p className={STEP_TEXT}>Tap any blue word.</p>
           </article>
-          <article className="group flex flex-col gap-2.5 md:gap-5">
+          <article style={{ '--i': 3 }} className="rv group flex flex-col gap-2.5 md:gap-5">
             <div className={`${STEP_CARD} flex flex-col justify-center gap-2.5 bg-[#F1F9F4] p-7`} aria-hidden="true">
               {[['8:00 AM', '3 pills', true], ['6:00 PM', '1 pill', false], ['9:00 PM', '1 pill', false]].map(([t, n, done]) => (
                 <div key={t} className="flex items-center justify-between rounded-[8px] border border-line bg-white px-3.5 py-3">
@@ -199,7 +203,8 @@ export function How() {
 /* 4. Feature bento */
 const SLOTS = [['morning', 'Morning', 'AM'], ['noon', 'Noon', 'Noon'], ['evening', 'Evening', 'PM'], ['bedtime', 'Bedtime', 'Bed']]
   .map(([k, label, short]) => [label, short, CARDIAC.meds.filter((m) => m.slots.includes(k)).map((m) => `${m.name} ${parseInt(m.dose, 10)}`)]);
-const TILE = 'flex flex-col justify-between rounded-[14px] transition-all duration-200 hover:-translate-y-1 hover:shadow-lg';
+const LIFT = 'transition-[translate,border-color,box-shadow] duration-[160ms] ease-[cubic-bezier(0.2,0,0,1)] hover:-translate-y-0.5 hover:border-control hover:shadow-[0_8px_24px_#0F1B2D14]';
+const TILE = `flex flex-col justify-between rounded-[14px] ${LIFT}`;
 const TILE_W = `${TILE} border border-line bg-white`;
 const T22 = 'text-[22px] font-semibold leading-[28px] text-black';
 const T20 = 'text-[20px] font-semibold leading-6 text-black';
@@ -209,14 +214,14 @@ const M_T16 = 'text-[16px] font-semibold leading-5 text-black';
 function FeaturesDesktop() {
   return (
     <div className="hidden flex-col gap-5 md:flex">
-      <div className="grid gap-5 md:grid-cols-2 lg:flex lg:h-[300px]">
+      <div style={{ '--i': 1 }} className="rv grid gap-5 md:grid-cols-2 lg:flex lg:h-[300px]">
         <article className={`${TILE} min-h-[240px] p-7 text-white md:col-span-2 lg:flex-[2_1_0%]`} style={INK_GRAD}>
           <div className="flex flex-col gap-1.5">
             <h3 className="text-[24px] font-semibold leading-[30px]">Scan with camera</h3>
             <p className="text-[17px] leading-[22px] text-[#C9D2E0]">Point. Capture. Done.</p>
           </div>
           <div className="flex items-center gap-3.5" aria-hidden="true">
-            <div className="h-2 flex-1 rounded-[4px] bg-[#FFFFFF2E]"><div className="bar-fill h-2 w-[72%] rounded-[4px] bg-white" /></div>
+            <div className="h-2 flex-1 rounded-[4px] bg-[#FFFFFF2E]"><div style={{ '--d': '240ms' }} className="fill-in h-2 w-[72%] rounded-[4px] bg-white" /></div>
             <span className="text-[15px] font-semibold leading-[18px]">Reading label 72%</span>
           </div>
         </article>
@@ -234,7 +239,7 @@ function FeaturesDesktop() {
           </p>
         </article>
       </div>
-      <div className="grid gap-5 md:grid-cols-2 lg:flex lg:h-[300px]">
+      <div style={{ '--i': 2 }} className="rv grid gap-5 md:grid-cols-2 lg:flex lg:h-[300px]">
         <article className={`${TILE_W} min-h-[240px] justify-start gap-[18px] p-7 md:col-span-2 lg:flex-[2_1_0%]`}>
           <h3 className="text-[24px] font-semibold leading-[30px] text-black">Daily pill timeline</h3>
           <div className="flex flex-1 gap-3" aria-hidden="true">
@@ -257,12 +262,12 @@ function FeaturesDesktop() {
         </article>
         <article className={`${TILE} min-h-[240px] lg:flex-1 bg-primary-soft p-7`}>
           <h3 className={T22}>Read aloud</h3>
-          <div className="flex h-12 shrink-0 items-end gap-[5px]" aria-hidden="true">
-            {[20, 40, 28, 48, 24, 36, 16].map((h, i) => <span key={i} className="w-2 shrink-0 rounded-[3px] bg-primary" style={{ height: h }} />)}
+          <div className="eq flex h-12 shrink-0 items-end gap-[5px]" aria-hidden="true">
+            {[20, 40, 28, 48, 24, 36, 16].map((h, i) => <span key={i} className="w-2 shrink-0 rounded-[3px] bg-primary" style={{ height: h, '--i': i }} />)}
           </div>
         </article>
       </div>
-      <div className="grid gap-5 md:grid-cols-2 lg:h-[220px] lg:grid-cols-4">
+      <div style={{ '--i': 3 }} className="rv grid gap-5 md:grid-cols-2 lg:h-[220px] lg:grid-cols-4">
         <article className={`${TILE_W} min-h-[200px] p-6`}>
           <h3 className={T20}>4 languages</h3>
           <div className="flex gap-1.5" aria-hidden="true">
@@ -299,10 +304,10 @@ function FeaturesDesktop() {
 }
 function FeaturesMobile() {
   return (
-    <div className="flex flex-col gap-3 md:hidden">
+    <div className="rv flex flex-col gap-3 md:hidden" style={{ '--i': 1 }}>
       <article className="flex flex-col gap-3.5 rounded-[14px] p-5" style={INK_GRAD}>
         <h3 className="text-[20px] font-semibold leading-6 text-white">Scan with camera</h3>
-        <div className="h-1.5 rounded-[3px] bg-[#FFFFFF2E]" aria-hidden="true"><div className="bar-fill h-1.5 w-[72%] rounded-[3px] bg-white" /></div>
+        <div className="h-1.5 rounded-[3px] bg-[#FFFFFF2E]" aria-hidden="true"><div style={{ '--d': '240ms' }} className="fill-in h-1.5 w-[72%] rounded-[3px] bg-white" /></div>
       </article>
       <div className="flex gap-3">
         <article className={`${M_TILE} gap-2.5 border border-line bg-white`}>
@@ -329,8 +334,8 @@ function FeaturesMobile() {
         </article>
         <article className={`${M_TILE} bg-primary-soft`}>
           <h3 className={M_T16}>Read aloud</h3>
-          <div className="flex h-6 shrink-0 items-end gap-1" aria-hidden="true">
-            {[10, 22, 14, 24].map((h, i) => <span key={i} className="w-1.5 shrink-0 rounded-[2px] bg-primary" style={{ height: h }} />)}
+          <div className="eq flex h-6 shrink-0 items-end gap-1" aria-hidden="true">
+            {[10, 22, 14, 24].map((h, i) => <span key={i} className="w-1.5 shrink-0 rounded-[2px] bg-primary" style={{ height: h, '--i': i }} />)}
           </div>
         </article>
       </div>
@@ -344,12 +349,15 @@ function FeaturesMobile() {
 }
 export function Features() {
   const [ref, on] = useReveal();
+  const [eqRef, playing] = useReveal(false); // read-aloud bars only move while on screen
   return (
     <section id="features" ref={ref} className={`scroll-mt-24 bg-canvas py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="features-h">
       <div className={WRAP}>
+        <div ref={eqRef} className={playing ? 'playing' : ''}>
         <h2 id="features-h" className={`rv ${H2} mb-6 leading-[34px] md:mb-12`}>Everything on one screen.</h2>
         <FeaturesMobile />
         <FeaturesDesktop />
+        </div>
       </div>
     </section>
   );
@@ -363,15 +371,15 @@ export function Warning() {
       <div className={`${WRAP} flex flex-col gap-5 md:flex-row md:items-center md:gap-10 lg:gap-20`}>
         <div className="flex flex-col gap-5 md:w-[440px] md:shrink">
           <h2 id="warn-h" className={`rv ${H2} leading-[35px]`}>Warnings, <em className="text-danger">straight from the label.</em></h2>
-          <p className="hidden text-[19px] leading-[29px] text-[#2A3547] md:block">Every alert links to the FDA drug label it came from.</p>
+          <p className="rv hidden text-[19px] leading-[29px] text-[#2A3547] md:block" style={{ '--i': 1 }}>Every alert links to the FDA drug label it came from.</p>
         </div>
-        <article className="flex flex-1 flex-col gap-3.5 rounded-[14px] border border-l-[5px] border-line border-l-danger bg-white p-5 transition-transform hover:-translate-y-1 md:gap-[18px] md:border-l-[6px] md:p-8 shadow-[0_12px_32px_#0F1B2D1A] md:shadow-[0_20px_48px_#0F1B2D1A]">
+        <article className="rv-r flex flex-1 flex-col gap-3.5 rounded-[14px] border border-l-[5px] border-line border-l-danger bg-white p-5 md:gap-[18px] md:border-l-[6px] md:p-8 shadow-[0_12px_32px_#0F1B2D1A] md:shadow-[0_20px_48px_#0F1B2D1A]">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-[20px] font-semibold leading-6 text-black md:text-[28px] md:leading-[34px]">Warfarin + Aspirin</h3>
             <span className="rounded-[6px] bg-danger px-2.5 py-[3px] text-[13px] font-semibold leading-4 text-white md:px-3 md:py-[5px] md:text-[15px] md:leading-[18px]">High</span>
           </div>
           <div className="hidden gap-1 md:flex" aria-hidden="true">
-            {[0, 1, 2].map((i) => <span key={i} className="h-2 flex-1 rounded-[3px] bg-danger" />)}
+            {[0, 1, 2].map((i) => <span key={i} className="fill-in h-2 flex-1 rounded-[3px] bg-danger" style={{ '--d': `${280 + i * 80}ms` }} />)}
           </div>
           <p className="text-[17px] leading-[25px] text-black md:text-[20px] md:leading-[30px]">
             <R m={<>Higher risk of <em className="text-danger">serious bleeding</em>. Call your doctor first.</>}
@@ -405,7 +413,7 @@ export function Who() {
         <h2 id="who-h" className={`rv ${H2} mb-6 leading-[35px] md:mb-10`}>Made for the people <em className="text-primary">holding the bottle.</em></h2>
         <div className="grid grid-cols-2 gap-3 md:h-[420px] md:grid-cols-[1.3fr_1fr_1fr_1fr] md:gap-5 lg:grid-cols-[1.3fr_1fr_1fr_auto]">
           {PEOPLE.map(([t, s, src, pos, alt], i) => (
-            <article key={t} className={`flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-line bg-white transition-all hover:-translate-y-1 hover:shadow-lg ${i ? '' : 'col-span-2 md:col-span-1'}`}>
+            <article key={t} style={{ '--i': i + 1 }} className={`rv flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-line bg-white ${LIFT} ${i ? '' : 'col-span-2 md:col-span-1'}`}>
               <img src={src} alt={alt} loading="lazy" style={{ objectPosition: pos }}
                 className={`w-full shrink-0 object-cover md:h-auto md:min-h-0 md:flex-1 ${i ? 'h-[120px]' : 'h-[200px]'}`} />
               <div className={`flex flex-col md:gap-1 md:px-[22px] md:py-5 ${i ? 'px-3.5 py-3' : 'gap-0.5 px-4 py-3.5'}`}>
@@ -414,7 +422,7 @@ export function Who() {
               </div>
             </article>
           ))}
-          <article className="col-span-2 flex items-center justify-between rounded-[14px] bg-ink px-4 py-[18px] text-white transition-transform hover:-translate-y-1 md:col-span-1 md:flex-col md:items-stretch md:p-[22px]">
+          <article style={{ '--i': 4 }} className="rv col-span-2 flex items-center justify-between rounded-[14px] bg-ink px-4 py-[18px] text-white transition-[translate] duration-[160ms] hover:-translate-y-0.5 md:col-span-1 md:flex-col md:items-stretch md:p-[22px]">
             <p className="hidden whitespace-pre-line text-[30px] font-semibold leading-9 md:block" lang="mul">{'Hola.\nBonjour.\n'}<span lang="zh">你好.</span></p>
             <div className="flex flex-col gap-1">
               <h3 className="text-[19px] font-semibold leading-6 md:text-[22px] md:leading-[28px]">Newcomers</h3>
@@ -438,7 +446,7 @@ export function Senior() {
           <h2 id="senior-h" className={`rv ${H2} leading-[34px]`}>Bigger when you need it.</h2>
           <p className="hidden text-[19px] leading-[29px] text-ink-2 md:block">Senior Mode: larger text, stronger contrast, bigger buttons.</p>
         </div>
-        <div className="relative flex min-w-0 flex-1 overflow-hidden rounded-[14px] border border-line md:h-[360px]">
+        <div style={{ '--i': 1 }} className="rv relative flex min-w-0 flex-1 overflow-hidden rounded-[14px] border border-line md:h-[360px]">
           <div className="flex flex-1 basis-0 flex-col justify-center gap-1.5 bg-white p-4 md:gap-2.5 md:p-9">
             <p className="text-[13px] leading-4 text-ink-2 md:text-[14px] md:leading-[18px]">Standard</p>
             <p className="text-[15px] font-semibold leading-[18px] text-black md:text-[20px] md:leading-6">Lisinopril 10 mg</p>
@@ -476,8 +484,8 @@ export function Privacy() {
           <h2 id="privacy-h" className="rv text-[30px] font-semibold leading-[35px] tracking-[-0.02em] md:text-[48px] md:leading-[54px] md:tracking-[-0.025em]">Your health info stays on your device.</h2>
         </div>
         <dl className="flex flex-col md:w-[460px] md:shrink md:pt-16">
-          {PRIVACY.map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-4 border-b border-[#2B3A52] py-3.5 text-[16px] leading-5 last:border-b-0 md:py-[18px] md:text-[18px] md:leading-[22px]">
+          {PRIVACY.map(([k, v], i) => (
+            <div key={k} style={{ '--i': i + 1 }} className="rv flex justify-between gap-4 border-b border-[#2B3A52] py-3.5 text-[16px] leading-5 last:border-b-0 md:py-[18px] md:text-[18px] md:leading-[22px]">
               <dt>{k}</dt><dd className="font-semibold">{v}</dd>
             </div>
           ))}
@@ -507,7 +515,7 @@ export function Faq() {
         <h2 id="faq-h" className={`rv ${H2} pb-4 leading-[34px] md:w-[360px] md:shrink-0 md:pb-0 lg:w-[360px]`}>Questions, answered.</h2>
         <div className="flex flex-1 flex-col">
           {FAQS.map(([q, a], i) => (
-            <div key={i} className="border-b border-line py-[18px] md:py-6">
+            <div key={i} style={{ '--i': i + 1 }} className="rv border-b border-line py-[18px] md:py-6">
               <h3>
                 <button type="button" onClick={() => setOpen(open === i ? -1 : i)} aria-expanded={open === i} aria-controls={`faq-${i}`}
                   className="flex w-full items-center justify-between gap-4 text-left text-[18px] font-semibold leading-[22px] text-black md:text-[21px] md:leading-[26px]">
@@ -517,7 +525,12 @@ export function Faq() {
                   </svg>
                 </button>
               </h3>
-              <div id={`faq-${i}`} hidden={open !== i} className="pop mt-2.5 max-w-[620px] text-[16px] leading-6 text-[#2A3547] md:mt-3 md:text-[18px] md:leading-[28px]">{a}</div>
+              <div id={`faq-${i}`} inert={open !== i} aria-hidden={open !== i}
+                className={`grid transition-[grid-template-rows] duration-[240ms] ease-[cubic-bezier(0.2,0,0,1)] ${open === i ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                <div className="overflow-hidden">
+                  <p className="max-w-[620px] pt-2.5 text-[16px] leading-6 text-[#2A3547] md:pt-3 md:text-[18px] md:leading-[28px]">{a}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -534,11 +547,11 @@ export function Cta() {
     <section ref={ref} className={`py-14 text-white md:py-[120px] ${on ? 'in' : ''}`} aria-labelledby="cta-h" style={{ backgroundImage: 'linear-gradient(135deg, #1849A9 0%, #123A8A 100%)' }}>
       <div className={`${WRAP} flex flex-col gap-5 md:items-center md:gap-7`}>
         <h2 id="cta-h" className="rv max-w-[900px] text-[34px] font-semibold leading-[39px] tracking-[-0.02em] md:text-center md:text-[60px] md:leading-[66px] md:tracking-[-0.03em]">Make sense of your next prescription.</h2>
-        <div className="flex flex-col gap-5 md:flex-row md:gap-3">
-          <a href="#/app/today" className="flex h-14 items-center justify-center rounded-[10px] bg-white px-7 text-[18px] font-semibold leading-[22px] text-primary transition-transform hover:-translate-y-0.5 md:h-[58px]">Open MedLens</a>
-          <button type="button" onClick={() => tryExample(CARDIAC.id)} className="flex h-14 items-center justify-center rounded-[10px] border-[1.5px] border-[#FFFFFF8C] px-6 text-[18px] font-semibold leading-[22px] transition-transform hover:-translate-y-0.5 md:h-[58px]">Try an example</button>
+        <div style={{ '--i': 1 }} className="rv flex flex-col gap-5 md:flex-row md:gap-3">
+          <a href="#/app/today" className="flex h-14 items-center justify-center rounded-[10px] bg-white px-7 text-[18px] font-semibold leading-[22px] text-primary transition-[translate,background-color] duration-[160ms] ease-[cubic-bezier(0.2,0,0,1)] hover:-translate-y-px hover:bg-[#E8EFFB] md:h-[58px]">Open MedLens</a>
+          <button type="button" onClick={() => tryExample(CARDIAC.id)} className="flex h-14 items-center justify-center rounded-[10px] border-[1.5px] border-[#FFFFFF8C] px-6 text-[18px] font-semibold leading-[22px] transition-[translate,background-color] duration-[160ms] ease-[cubic-bezier(0.2,0,0,1)] hover:-translate-y-px hover:bg-white/10 md:h-[58px]">Try an example</button>
         </div>
-        <p className="hidden text-[15px] leading-[18px] text-[#C9D8F5] md:block">Free · No sign-up · Data from openFDA</p>
+        <p style={{ '--i': 2 }} className="rv hidden text-[15px] leading-[18px] text-[#C9D8F5] md:block">Free · No sign-up · Data from openFDA</p>
       </div>
     </section>
   );

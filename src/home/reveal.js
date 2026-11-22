@@ -6,10 +6,10 @@ const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').ma
 /** [ref, visible]. `once` (default) latches true the first time the element is 15% on screen. */
 export function useReveal(once = true) {
   const ref = useRef(null);
-  const [on, setOn] = useState(false);
+  const [on, setOn] = useState(() => !('IntersectionObserver' in window));
   useEffect(() => {
     const el = ref.current;
-    if (!el || !('IntersectionObserver' in window)) { setOn(true); return undefined; }
+    if (!el || !('IntersectionObserver' in window)) return undefined;
     const io = new IntersectionObserver(([e]) => {
       if (once) { if (e.isIntersecting) { setOn(true); io.disconnect(); } } else setOn(e.isIntersecting);
     }, { threshold: 0.15 });
@@ -23,8 +23,7 @@ export function useReveal(once = true) {
 export function useCount(to, run, { from = 0, ms = 900, decimals = 0 } = {}) {
   const [v, setV] = useState(from);
   useEffect(() => {
-    if (!run) return undefined;
-    if (reduced()) { setV(to); return undefined; }
+    if (!run || reduced()) return undefined;
     let raf;
     const t0 = performance.now();
     const tick = (t) => {
@@ -35,5 +34,5 @@ export function useCount(to, run, { from = 0, ms = 900, decimals = 0 } = {}) {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [to, run, from, ms]);
-  return v.toFixed(decimals);
+  return (run && reduced() ? to : v).toFixed(decimals);
 }

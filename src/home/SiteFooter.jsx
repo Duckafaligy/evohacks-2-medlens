@@ -78,7 +78,7 @@ export default function SiteFooter() {
             <p className="leading-[22px] text-[#C9D2E0] md:leading-[23px]">
               Prescriptions in plain words<span className="hidden md:inline">, for seniors, caregivers and parents</span>.
             </p>
-            <a href="#/app/today" className="hidden h-11 items-center self-start rounded-[10px] bg-white px-4 font-semibold text-ink transition-colors hover:bg-white/90 md:flex">Open MedLens</a>
+            <a href="#/app/today" className="hidden h-11 items-center self-start rounded-[10px] bg-white px-4 font-semibold text-ink transition-[translate,background-color] duration-[160ms] hover:-translate-y-px hover:bg-[#E8EFFB] md:flex">Open MedLens</a>
           </div>
           <Col title="Product">
             {[['today', 'Open app'], ['scan', 'Scan'], ['today', 'Today'], ['calendar', 'Calendar'], ['safety', 'Safety']].map(([v, l]) => (
