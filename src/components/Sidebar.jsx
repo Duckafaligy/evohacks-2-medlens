@@ -130,13 +130,15 @@ export default function Sidebar({ view }) {
 
   return (
     <>
-      <aside className="sticky top-0 hidden h-screen w-[264px] shrink-0 flex-col border-r border-line bg-canvas px-4 py-6 md:flex" aria-label={tr('mainNav')}>
+      <div className="hidden w-[264px] shrink-0 border-r border-line bg-canvas md:block">
+      <aside className="sticky top-0 flex h-dvh flex-col overflow-y-auto px-4 py-6" aria-label={tr('mainNav')}>
         <a href="#/" className="mb-6 px-2" aria-label="MedLens home"><Logo /></a>
         <nav className="flex-1 space-y-1 overflow-auto" aria-label={tr('mainNav')}>
           {TABS.map(([id, Icon]) => <NavItem key={id} id={id} Icon={Icon} active={tab === id} badge={badgeFor(id)} />)}
         </nav>
         <Preferences />
       </aside>
+      </div>
 
       {/* Mobile: top bar + bottom tabs */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface px-4 md:hidden">

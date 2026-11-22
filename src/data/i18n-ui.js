@@ -1,5 +1,10 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  checkYourself: ['Check yourself', 'Compruébelo', 'Vérifiez-vous', '自我检查'],
+  nQuestions: ['{n} questions', '{n} preguntas', '{n} questions', '{n} 道题'],
+  rightShort: ['Right', 'Correcto', 'Exact', '答对了'],
+  nextQuestion: ['Next question', 'Siguiente pregunta', 'Question suivante', '下一题'],
+  seeScore: ['See score', 'Ver resultado', 'Voir le score', '查看得分'],
   navCabinetTitle: ['My medicines', 'Mis medicinas', 'Mes médicaments', '我的药物'],
   pillsLeftShort: ['pills left', 'pastillas', 'restantes', '剩余'],
   ofN: ['of {n}', 'de {n}', 'sur {n}', '共 {n}'],

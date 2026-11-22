@@ -47,6 +47,8 @@ export default function Quiz({ embedded = false }) {
   const score = quiz.filter((q, i) => answers[i] === q.right).length;
   const done = quiz.length > 0 && Object.keys(answers).length === quiz.length;
 
+  if (embedded) return <CheckYourself quiz={quiz} label={label} question={question} onRestart={() => setSeed(seed + 1)} />;
+
   if (!quiz.length) {
     return (
       <div className="space-y-6">
@@ -102,5 +104,76 @@ export default function Quiz({ embedded = false }) {
         </div>
       )}
     </div>
+  );
+}
+
+/** One question at a time — Paper "Check yourself" card at the bottom of Translate. */
+function CheckYourself({ quiz, label, question, onRestart }) {
+  const { tr, lang } = useApp();
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  if (!quiz.length) return null;
+  const finished = i >= quiz.length;
+  const q = quiz[Math.min(i, quiz.length - 1)];
+  const right = picked != null && picked === q.right;
+  const explain = (pl(q.med.plain, lang).match(/^.+?[.!?。](?=\s|$)/) || [pl(q.med.plain, lang)])[0];
+  const choose = (o) => { if (picked != null) return; setPicked(o); if (o === q.right) setScore(score + 1); };
+  const next = () => { setPicked(null); setI(i + 1); };
+  return (
+    <section className="flex flex-col gap-4 rounded-lg border border-line bg-surface px-6 py-[22px]" aria-labelledby="check-h">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="flex items-baseline gap-2.5">
+          <span id="check-h" className="text-[18px] font-semibold leading-6">{tr('checkYourself')}</span>
+          <span className="text-[14px] leading-[18px] text-ink-2">{tr('nQuestions', { n: quiz.length })}</span>
+        </p>
+        <div className="flex items-center gap-2.5">
+          <span className="flex gap-1" aria-hidden="true">
+            {quiz.map((_, k) => <span key={k} className="h-[5px] w-7 rounded-[3px]" style={{ background: k <= Math.min(i, quiz.length - 1) ? '#1849A9' : '#DCE2EA' }} />)}
+          </span>
+          <span className="text-[13px] font-semibold leading-4">{tr('nOfM', { n: Math.min(i + 1, quiz.length), m: quiz.length })}</span>
+        </div>
+      </div>
+      {finished ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md bg-canvas px-4 py-3" role="status">
+          <p className="text-[15px] font-semibold leading-5">{tr('score', { n: score, total: quiz.length })}</p>
+          <button type="button" onClick={() => { setI(0); setScore(0); setPicked(null); onRestart(); }} className="text-[15px] font-semibold leading-[18px] text-primary hover:underline">{tr('tryAgain')} →</button>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
+            <h3 className="text-[22px] font-semibold leading-7 tracking-[-0.01em] lg:w-[300px] lg:shrink-0">{question(q)}</h3>
+            <div className="grid flex-1 grid-cols-2 gap-2.5 sm:flex">
+              {q.opts.map((o) => {
+                const isRight = picked != null && o === q.right;
+                const isWrong = picked === o && o !== q.right;
+                return (
+                  <button key={o} type="button" onClick={() => choose(o)} aria-pressed={picked === o} disabled={picked != null && !isRight && !isWrong}
+                    className="flex min-h-[52px] flex-1 items-center justify-center gap-1.5 rounded-md px-3 text-center text-[15px] leading-[18px]"
+                    style={{
+                      border: isRight ? '2px solid #12704F' : isWrong ? '2px solid #B4232A' : '1px solid #DCE2EA',
+                      background: isRight ? '#E5F3EC' : isWrong ? '#FBE9E9' : '#FFFFFF',
+                      color: isRight ? '#12704F' : isWrong ? '#B4232A' : '#0F1B2D',
+                      fontWeight: isRight || isWrong ? 600 : 400,
+                    }}>
+                    {isRight && <Check className="size-3.5" strokeWidth={3} aria-hidden="true" />}
+                    {isWrong && <X className="size-3.5" strokeWidth={3} aria-hidden="true" />}
+                    {label(q, o)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          {picked != null && (
+            <div className="pop flex flex-wrap items-center justify-between gap-3 rounded-md bg-canvas px-4 py-3" role="status">
+              <p className="max-w-[65ch] text-[15px] leading-5"><span className="font-semibold">{tr(right ? 'rightShort' : 'notQuite')}.</span> {explain}</p>
+              <button type="button" onClick={next} className="shrink-0 text-[15px] font-semibold leading-[18px] text-primary hover:underline">
+                {i + 1 < quiz.length ? tr('nextQuestion') : tr('seeScore')} →
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 }

@@ -127,7 +127,7 @@ export default function Translate({ route }) {
           </div>
         </section>
       </div>
-      <section id="quiz" className="scroll-mt-6 border-t border-line pt-8"><Quiz embedded /></section>
+      <div id="quiz" className="scroll-mt-6"><Quiz embedded /></div>
     </div>
   );
 }
