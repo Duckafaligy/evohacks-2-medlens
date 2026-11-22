@@ -536,6 +536,7 @@ const PRIVACY = [['Account', 'Not needed'], ['Sent to the FDA', 'Medicine names 
 export function Privacy() {
   const [ref, on] = useReveal();
   return (
+    <>
     <section id="privacy" ref={ref} className={`scroll-mt-24 py-12 text-white md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="privacy-h"
       style={{ backgroundImage: 'linear-gradient(160deg, #16243A 0%, #0F1B2D 100%)' }}>
       <div className={`${WRAP} flex flex-col gap-[18px] md:flex-row md:items-start md:gap-10 lg:gap-20`}>
@@ -554,6 +555,47 @@ export function Privacy() {
             </div>
           ))}
         </dl>
+      </div>
+    </section>
+    <Tools />
+    </>
+  );
+}
+
+/* 8b. Tools (rendered right after Privacy). Tags link to the real docs. */
+const TOOLS = [
+  ['Tesseract.js', 'OCR · on-device', 'https://tesseract.projectnaptha.com/', 'Reads label photos right in your browser. The photo never leaves your device.'],
+  ['Web Speech API', 'speechSynthesis', 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis', 'Read aloud in 4 languages, slowly and clearly.'],
+  ['QR code + .ics', 'qrcode.react · RFC 5545', 'https://datatracker.ietf.org/doc/html/rfc5545', 'Fridge-card QR and calendar files that open in Google or Apple Calendar.'],
+  ['Supabase', 'Postgres · Auth, RLS', 'https://supabase.com/', 'Optional account. Row-level security means only you can read your list.'],
+  ['React + Vite + Tailwind', 'Vercel', 'https://vite.dev/', 'A fast, accessible web app with nothing to install.'],
+  ['Playwright + GitHub Actions', 'CI', 'https://playwright.dev/', 'Every change is tested end to end before it ships.'],
+];
+const ext = { target: '_blank', rel: 'noopener noreferrer' };
+const TAG = 'self-start rounded-[6px] border px-2 py-0.5 font-mono text-[13px] leading-[18px] transition-colors duration-[160ms]';
+function Tools() {
+  const [ref, on] = useReveal();
+  return (
+    <section ref={ref} className={`bg-white py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="tools-h">
+      <div className={WRAP}>
+        <h2 id="tools-h" className={`rv ${H2} leading-[35px]`}>Built with open, <em className="text-primary">trusted tools.</em></h2>
+        <p className="rv mt-3 max-w-[720px] text-[17px] leading-[26px] text-[#2A3547] md:mt-4 md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>
+          No black boxes. Every answer comes from a public source or runs on your own device.
+        </p>
+        <div className="mt-6 grid gap-3 md:mt-10 md:grid-cols-2 md:gap-5 lg:grid-cols-4">
+          <article className={`rv flex flex-col gap-3 rounded-[14px] border border-[#BFE0E7] bg-info-soft p-5 md:col-span-2 md:p-7 ${LIFT}`} style={{ '--i': 2 }}>
+            <h3 className="text-[20px] font-semibold leading-6 text-black md:text-[24px] md:leading-[30px]">openFDA Drug Label API</h3>
+            <a href="https://open.fda.gov/apis/drug/label/" {...ext} className={`${TAG} border-[#BFE0E7] bg-white text-info hover:border-info`}>api.fda.gov</a>
+            <p className="text-[16px] leading-6 text-[#2A3547] md:text-[17px] md:leading-[26px]">Live FDA warnings, side effects and interactions. 4-second timeout with a saved snapshot, so it never breaks offline.</p>
+          </article>
+          {TOOLS.map(([name, tag, href, text], i) => (
+            <article key={name} className={`rv flex flex-col gap-3 rounded-[14px] border border-line bg-white p-5 md:p-6 ${LIFT}`} style={{ '--i': i + 3 }}>
+              <h3 className="text-[18px] font-semibold leading-[22px] text-black md:text-[20px] md:leading-6">{name}</h3>
+              <a href={href} {...ext} className={`${TAG} border-line bg-canvas text-ink-2 hover:border-control hover:text-primary`}>{tag}</a>
+              <p className="text-[15px] leading-[22px] text-ink-2">{text}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
