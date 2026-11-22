@@ -1,11 +1,12 @@
 // Homepage sections (English copy). Composed in src/views/Home.jsx.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Lock } from 'lucide-react';
 import { useApp } from '../components/ctx.js';
 import { highlightTerms } from '../lib/parse.js';
 import { fkGrade } from '../lib/readability.js';
 import { SCENARIOS } from '../data/scenarios.js';
+import { useCount, useReveal } from './reveal.js';
 
 const CARDIAC = SCENARIOS[0];
 const GRADE_BEFORE = Math.round(fkGrade(CARDIAC.raw));
@@ -17,12 +18,21 @@ const DOT_SHADOW = { boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,.18)' };
 const HERO_LINES = CARDIAC.raw.split('\n')
   .filter((l) => /\bmg\b/.test(l))
   .map((l) => (l.match(/^.*?\b(QD|BID|TID|QID|QHS|q\d+h)\b/) || [l])[0]);
+const HERO_TERMS = HERO_LINES.flatMap((l) => highlightTerms(l)).map((s) => s.term).filter(Boolean);
+const CYCLE = ['PO', 'QD', 'BID', 'QHS'].map((c) => HERO_TERMS.find((t) => t.term === c)).filter(Boolean);
 const isCode = (t) => /^[A-Za-z]{2,4}$|^q\d+h$/.test(t.term) && t.category !== 'unit';
 
 export function Hero() {
   const { tryExample } = useApp();
   const segs = HERO_LINES.map((l) => highlightTerms(l));
   const [term, setTerm] = useState(() => segs.flat().find((s) => s.term?.term === 'BID')?.term);
+  const [auto, setAuto] = useState(true); // cycles PO → QD → BID → QHS every 2.8s until the user picks a word
+  useEffect(() => {
+    if (!auto || CYCLE.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const id = setInterval(() => setTerm((t) => CYCLE[(CYCLE.findIndex((c) => c.term === t?.term) + 1) % CYCLE.length]), 2800);
+    return () => clearInterval(id);
+  }, [auto]);
+  const grade = useCount(GRADE_AFTER, true, { from: GRADE_BEFORE });
   return (
     <section aria-labelledby="hero-h" className="overflow-hidden px-4 pt-[104px] md:pt-[120px]"
       style={{ backgroundImage: 'linear-gradient(180deg, #FFFFFF 0%, #F3F7FD 70%, #EAF1FC 100%)' }}>
@@ -58,7 +68,7 @@ export function Hero() {
             <div className="font-mono text-[16px] leading-[30px] text-black md:text-[20px] md:leading-[36px]">
               {segs.map((line, n) => (
                 <p key={n} className="whitespace-pre-wrap">{line.map((s, k) => s.term && isCode(s.term) ? (
-                  <button key={k} type="button" onClick={() => setTerm(s.term)} aria-pressed={term?.term === s.term.term}
+                  <button key={k} type="button" onClick={() => { setAuto(false); setTerm(s.term); }} aria-pressed={term?.term === s.term.term}
                     className={`rounded-[4px] px-[2px] text-primary underline decoration-1 underline-offset-[5px] transition-colors ${term?.term === s.term.term ? 'bg-primary-soft' : 'hover:bg-primary-soft'}`}>
                     {s.text}
                   </button>
@@ -67,7 +77,7 @@ export function Hero() {
             </div>
             <div className="flex w-fit items-center gap-3 rounded-[10px] bg-[#F1F9F4] px-3.5 py-3">
               <span className="text-[14px] leading-[18px] text-ink-2">Reading level</span>
-              <span className="text-[15px] leading-[18px] text-black"><span className="text-danger">Grade {GRADE_BEFORE}</span> → <span className="font-semibold text-safe">Grade {GRADE_AFTER}</span></span>
+              <span className="text-[15px] leading-[18px] text-black"><span className="text-danger">Grade {GRADE_BEFORE}</span> → <span className="font-semibold text-safe">Grade {grade}</span></span>
             </div>
           </div>
           <div className="flex flex-1 flex-col gap-3.5 px-6 py-7 md:px-8">
@@ -106,10 +116,11 @@ const STATS = [
   ['1.5M+', 'ER visits each year for adverse drug events.', 'CDC', 'CDC, Medication Safety Program'],
 ];
 export function Problem() {
+  const [ref, on] = useReveal();
   return (
-    <section className="bg-ink py-14 text-white md:py-[112px]" aria-labelledby="problem-h">
+    <section ref={ref} className={`bg-ink py-14 text-white md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="problem-h">
       <div className={WRAP}>
-        <h2 id="problem-h" className="max-w-[760px] text-[30px] font-semibold leading-[36px] tracking-[-0.02em] md:text-[48px] md:leading-[56px] md:tracking-[-0.025em]">
+        <h2 id="problem-h" className="rv max-w-[760px] text-[30px] font-semibold leading-[36px] tracking-[-0.02em] md:text-[48px] md:leading-[56px] md:tracking-[-0.025em]">
           Medicine labels are written for doctors. <em className="text-[#7FB0FF]">Patients pay the price.</em>
         </h2>
         <dl className="mt-7 grid gap-7 md:mt-14 md:grid-cols-3 md:gap-12">
@@ -131,10 +142,11 @@ const STEP_TITLE = 'text-[22px] font-semibold leading-[28px] text-black';
 const STEP_TEXT = 'text-[17px] leading-[26px] text-ink-2';
 const STEP_CARD = 'h-[220px] shrink-0 rounded-[12px] transition-transform group-hover:-translate-y-1 md:h-[280px]';
 export function How() {
+  const [ref, on] = useReveal();
   return (
-    <section id="how" className="scroll-mt-24 bg-white py-12 md:py-[112px]" aria-labelledby="how-h">
+    <section id="how" ref={ref} className={`scroll-mt-24 bg-white py-12 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="how-h">
       <div className={WRAP}>
-        <h2 id="how-h" className={`${H2} max-w-[640px] leading-[34px]`}>Scan. Understand. Remember.</h2>
+        <h2 id="how-h" className={`rv ${H2} max-w-[640px] leading-[34px]`}>Scan. Understand. Remember.</h2>
         <div className="mt-6 grid items-start gap-6 md:mt-12 md:grid-cols-[1.2fr_1fr_1fr] md:gap-8">
           <article className="group flex flex-col gap-2.5 md:gap-5">
             <div className={`${STEP_CARD} relative flex items-center justify-center`} style={INK_GRAD} aria-hidden="true">
@@ -331,10 +343,11 @@ function FeaturesMobile() {
   );
 }
 export function Features() {
+  const [ref, on] = useReveal();
   return (
-    <section id="features" className="scroll-mt-24 bg-canvas py-14 md:py-[112px]" aria-labelledby="features-h">
+    <section id="features" ref={ref} className={`scroll-mt-24 bg-canvas py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="features-h">
       <div className={WRAP}>
-        <h2 id="features-h" className={`${H2} mb-6 leading-[34px] md:mb-12`}>Everything on one screen.</h2>
+        <h2 id="features-h" className={`rv ${H2} mb-6 leading-[34px] md:mb-12`}>Everything on one screen.</h2>
         <FeaturesMobile />
         <FeaturesDesktop />
       </div>
@@ -344,11 +357,12 @@ export function Features() {
 
 /* 5. Warnings from the label */
 export function Warning() {
+  const [ref, on] = useReveal();
   return (
-    <section className="bg-white py-14 md:py-[112px]" aria-labelledby="warn-h">
+    <section ref={ref} className={`bg-white py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="warn-h">
       <div className={`${WRAP} flex flex-col gap-5 md:flex-row md:items-center md:gap-10 lg:gap-20`}>
         <div className="flex flex-col gap-5 md:w-[440px] md:shrink">
-          <h2 id="warn-h" className={`${H2} leading-[35px]`}>Warnings, <em className="text-danger">straight from the label.</em></h2>
+          <h2 id="warn-h" className={`rv ${H2} leading-[35px]`}>Warnings, <em className="text-danger">straight from the label.</em></h2>
           <p className="hidden text-[19px] leading-[29px] text-[#2A3547] md:block">Every alert links to the FDA drug label it came from.</p>
         </div>
         <article className="flex flex-1 flex-col gap-3.5 rounded-[14px] border border-l-[5px] border-line border-l-danger bg-white p-5 transition-transform hover:-translate-y-1 md:gap-[18px] md:border-l-[6px] md:p-8 shadow-[0_12px_32px_#0F1B2D1A] md:shadow-[0_20px_48px_#0F1B2D1A]">
@@ -384,10 +398,11 @@ const PEOPLE = [
   ['Parents', 'mL to teaspoons, done right.', '/home/parents.jpg', '50% 70%', 'Medicine for a family'],
 ];
 export function Who() {
+  const [ref, on] = useReveal();
   return (
-    <section id="who" className="scroll-mt-24 bg-canvas py-14 md:py-[112px]" aria-labelledby="who-h">
+    <section id="who" ref={ref} className={`scroll-mt-24 bg-canvas py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="who-h">
       <div className={WRAP}>
-        <h2 id="who-h" className={`${H2} mb-6 leading-[35px] md:mb-10`}>Made for the people <em className="text-primary">holding the bottle.</em></h2>
+        <h2 id="who-h" className={`rv ${H2} mb-6 leading-[35px] md:mb-10`}>Made for the people <em className="text-primary">holding the bottle.</em></h2>
         <div className="grid grid-cols-2 gap-3 md:h-[420px] md:grid-cols-[1.3fr_1fr_1fr_1fr] md:gap-5 lg:grid-cols-[1.3fr_1fr_1fr_auto]">
           {PEOPLE.map(([t, s, src, pos, alt], i) => (
             <article key={t} className={`flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-line bg-white transition-all hover:-translate-y-1 hover:shadow-lg ${i ? '' : 'col-span-2 md:col-span-1'}`}>
@@ -415,11 +430,12 @@ export function Who() {
 
 /* 7. Senior Mode before/after */
 export function Senior() {
+  const [ref, on] = useReveal();
   return (
-    <section className="bg-white py-12 md:py-[112px]" aria-labelledby="senior-h">
+    <section ref={ref} className={`bg-white py-12 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="senior-h">
       <div className={`${WRAP} flex flex-col gap-[18px] md:flex-row md:items-center md:gap-10 lg:gap-[72px]`}>
         <div className="flex flex-col gap-5 md:w-[380px] md:shrink">
-          <h2 id="senior-h" className={`${H2} leading-[34px]`}>Bigger when you need it.</h2>
+          <h2 id="senior-h" className={`rv ${H2} leading-[34px]`}>Bigger when you need it.</h2>
           <p className="hidden text-[19px] leading-[29px] text-ink-2 md:block">Senior Mode: larger text, stronger contrast, bigger buttons.</p>
         </div>
         <div className="relative flex min-w-0 flex-1 overflow-hidden rounded-[14px] border border-line md:h-[360px]">
@@ -447,8 +463,9 @@ export function Senior() {
 /* 8. Privacy */
 const PRIVACY = [['Account', 'Not needed'], ['Sent to the FDA', 'Medicine names only'], ['Tracking', 'None']];
 export function Privacy() {
+  const [ref, on] = useReveal();
   return (
-    <section id="privacy" className="scroll-mt-24 py-12 text-white md:py-[112px]" aria-labelledby="privacy-h"
+    <section id="privacy" ref={ref} className={`scroll-mt-24 py-12 text-white md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="privacy-h"
       style={{ backgroundImage: 'linear-gradient(160deg, #16243A 0%, #0F1B2D 100%)' }}>
       <div className={`${WRAP} flex flex-col gap-[18px] md:flex-row md:items-start md:gap-10 lg:gap-20`}>
         <div className="flex flex-1 flex-col gap-[18px] md:gap-5">
@@ -456,7 +473,7 @@ export function Privacy() {
             <rect x="4" y="11" width="16" height="10" rx="2" fill="none" stroke="#7FB0FF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#7FB0FF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <h2 id="privacy-h" className="text-[30px] font-semibold leading-[35px] tracking-[-0.02em] md:text-[48px] md:leading-[54px] md:tracking-[-0.025em]">Your health info stays on your device.</h2>
+          <h2 id="privacy-h" className="rv text-[30px] font-semibold leading-[35px] tracking-[-0.02em] md:text-[48px] md:leading-[54px] md:tracking-[-0.025em]">Your health info stays on your device.</h2>
         </div>
         <dl className="flex flex-col md:w-[460px] md:shrink md:pt-16">
           {PRIVACY.map(([k, v]) => (
@@ -482,11 +499,12 @@ const FAQS = [
   [<R key="q" m="Which languages?" d="Which languages are supported?" />, 'English, Spanish, French and Simplified Chinese — for the instructions, the buttons and read-aloud.'],
 ];
 export function Faq() {
+  const [ref, on] = useReveal();
   const [open, setOpen] = useState(0);
   return (
-    <section id="faq" className="scroll-mt-24 bg-white py-14 md:py-[112px]" aria-labelledby="faq-h">
+    <section id="faq" ref={ref} className={`scroll-mt-24 bg-white py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="faq-h">
       <div className={`${WRAP} flex flex-col md:flex-row md:gap-10 lg:gap-20`}>
-        <h2 id="faq-h" className={`${H2} pb-4 leading-[34px] md:w-[360px] md:shrink-0 md:pb-0 lg:w-[360px]`}>Questions, answered.</h2>
+        <h2 id="faq-h" className={`rv ${H2} pb-4 leading-[34px] md:w-[360px] md:shrink-0 md:pb-0 lg:w-[360px]`}>Questions, answered.</h2>
         <div className="flex flex-1 flex-col">
           {FAQS.map(([q, a], i) => (
             <div key={i} className="border-b border-line py-[18px] md:py-6">
@@ -511,10 +529,11 @@ export function Faq() {
 /* 10. Closing CTA */
 export function Cta() {
   const { tryExample } = useApp();
+  const [ref, on] = useReveal();
   return (
-    <section className="py-14 text-white md:py-[120px]" aria-labelledby="cta-h" style={{ backgroundImage: 'linear-gradient(135deg, #1849A9 0%, #123A8A 100%)' }}>
+    <section ref={ref} className={`py-14 text-white md:py-[120px] ${on ? 'in' : ''}`} aria-labelledby="cta-h" style={{ backgroundImage: 'linear-gradient(135deg, #1849A9 0%, #123A8A 100%)' }}>
       <div className={`${WRAP} flex flex-col gap-5 md:items-center md:gap-7`}>
-        <h2 id="cta-h" className="max-w-[900px] text-[34px] font-semibold leading-[39px] tracking-[-0.02em] md:text-center md:text-[60px] md:leading-[66px] md:tracking-[-0.03em]">Make sense of your next prescription.</h2>
+        <h2 id="cta-h" className="rv max-w-[900px] text-[34px] font-semibold leading-[39px] tracking-[-0.02em] md:text-center md:text-[60px] md:leading-[66px] md:tracking-[-0.03em]">Make sense of your next prescription.</h2>
         <div className="flex flex-col gap-5 md:flex-row md:gap-3">
           <a href="#/app/today" className="flex h-14 items-center justify-center rounded-[10px] bg-white px-7 text-[18px] font-semibold leading-[22px] text-primary transition-transform hover:-translate-y-0.5 md:h-[58px]">Open MedLens</a>
           <button type="button" onClick={() => tryExample(CARDIAC.id)} className="flex h-14 items-center justify-center rounded-[10px] border-[1.5px] border-[#FFFFFF8C] px-6 text-[18px] font-semibold leading-[22px] transition-transform hover:-translate-y-0.5 md:h-[58px]">Try an example</button>

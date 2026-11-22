@@ -71,8 +71,21 @@ html.senior body { --color-ink-2: #1F2A3C; --color-line: #9AA6B6; --color-contro
 .warn-in { animation: rise 280ms var(--ease-calm) both; }
 .bar-fill { transform-origin: left; animation: fill 400ms var(--ease-calm) both; }
 .meter-fill { transform-origin: left; animation: fill 900ms var(--ease-calm) both; }
+/* Homepage scroll reveal (src/home/reveal.js adds .in to the section once it is on screen). */
+@keyframes rise12 { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes slide16 { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@keyframes eq { from { transform: scaleY(1); } to { transform: scaleY(0.5); } }
+.rv, .rv-r { opacity: 0; }
+.in .rv { opacity: 1; animation: rise12 240ms var(--ease-calm) both; animation-delay: calc(var(--i, 0) * 60ms); }
+.in .rv-r { opacity: 1; animation: slide16 280ms var(--ease-calm) both; }
+.fill-in { transform: scaleX(0); transform-origin: left; }
+.in .fill-in { transform: none; animation: fill var(--ms, 400ms) var(--ease-calm) both; animation-delay: var(--d, 0ms); }
+.eq > * { transform-origin: bottom; animation: eq 900ms ease-in-out infinite alternate; animation-delay: calc(var(--i, 0) * -150ms); animation-play-state: paused; }
+.playing .eq > * { animation-play-state: running; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  .rv, .rv-r { opacity: 1; }
+  .fill-in { transform: none; }
 }
 
 /* Print: only the fridge card */

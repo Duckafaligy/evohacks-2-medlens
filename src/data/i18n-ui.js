@@ -1,5 +1,9 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  tapWord: ['Tap a highlighted word to see what it means.', 'Toque una palabra resaltada para ver qué significa.', 'Touchez un mot surligné pour voir ce qu’il veut dire.', '点击高亮的词查看含义。'],
+  gradeN: ['Grade {n}', 'Grado {n}', 'Niveau {n}', '{n} 年级'],
+  termsFound: ['{n} terms found', '{n} términos encontrados', '{n} termes trouvés', '找到 {n} 个术语'],
+  onYourList: ['On your list', 'En su lista', 'Sur votre liste', '在您的清单中'],
   medsPairs: ['{n} medicines, {p} pairs checked.', '{n} medicinas, {p} pares revisados.', '{n} médicaments, {p} paires vérifiées.', '{n} 种药，已检查 {p} 组。'],
   needsCall: ['{n} pair needs a call to your doctor.', '{n} par necesita una llamada a su médico.', '{n} paire demande d’appeler votre médecin.', '有 {n} 组需要联系医生。'],
   whatToDo: ['What to do', 'Qué hacer', 'Que faire', '该怎么做'],
@@ -216,7 +220,7 @@ export const UI = {
   todaysPills: ['Today’s pills', 'Pastillas de hoy', 'Médicaments du jour', '今天的药'],
   translateEmpty: ['Scan or paste a prescription first.', 'Primero escanee o pegue una receta.', 'Scannez ou collez d’abord une ordonnance.', '请先扫描或粘贴处方。'],
   translateEyebrow: ['Plain-language translator', 'Traductor a palabras simples', 'Traducteur en mots simples', '通俗语言翻译'],
-  translateTitle: ['Doctor note in plain words', 'La nota del médico en palabras simples', 'La note du médecin en mots simples', '用简单的话读懂医嘱'],
+  translateTitle: ['Doctor’s note, plain words', 'La nota del médico, en palabras simples', 'La note du médecin, en mots simples', '医嘱，通俗说'],
   tryAgain: ['Try again', 'Intentar de nuevo', 'Réessayer', '再试一次'],
   tryExample: ['Try an example', 'Probar un ejemplo', 'Essayer un exemple', '试试示例'],
   trySample: ['Try sample label', 'Probar etiqueta de muestra', 'Essayer l’étiquette type', '试用样例标签'],
