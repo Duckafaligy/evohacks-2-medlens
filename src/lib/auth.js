@@ -1,7 +1,7 @@
 // Supabase accounts (email + password) and cabinet sync.
 // The publishable key is public by design; row-level security limits every row to its owner.
 import { createClient } from '@supabase/supabase-js';
-import { setRemote } from './cabinet.js';
+import { setRemote, getSnapshot } from './cabinet.js';
 
 const URL = 'https://uvlmdsqvybxmdayjngrt.supabase.co';
 const KEY = 'sb_publishable_qad4MdwbYSKOU-SXAafvQQ_O-Mhdgxo';
@@ -78,7 +78,6 @@ async function attach(u) {
   setUser(u);
   if (!u) return setRemote(null);
   // First sign-in on this device: upload what the guest already saved, then adopt the server copy.
-  const { getSnapshot } = await import('./cabinet.js');
   const local = getSnapshot();
   if (local.items.length) await push(local);
   await setRemote({ push, pull });

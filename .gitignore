@@ -5,3 +5,7 @@ dist
 env.txt
 *.log
 .DS_Store
+
+.vercel
+.env*
+tests/screens/
