@@ -26,7 +26,7 @@ ok('First visit auto-loads Heart discharge', /Furosemide/.test(await text()));
 
 // 3 Example switcher + safety High
 await p.getByRole('radio', { name: /blood thinner/i }).first().click(); await p.waitForTimeout(2500);
-await go('#/app/safety');
+await go('#/app/safety'); await p.waitForTimeout(3000);
 const s = await text();
 ok('Warfarin + Aspirin flagged High', /warfarin/i.test(s) && /aspirin/i.test(s) && /high/i.test(s));
 ok('Urgent call-911 panel', /Call 911/i.test(s));
@@ -49,7 +49,6 @@ const ics = await (await import('node:fs')).promises.readFile(await dl.path(), '
 ok('.ics valid (VCALENDAR, RRULE, VALARM, CRLF)', /BEGIN:VCALENDAR/.test(ics) && /RRULE:FREQ=DAILY/.test(ics) && /BEGIN:VALARM/.test(ics) && ics.includes('\r\n'), `${(ics.match(/BEGIN:VEVENT/g) || []).length} events`);
 
 // 6 Share link restore (QR target)
-const share = await p.evaluate(async () => { const m = await import('/src/lib/share.js').catch(() => null); return !!m; }).catch(() => false);
 const planUrl = await p.evaluate(() => { const a = [...document.querySelectorAll('a,button')].find((x) => /share|family/i.test(x.textContent)); return a?.href || null; });
 ok('Share/QR link available (fridge card)', true, planUrl ? 'share link found' : 'via fridge card QR');
 
