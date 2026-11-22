@@ -15,7 +15,6 @@ const U = 'text-primary underline decoration-1';
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const seg = (t, a, b) => clamp((t - a) / (b - a));
 const ease = (p) => 1 - (1 - p) ** 3; // ≈ cubic-bezier(0.2,0,0,1)
-const inOut = (p) => (p < 0.5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2);
 const fade = (t, a, d = 0.2) => ease(seg(t, a, a + d));
 const on = (t, a, b, d = 0.2) => fade(t, a, d) * (1 - fade(t, b, d)); // in at a, out at b
 const bump = (t, a, d) => Math.sin(Math.PI * seg(t, a, a + d)); // 0 → 1 → 0
@@ -27,26 +26,42 @@ function rng(seed) { // mulberry32: same "random" arcs every loop so seeking is 
   return () => { seed = (seed + 0x6D2B79F5) | 0; let x = Math.imul(seed ^ (seed >>> 15), 1 | seed); x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x; return ((x ^ (x >>> 14)) >>> 0) / 4294967296; };
 }
 
-/** Build the ~16s script from measured points. Returns moves (cursor path) and named times T. */
+// cubic-bezier(0.22,1,0.36,1): fast start, long deceleration (Newton solve for x → t, then y)
+const hand = (() => {
+  const [x1, y1, x2, y2] = [0.22, 1, 0.36, 1];
+  const B = (u, a, b) => 3 * a * u * (1 - u) ** 2 + 3 * b * u * u * (1 - u) + u ** 3;
+  const dB = (u, a, b) => 3 * a * (1 - u) ** 2 + 6 * (b - a) * u * (1 - u) + 3 * (1 - b) * u * u;
+  return (x) => { let u = x; for (let i = 0; i < 6; i++) { const d = dB(u, x1, x2) || 1e-6; u = clamp(u - (B(u, x1, x2) - x) / d); } return B(u, y1, y2); };
+})();
+
+/** Build the ~9–10s script from measured points. Returns moves (cursor path) and named times T. */
 function buildScript(P) {
   const r = rng(7); const moves = []; const T = {};
-  let t = 0; let pos = P.enter;
+  let t = 0.5; let pos = P.enter; // starts just outside the window
+  moves.push({ t0: 0, t1: t, a: pos, b: pos, dwell: true });
   const move = (to) => {
     const d = Math.hypot(to[0] - pos[0], to[1] - pos[1]);
-    const dur = clamp(0.45 + 0.0009 * d, 0.5, 1.3);
-    moves.push({ t0: t, t1: t + dur, a: pos, b: to, off: (0.08 + r() * 0.12) * (r() < 0.5 ? -1 : 1) });
-    t += dur; pos = to; return t;
+    const dur = clamp(0.18 + 0.00032 * d, 0.26, 0.62);
+    const off = (0.04 + r() * 0.06) * (r() < 0.5 ? -1 : 1);
+    if (d > 250 && r() < 0.5) { // ballistic move lands a few px off, then a tiny correction
+      const k = (2 + 2 * r()) * (r() < 0.5 ? -1 : 1); const nx = -(to[1] - pos[1]) / d; const ny = (to[0] - pos[0]) / d;
+      const miss = [to[0] + nx * k, to[1] + ny * k];
+      moves.push({ t0: t, t1: t + dur, a: pos, b: miss, off, ov: 1 + r() }); t += dur;
+      const c = 0.04 + 0.04 * r(); moves.push({ t0: t, t1: t + c, a: miss, b: to, corr: true }); t += c;
+    } else { moves.push({ t0: t, t1: t + dur, a: pos, b: to, off, ov: 1 + r() }); t += dur; }
+    pos = to; return t;
   };
   const dwell = (s) => { moves.push({ t0: t, t1: t + s, a: pos, b: pos, dwell: true }); t += s; return t; };
-  T.po = move(P.po); T.poOut = dwell(0.6);
-  T.bid = move(P.bid); dwell(2);
-  T.row = move(P.row); T.rowOut = dwell(0.6);
-  T.chip = move(P.chip); T.chipOut = dwell(2);
-  T.strip = move(P.strip); T.click = dwell(0.6); T.stripOut = dwell(2.2);
-  T.today = move(P.today); T.todayOut = dwell(0.8);
+  const hover = () => dwell(0.35 + 0.15 * r());
+  T.po = move(P.po); T.poOut = hover();
+  T.bid = move(P.bid); dwell(0.6);
+  T.row = move(P.row); T.rowOut = hover();
+  T.chip = move(P.chip); T.chipOut = dwell(1);
+  T.strip = move(P.strip); T.click = hover(); T.stripOut = dwell(0.9);
+  T.today = move(P.today); T.todayOut = hover();
   T.exit = move(P.exit);
   T.reset = t + 0.2;
-  return { moves, T, loop: T.reset + 0.6 };
+  return { moves, T, loop: T.reset + 1.2 };
 }
 
 function cursorAt(S, t) {
@@ -55,14 +70,16 @@ function cursorAt(S, t) {
     const w = seg(t, m.t0, m.t0 + 0.3);
     return [m.a[0] + 1.5 * Math.sin(t * 1.3) * w, m.a[1] + 1.5 * Math.sin(t * 1.7 + 1) * w];
   }
-  const p = seg(t, m.t0, m.t1); const u = inOut(p);
+  const p = seg(t, m.t0, m.t1);
   const [ax, ay] = m.a; const [bx, by] = m.b; const dx = bx - ax; const dy = by - ay; const d = Math.hypot(dx, dy) || 1;
+  if (m.corr) { const u = ease(p); return [ax + dx * u, ay + dy * u]; }
+  const u = hand(p);
   const nx = -dy / d; const ny = dx / d; const k = d * m.off; // perpendicular arc
   const c1 = [ax + dx / 3 + nx * k, ay + dy / 3 + ny * k]; const c2 = [ax + (2 * dx) / 3 + nx * k, ay + (2 * dy) / 3 + ny * k];
   const v = 1 - u;
   const x = v ** 3 * ax + 3 * v * v * u * c1[0] + 3 * v * u * u * c2[0] + u ** 3 * bx;
   const y = v ** 3 * ay + 3 * v * v * u * c1[1] + 3 * v * u * u * c2[1] + u ** 3 * by;
-  const o = 2.5 * Math.sin(Math.PI * seg(p, 0.82, 1)); // overshoot past the target, then settle
+  const o = m.ov * Math.sin(Math.PI * seg(p, 0.7, 1)); // 1–2px overshoot, then settle
   return [x + (dx / d) * o, y + (dy / d) * o];
 }
 
@@ -142,9 +159,9 @@ export default function HeroDemo() {
   const stripHover = live ? on(t, T.strip - 0.05, T.stripOut, 0.16) : 0;
   const stripOpen = live ? on(t, T.click + 0.06, T.reset, 0.24) : 0;
   const todayTint = live ? on(t, T.today - 0.05, T.todayOut, 0.16) : 0;
-  const pill = live ? [on(t, T.bid + 0.05, T.chip - 0.1), on(t, T.chip, T.strip - 0.1), on(t, T.strip, T.exit - 0.3)] : [1, 1, 1];
+  const pill = live ? [on(t, T.bid + 0.05, T.bid + 1.25), on(t, T.chip, T.chip + 1.2), on(t, T.strip, T.strip + 1.2)] : [1, 1, 1]; // each stays 1.2s
   const [cx, cy] = S && live ? cursorAt(S, t) : [0, 0];
-  const cursorO = live ? fade(t, 0, 0.3) * (1 - fade(t, T.exit - 0.3, 0.3)) : 0;
+  const cursorO = live ? fade(t, 0.4, 0.2) * (1 - fade(t, T.exit - 0.3, 0.3)) : 0;
   const press = live ? Math.max(bump(t, T.bid, 0.12), bump(t, T.click, 0.12)) : 0;
   const ripples = live ? [T.bid, T.click].map((a) => seg(t, a, a + 0.3)) : [];
   const spot = S ? { bid: S.moves.find((m) => m.t1 === T.bid).b, chip: S.moves.find((m) => m.t1 === T.chip).b, strip: S.moves.find((m) => m.t1 === T.strip).b } : null;

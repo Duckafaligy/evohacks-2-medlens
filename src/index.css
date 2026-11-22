@@ -82,6 +82,28 @@ html.senior body { --color-ink-2: #1F2A3C; --color-line: #9AA6B6; --color-contro
 .in .fill-in { transform: none; animation: fill var(--ms, 400ms) var(--ease-calm) both; animation-delay: var(--d, 0ms); }
 .eq > * { transform-origin: bottom; animation: eq 900ms ease-in-out infinite alternate; animation-delay: calc(var(--i, 0) * -150ms); animation-play-state: paused; }
 .playing .eq > * { animation-play-state: running; }
+/* How-it-works step cards: 4.5s loops, paused until the card is on screen (.playing). Base styles = final state for reduced motion. */
+.loop { animation-duration: 4.5s; animation-iteration-count: infinite; animation-fill-mode: both; animation-timing-function: var(--ease-calm); animation-play-state: paused; }
+.playing .loop { animation-play-state: running; }
+@keyframes scan-line { 0%, 6.7% { transform: translateY(0); opacity: 0; } 7.5% { opacity: 1; } 37% { opacity: 1; } 37.8%, 100% { transform: translateY(214px); opacity: 0; } }
+@keyframes scan-ink { 0%, 17% { opacity: 0; } 20% { opacity: 1; } 63% { opacity: 1; } 69%, 100% { opacity: 0; } }
+@keyframes scan-fill { 0%, 6.7% { transform: scaleX(0); opacity: 1; } 37.8% { transform: scaleX(1); } 63% { transform: scaleX(1); opacity: 1; } 69% { transform: scaleX(1); opacity: 0; } 70% { transform: scaleX(0); opacity: 0; } 74%, 100% { transform: scaleX(0); opacity: 1; } }
+@keyframes pop-chip { 0%, 40% { opacity: 0; transform: scale(.9); } 45.3% { opacity: 1; transform: none; } 63% { opacity: 1; transform: none; } 69%, 100% { opacity: 0; transform: none; } }
+@keyframes soft-hl { 0%, 6% { opacity: 0; } 10% { opacity: 1; } 24% { opacity: 1; } 28%, 100% { opacity: 0; } }
+@keyframes solid-chip { 0%, 27% { opacity: 0; } 29% { opacity: 1; } 88% { opacity: 1; } 93%, 100% { opacity: 0; } }
+@keyframes tap-ripple { 0%, 26.7% { opacity: 0; transform: scale(.4); } 27% { opacity: .7; transform: scale(.45); } 33.3%, 100% { opacity: 0; transform: scale(1.6); } }
+@keyframes card-up { 0%, 30% { opacity: 0; transform: translateY(8px); } 35.3% { opacity: 1; transform: none; } 85% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; transform: none; } }
+@keyframes row-rise { 0% { opacity: 0; transform: translateY(8px); } 6% { opacity: 1; transform: none; } 88% { opacity: 1; transform: none; } 95% { opacity: 0; transform: none; } 100% { opacity: 0; transform: translateY(8px); } }
+@keyframes count-pulse { 0%, 24% { transform: none; } 27% { transform: scale(1.12); } 31%, 100% { transform: none; } }
+@keyframes row-tint-0 { 0%, 24% { opacity: 0; } 29% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes tick-fill-0 { 0%, 24% { opacity: 0; transform: scale(.8); } 27% { opacity: 1; transform: none; } 100% { opacity: 1; transform: none; } }
+@keyframes tick-draw-0 { 0%, 24% { stroke-dashoffset: 1; } 29.3% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+@keyframes row-tint-1 { 0%, 38% { opacity: 0; } 43% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes tick-fill-1 { 0%, 38% { opacity: 0; transform: scale(.8); } 41% { opacity: 1; transform: none; } 100% { opacity: 1; transform: none; } }
+@keyframes tick-draw-1 { 0%, 38% { stroke-dashoffset: 1; } 43.3% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
+@keyframes row-tint-2 { 0%, 52% { opacity: 0; } 57% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes tick-fill-2 { 0%, 52% { opacity: 0; transform: scale(.8); } 55% { opacity: 1; transform: none; } 100% { opacity: 1; transform: none; } }
+@keyframes tick-draw-2 { 0%, 52% { stroke-dashoffset: 1; } 57.3% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .rv, .rv-r { opacity: 1; }

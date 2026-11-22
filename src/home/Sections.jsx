@@ -97,6 +97,11 @@ const StepNum = ({ n }) => (
 export function How() {
   return <><HowSteps /><RealNote /></>;
 }
+/** Step-card motion: CSS keyframe loops (src/index.css) that run only while the card is on screen. */
+function StepLoop({ className, style, children }) {
+  const [ref, playing] = useReveal(false);
+  return <div ref={ref} className={`${className} ${playing ? 'playing' : ''}`} style={style} aria-hidden="true">{children}</div>;
+}
 function HowSteps() {
   const [ref, on] = useReveal();
   return (
@@ -109,46 +114,60 @@ function HowSteps() {
         <div className="mt-6 grid items-start gap-6 md:mt-8 md:grid-cols-[1.2fr_1fr_1fr] md:gap-8">
           <article style={{ '--i': 1 }} className="rv group flex flex-col gap-2.5 md:gap-5">
             <StepNum n={1} />
-            <div className={`${STEP_CARD} relative flex items-center justify-center`} style={INK_GRAD} aria-hidden="true">
-              <div className="flex h-[220px] w-[180px] items-center justify-center rounded-[12px] border-[3px] border-white">
-                <div className="flex h-[90px] w-[140px] flex-col gap-[7px] rounded-[6px] bg-[#FFFFFFEB] p-3">
-                  <div className="h-[7px] w-[60%] rounded-[3px] bg-primary" />
-                  <div className="h-[5px] w-[90%] rounded-[3px] bg-[#9AA4B2]" />
-                  <div className="h-[5px] w-[75%] rounded-[3px] bg-[#9AA4B2]" />
+<StepLoop className={`${STEP_CARD} relative flex items-center justify-center`} style={INK_GRAD}>
+              <div className="relative flex h-[220px] w-[180px] items-center justify-center overflow-hidden rounded-[12px] border-[3px] border-white">
+                <div className="flex h-[90px] w-[140px] -rotate-3 flex-col gap-[7px] rounded-[6px] bg-[#FFFFFFEB] p-3">
+                  {[['h-[7px] w-[60%]', 'bg-primary', '#1849A9'], ['h-[5px] w-[90%]', 'bg-[#9AA4B2]', '#0F1B2D'], ['h-[5px] w-[75%]', 'bg-[#9AA4B2]', '#0F1B2D']].map(([size, grey, ink], i) => (
+                    <div key={i} className={`relative rounded-[3px] ${size} ${i ? grey : 'bg-[#9AA4B2]'}`}>
+                      <span className="loop absolute inset-0 rounded-[3px] [animation-name:scan-ink]" style={{ background: ink, animationDelay: `${i * 80}ms` }} />
+                    </div>
+                  ))}
                 </div>
+                <span className="loop absolute inset-x-0 top-0 h-0.5 bg-[#7FB0FF] shadow-[0_0_0_4px_#1849A933,0_0_14px_#7FB0FF] opacity-0 [animation-name:scan-line] [animation-timing-function:linear]" />
+                <span className="loop absolute bottom-3 rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold leading-4 text-safe shadow-[0_4px_12px_#0F1B2D33] [animation-name:pop-chip]">Read ✓</span>
               </div>
-              <div className="absolute inset-x-5 bottom-[18px] h-1.5 rounded-[3px] bg-[#FFFFFF33]">
-                <div style={{ '--d': '240ms' }} className="fill-in h-1.5 w-[64%] rounded-[3px] bg-white" />
+              <div className="absolute inset-x-5 bottom-[18px] h-1.5 overflow-hidden rounded-[3px] bg-[#FFFFFF33]">
+                <div className="loop h-1.5 w-full origin-left rounded-[3px] bg-white [animation-name:scan-fill]" />
               </div>
-            </div>
+            </StepLoop>
             <h3 className={STEP_TITLE}>Scan</h3>
             <p className={STEP_TEXT}>Point your camera at the label. MedLens reads it in seconds.</p>
           </article>
           <article style={{ '--i': 2 }} className="rv group flex flex-col gap-2.5 md:gap-5">
             <StepNum n={2} />
-            <div className={`${STEP_CARD} flex flex-col justify-center gap-3.5 bg-[#EAF1FC] p-7`} aria-hidden="true">
+<StepLoop className={`${STEP_CARD} flex flex-col justify-center gap-3.5 bg-[#EAF1FC] p-7`}>
               <p className="font-mono text-[18px] font-medium leading-[22px] text-ink-2">
-                Metformin 500 mg PO <span className="font-semibold text-primary underline decoration-1">BID</span>
+                Metformin 500 mg <span className="relative"><span className="loop absolute -inset-x-1 -inset-y-0.5 rounded-[5px] bg-[#D5E2F7] opacity-0 [animation-name:soft-hl]" /><span className="relative">PO</span></span>{' '}
+                <span className="relative inline-block">
+                  <span className="font-semibold text-primary underline decoration-1">BID</span>
+                  <span className="loop absolute -inset-x-1 -inset-y-0.5 grid place-items-center rounded-[5px] bg-primary font-semibold text-white [animation-name:solid-chip]">BID</span>
+                  <span className="loop absolute left-1/2 top-1/2 -ml-5 -mt-5 size-10 rounded-full border-2 border-primary opacity-0 [animation-name:tap-ripple]" />
+                </span>
               </p>
-              <div className="flex flex-col gap-1 rounded-[10px] border border-line bg-white p-4" style={{ boxShadow: '0 12px 24px #0F1B2D1A' }}>
+              <div className="loop flex flex-col gap-1 rounded-[10px] border border-line bg-white p-4 [animation-name:card-up]" style={{ boxShadow: '0 12px 24px #0F1B2D1A' }}>
                 <p className="text-[20px] font-semibold leading-6 text-primary">Twice a day</p>
                 <p className="text-[16px] leading-5 text-ink-2">With breakfast and dinner</p>
               </div>
-            </div>
+            </StepLoop>
             <h3 className={STEP_TITLE}>Understand</h3>
             <p className={STEP_TEXT}>Every medical word turns blue. Tap it to see what it means.</p>
           </article>
           <article style={{ '--i': 3 }} className="rv group flex flex-col gap-2.5 md:gap-5">
             <StepNum n={3} />
-            <div className={`${STEP_CARD} flex flex-col justify-center gap-2.5 bg-[#F1F9F4] p-7`} aria-hidden="true">
-              {[['8:00 AM', '3 pills', true], ['6:00 PM', '1 pill', false], ['9:00 PM', '1 pill', false]].map(([t, n, done]) => (
-                <div key={t} className="flex items-center justify-between rounded-[8px] border border-line bg-white px-3.5 py-3">
-                  <span className="text-[16px] font-semibold leading-5 text-black">{t}</span>
-                  <span className="text-[15px] leading-[18px] text-ink-2">{n}</span>
-                  <span className={`size-6 shrink-0 rounded-[6px] ${done ? 'bg-safe' : 'border-2 border-[#9AA4B2]'}`} />
+<StepLoop className={`${STEP_CARD} flex flex-col justify-center gap-2.5 bg-[#F1F9F4] p-7`}>
+              {[['8:00 AM', '3 pills'], ['6:00 PM', '1 pill'], ['9:00 PM', '1 pill']].map(([t, n], i) => (
+                <div key={t} className="loop relative flex items-center justify-between overflow-hidden rounded-[8px] border border-line bg-white px-3.5 py-3 [animation-name:row-rise]" style={{ animationDelay: `${i * 60}ms` }}>
+                  <span className="loop absolute inset-0 bg-safe-soft" style={{ animationName: `row-tint-${i}` }} />
+                  <span className="relative text-[16px] font-semibold leading-5 text-black">{t}</span>
+                  <span className={`relative text-[15px] leading-[18px] text-ink-2 ${i ? '' : 'loop [animation-name:count-pulse]'}`}>{n}</span>
+                  <span className="relative size-6 shrink-0 rounded-[6px] border-2 border-[#9AA4B2]">
+                    <span className="loop absolute -inset-[2px] grid place-items-center rounded-[6px] bg-safe" style={{ animationName: `tick-fill-${i}` }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24"><path className="loop" style={{ animationName: `tick-draw-${i}` }} d="M20 6L9 17l-5-5" fill="none" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" pathLength="1" strokeDasharray="1" /></svg>
+                    </span>
+                  </span>
                 </div>
               ))}
-            </div>
+            </StepLoop>
             <h3 className={STEP_TITLE}>Remember</h3>
             <p className={STEP_TEXT}>Get a morning-to-bedtime plan, reminders and a fridge card.</p>
           </article>
