@@ -100,6 +100,9 @@ export const localDay = (d = new Date()) =>
 
 /** One stable colour per medicine, shared by Today and Calendar. */
 export const MED_COLORS = ['#1849A9', '#0E6A80', '#12704F', '#46536A', '#7A3FA0', '#A14A06'];
+const SOFT = { '#1849A9': '#E8EFFB', '#0E6A80': '#E2F2F5', '#12704F': '#E5F3EC', '#46536A': '#ECEFF3', '#7A3FA0': '#F1E9F6', '#A14A06': '#FDF0E1' };
+/** Tinted background that goes with a med colour. */
+export const softFor = (c) => SOFT[c] || '#ECEFF3';
 export const colorFor = (items, id) => MED_COLORS[Math.max(0, items.findIndex((i) => i.id === id)) % MED_COLORS.length];
 
 /** Is this med scheduled on `day` (YYYY-MM-DD)? Short courses run `days` days from when they were added. */

@@ -1,5 +1,8 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  mode_day: ['Day', 'Día', 'Jour', '日'],
+  mode_week: ['Week', 'Semana', 'Semaine', '周'],
+  mode_month: ['Month', 'Mes', 'Mois', '月'],
   emptyLong: ['Scan a pill bottle or discharge paper. We’ll turn it into plain words and a daily plan.', 'Escanee un frasco o papel de alta. Lo convertimos en palabras simples y un plan diario.', 'Scannez un flacon ou un papier de sortie. Nous en ferons des mots simples et un plan du jour.', '扫描药瓶或出院单，我们会把它变成通俗的话和每日计划。'],
   staysOnDevice: ['No sign-up. Stays on this device.', 'Sin registro. Se queda en este dispositivo.', 'Sans inscription. Reste sur cet appareil.', '无需注册，数据保存在本设备。'],
   addFirst: ['Let’s add your first medicine.', 'Agreguemos su primera medicina.', 'Ajoutons votre premier médicament.', '来添加第一种药吧。'],
