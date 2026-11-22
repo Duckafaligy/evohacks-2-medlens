@@ -10,15 +10,14 @@ import Scan from './views/Scan.jsx';
 import Cabinet from './views/Cabinet.jsx';
 import Translate from './views/Translate.jsx';
 import Safety from './views/Safety.jsx';
-import Calendar from './views/Calendar.jsx';
-import Quiz from './views/Quiz.jsx';
 import { t } from './data/i18n.js';
 import { planFromHash } from './lib/share.js';
 import { restorePlan, loadExample } from './lib/app.js';
 import { stop } from './lib/speech.js';
 import * as cabinet from './lib/cabinet.js';
 
-const VIEWS = { today: Today, scan: Scan, cabinet: Cabinet, translate: Translate, safety: Safety, calendar: Calendar, quiz: Quiz };
+// calendar = Today's Week view; quiz = the card at the bottom of Translate.
+const VIEWS = { today: Today, scan: Scan, cabinet: Cabinet, translate: Translate, safety: Safety, calendar: Today, quiz: Translate };
 
 const read = (k, d) => {
   try { return localStorage.getItem(k) ?? d; } catch { return d; }
@@ -91,7 +90,7 @@ export default function App() {
           <Sidebar view={view} />
           <main id="main" tabIndex={-1} className="flex min-h-screen min-w-0 flex-1 flex-col gap-6 px-4 pb-28 pt-5 outline-none md:px-10 md:pb-8">
             <TopBar />
-            <View key={view} />
+            <View key={view} route={view} />
             <AppFooter />
           </main>
         </div>

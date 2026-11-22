@@ -150,7 +150,7 @@ function MonthGrid({ first, items, all, today, locale, tr }) {
   );
 }
 
-export default function Calendar() {
+export default function Calendar({ embedded = false }) {
   const { tr, lang } = useApp();
   const { items } = useCabinet();
   const now = useNow(60000);
@@ -172,14 +172,14 @@ export default function Calendar() {
     <div className="space-y-5">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-4">
-          <h1 className="text-[32px] font-semibold leading-10 tracking-[-0.02em]">{title}</h1>
+          {embedded ? <h2 className="text-[32px] font-semibold leading-10 tracking-[-0.02em]">{title}</h2> : <h1 className="text-[32px] font-semibold leading-10 tracking-[-0.02em]">{title}</h1>}
           <div className="flex gap-1">
             <button type="button" onClick={() => setOffset(offset - 1)} aria-label={tr('prevWeek')} className={SQ}><ChevronLeft className="size-4" /></button>
             <button type="button" onClick={() => setOffset(offset + 1)} aria-label={tr('nextWeek')} className={SQ}><ChevronRight className="size-4" /></button>
           </div>
           <button type="button" onClick={() => setOffset(0)} className={BTN}>{tr('today')}</button>
           <div role="radiogroup" aria-label={tr('navCalendar')} className="flex gap-0.5 rounded-md p-[3px]" style={{ background: '#E9EDF2' }}>
-            {['day', 'week', 'month'].map((m) => (
+            {(embedded ? ['week', 'month'] : ['day', 'week', 'month']).map((m) => (
               <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setM(m)}
                 className={`h-[30px] rounded-[8px] border px-3.5 text-[14px] leading-[18px] ${mode === m ? 'border-line bg-surface font-semibold text-ink' : 'border-transparent text-ink-2 hover:text-ink'}`}>
                 {tr(`mode_${m}`)}

@@ -32,7 +32,7 @@ function buildQuiz(items, seed) {
   return qs;
 }
 
-export default function Quiz() {
+export default function Quiz({ embedded = false }) {
   const { tr, lang, go } = useApp();
   const { items } = useCabinet();
   const [seed, setSeed] = useState(1);
@@ -50,7 +50,7 @@ export default function Quiz() {
   if (!quiz.length) {
     return (
       <div className="space-y-6">
-        <h1 className="text-h2 md:text-h1">{tr('navQuiz')}</h1>
+        {embedded ? <h2 className="text-h2">{tr('navQuiz')}</h2> : <h1 className="text-h2 md:text-h1">{tr('navQuiz')}</h1>}
         <div className="grad-calm rounded-lg p-8">
           <p className="text-lead">{tr('quizEmpty')}</p>
           <Button className="mt-5" onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('navScan')}</Button>
@@ -62,7 +62,7 @@ export default function Quiz() {
   return (
     <div className="max-w-3xl space-y-6">
       <header>
-        <h1 className="text-h2 md:text-h1">{tr('navQuiz')}</h1>
+        {embedded ? <h2 className="text-h2">{tr('navQuiz')}</h2> : <h1 className="text-h2 md:text-h1">{tr('navQuiz')}</h1>}
         <p className="mt-1 text-lead text-ink-2">{tr('quizIntro')}</p>
       </header>
       {quiz.map((q, i) => {

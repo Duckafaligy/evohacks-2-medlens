@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  Sun, CalendarDays, CircleHelp, ScanLine, Pill, Languages, ShieldCheck, Play, Pause, Square, ChevronRight, Menu,
+  Sun, ScanLine, Pill, Languages, ShieldCheck, Play, Pause, Square, ChevronRight, Menu,
 } from 'lucide-react';
 import { useApp, useCabinet, useInteractions } from './ctx.js';
 import { Logo, Modal } from './ui.jsx';
@@ -9,12 +9,11 @@ import { speak, pause, resume, stop, canSpeak } from '../lib/speech.js';
 import { scheduleSpeech } from '../lib/app.js';
 import { currentUser, onUser, signOut } from '../lib/auth.js';
 
-const GROUPS = [
-  { key: 'groupDaily', items: [['today', Sun], ['calendar', CalendarDays], ['quiz', CircleHelp]] },
-  { key: 'groupMeds', items: [['scan', ScanLine], ['cabinet', Pill], ['translate', Languages], ['safety', ShieldCheck]] },
-];
-const MOBILE = [['today', Sun], ['scan', ScanLine], ['cabinet', Pill], ['calendar', CalendarDays]];
-const VIEW_LABEL = { today: 'navToday', calendar: 'navCalendar', quiz: 'navQuiz', scan: 'navScan', cabinet: 'navCabinet', translate: 'navTranslate', safety: 'navSafety' };
+const TABS = [['today', Sun], ['translate', Languages], ['safety', ShieldCheck]];
+const MOBILE = [['today', Sun], ['translate', Languages], ['safety', ShieldCheck], ['scan', ScanLine]];
+// Old routes live inside the 3 tabs now.
+const TAB_OF = { calendar: 'today', quiz: 'translate' };
+const VIEW_LABEL = { today: 'navToday', scan: 'navScan', cabinet: 'navCabinet', translate: 'navTranslate', safety: 'navSafety' };
 
 function NavItem({ id, Icon, active, badge }) {
   const { tr } = useApp();
@@ -65,6 +64,8 @@ function ReadAloud() {
 
 function Preferences() {
   const { tr, lang, setLang, senior, setSenior, openAuth } = useApp();
+  const { items } = useCabinet();
+  const { items } = useCabinet();
   const [user, setUser] = useState(() => currentUser());
   useEffect(() => onUser(setUser), []);
   return (
@@ -100,6 +101,14 @@ function Preferences() {
         </div>
         <ReadAloud />
       </div>
+      <a href="#/app/cabinet" className="flex items-center justify-between rounded-md px-3 py-2 text-small font-semibold hover:bg-surface">
+        <span className="flex items-center gap-2"><Pill className="size-4 text-ink-2" aria-hidden="true" />{tr('myMeds', { n: items.length })}</span>
+        <ChevronRight className="size-4 text-ink-2" aria-hidden="true" />
+      </a>
+      <a href="#/app/cabinet" className="flex items-center justify-between rounded-md px-3 py-2 text-small font-semibold hover:bg-surface">
+        <span className="flex items-center gap-2"><Pill className="size-4 text-ink-2" aria-hidden="true" />{tr('myMeds', { n: items.length })}</span>
+        <ChevronRight className="size-4 text-ink-2" aria-hidden="true" />
+      </a>
       {user ? (
         <div className="flex items-center justify-between gap-2 px-3 py-2 text-small">
           <span className="truncate text-ink" title={user.email}>{user.email}</span>
@@ -122,20 +131,15 @@ export default function Sidebar({ view }) {
   const high = inter?.interactions.filter((x) => x.severity === 'High').length || 0;
   const [more, setMore] = useState(false);
   const badgeFor = (id) => (id === 'safety' ? high : 0);
+  const tab = TAB_OF[view] || view;
+  const tab = TAB_OF[view] || view;
 
   return (
     <>
       <aside className="sticky top-0 hidden h-screen w-[264px] shrink-0 flex-col border-r border-line bg-canvas px-4 py-6 md:flex" aria-label={tr('mainNav')}>
         <a href="#/" className="mb-6 px-2" aria-label="MedLens home"><Logo /></a>
-        <nav className="flex-1 space-y-5 overflow-auto" aria-label={tr('mainNav')}>
-          {GROUPS.map((g) => (
-            <div key={g.key}>
-              <p className="mb-1.5 px-3 text-[13px] text-ink-2">{tr(g.key)}</p>
-              <div className="space-y-1">
-                {g.items.map(([id, Icon]) => <NavItem key={id} id={id} Icon={Icon} active={view === id} badge={badgeFor(id)} />)}
-              </div>
-            </div>
-          ))}
+        <nav className="flex-1 space-y-1 overflow-auto" aria-label={tr('mainNav')}>
+          {TABS.map(([id, Icon]) => <NavItem key={id} id={id} Icon={Icon} active={tab === id} badge={badgeFor(id)} />)}
         </nav>
         <Preferences />
       </aside>
@@ -146,23 +150,18 @@ export default function Sidebar({ view }) {
       </header>
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-surface md:hidden" aria-label={tr('mainNav')}>
         {MOBILE.map(([id, Icon]) => (
-          <a key={id} href={`#/app/${id}`} aria-current={view === id ? 'page' : undefined}
-            className={`flex h-16 flex-col items-center justify-center gap-1 text-[12px] ${view === id ? 'font-semibold text-primary' : 'text-ink-2'}`}>
+          <a key={id} href={`#/app/${id}`} aria-current={tab === id ? 'page' : undefined}
+            className={`relative flex h-16 flex-col items-center justify-center gap-1 text-[12px] ${tab === id ? 'font-semibold text-primary' : 'text-ink-2'}`}>
+            {id === 'safety' && high > 0 && <span className="absolute right-5 top-2 size-2 rounded-full bg-danger" aria-hidden="true" />}
             <Icon className="size-5" aria-hidden="true" />{tr(VIEW_LABEL[id])}
           </a>
         ))}
-        <button type="button" onClick={() => setMore(true)} className={`relative flex h-16 flex-col items-center justify-center gap-1 text-[12px] ${['translate', 'safety', 'quiz'].includes(view) ? 'font-semibold text-primary' : 'text-ink-2'}`}>
+        <button type="button" onClick={() => setMore(true)} className={`flex h-16 flex-col items-center justify-center gap-1 text-[12px] ${view === 'cabinet' ? 'font-semibold text-primary' : 'text-ink-2'}`}>
           <Menu className="size-5" aria-hidden="true" />{tr('more')}
-          {high > 0 && <span className="absolute right-4 top-2 size-2 rounded-full bg-danger" aria-hidden="true" />}
         </button>
       </nav>
       <Modal open={more} onClose={() => setMore(false)} title={tr('more')}>
-        <div className="space-y-1" onClick={() => setMore(false)}>
-          {[['translate', Languages], ['safety', ShieldCheck], ['quiz', CircleHelp]].map(([id, Icon]) => (
-            <NavItem key={id} id={id} Icon={Icon} active={view === id} badge={badgeFor(id)} />
-          ))}
-        </div>
-        <div className="mt-5"><Preferences /></div>
+        <div className="mt-1" onClick={() => setMore(false)}><Preferences /></div>
       </Modal>
     </>
   );

@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { AlertTriangle, ChevronDown, Info, ScanLine, ShieldCheck } from 'lucide-react';
 import { useApp, useCabinet, useInteractions, useNow } from '../components/ctx.js';
 import { Button } from '../components/ui.jsx';
-import { ExampleSwitcher } from '../components/Shell.jsx';
 import { pl, colorFor } from '../lib/app.js';
 import { REDFLAGS } from '../data/redflags.js';
 
@@ -172,7 +171,6 @@ export default function Safety() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ExampleSwitcher />
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-1.5">
           <h1 className="text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">{tr('safetyCheck')}</h1>

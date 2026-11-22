@@ -1,9 +1,9 @@
 // Translate — ported from Paper "Translate · Desktop v2".
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Quiz from './Quiz.jsx';
 import { ArrowRight, Download, ScanLine } from 'lucide-react';
 import { useApp, useCabinet } from '../components/ctx.js';
 import { Button } from '../components/ui.jsx';
-import { ExampleSwitcher } from '../components/Shell.jsx';
 import { highlightTerms, parseLine } from '../lib/parse.js';
 import { fkGrade } from '../lib/readability.js';
 import { downloadIcs } from '../lib/ics.js';
@@ -12,7 +12,7 @@ import { pl, colorFor } from '../lib/app.js';
 const CARD = 'rounded-lg border border-line bg-surface px-6 py-[22px]';
 const lower1 = (s) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
-export default function Translate() {
+export default function Translate({ route }) {
   const { tr, lang, raw, go, openFridge } = useApp();
   const { items } = useCabinet();
   const lines = (raw || '').split(/\r?\n/).filter((l) => l.trim());
@@ -22,12 +22,14 @@ export default function Translate() {
     s.term && (s.term.category === 'unit' || plainAlready.test(s.text)) ? { text: s.text } : s)));
   const terms = [...new Map(segLines.flat().filter((s) => s.term).map((s) => [s.term.term, s.term])).values()];
   const [picked, setPicked] = useState(null);
+  useEffect(() => {
+    if (route === 'quiz') document.getElementById('quiz')?.scrollIntoView({ block: 'start' });
+  }, [route]);
   const active = picked || terms.find((t) => t.term === 'BID') || terms[0] || null;
 
   if (!lines.length && !items.length) {
     return (
       <div className="flex flex-col gap-6">
-        <ExampleSwitcher />
         <h1 className="text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">{tr('translateTitle')}</h1>
         <div className={CARD}>
           <p className="text-lead">{tr('translateEmpty')}</p>
@@ -48,7 +50,6 @@ export default function Translate() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ExampleSwitcher />
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-1.5">
           <h1 className="text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">{tr('translateTitle')}</h1>
@@ -126,6 +127,7 @@ export default function Translate() {
           </div>
         </section>
       </div>
+      <section id="quiz" className="scroll-mt-6 border-t border-line pt-8"><Quiz embedded /></section>
     </div>
   );
 }

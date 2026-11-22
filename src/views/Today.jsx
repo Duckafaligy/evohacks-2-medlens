@@ -3,8 +3,8 @@ import {
   AlertTriangle, ArrowRight, Check, ChevronLeft, ChevronRight, Droplet, Utensils, Clock, Ban, ScanLine, Heart, Baby, Lock, Activity, Volume2,
 } from 'lucide-react';
 import { useApp, useCabinet, useInteractions, useNow } from '../components/ctx.js';
+import Calendar from './Calendar.jsx';
 import { Button, Chip, FoodChips } from '../components/ui.jsx';
-import { ExampleSwitcher } from '../components/Shell.jsx';
 import * as cabinet from '../lib/cabinet.js';
 import { SLOTS, slotTime, nextDose, localDay, colorFor, activeOn, slotMinutes, scheduleSpeech } from '../lib/app.js';
 import { SCENARIOS } from '../data/scenarios.js';
@@ -140,8 +140,9 @@ function MonthCalendar({ items, now }) {
   );
 }
 
-export default function Today() {
+export default function Today({ route }) {
   const { tr, lang, senior } = useApp();
+  const [mode, setMode] = useState(route === 'calendar' ? 'week' : 'day');
   const { items } = useCabinet();
   const now = useNow();
   const [offset, setOffset] = useState(0);
@@ -166,13 +167,23 @@ export default function Today() {
 
   return (
     <div className="space-y-6">
-      {items.length > 0 && <ExampleSwitcher />}
-
-      <header>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
         <h1 className="text-h2 md:text-h1">{tr(greet)}</h1>
         {items.length === 0 && <p className="mt-1 text-lead text-ink-2">{tr('addFirst')}</p>}
         {total > 0 && isToday && (
           <p className="mt-1 text-lead text-ink-2">{total - doneCount > 0 ? tr('dosesLeft', { n: total - doneCount }) : tr('allDoneToday')}</p>
+        )}
+        </div>
+        {items.length > 0 && (
+          <div role="radiogroup" aria-label={tr('navToday')} className="flex h-9 gap-0.5 rounded-md p-[3px]" style={{ background: '#E9EDF2' }}>
+            {['day', 'week'].map((m) => (
+              <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)}
+                className={`h-[30px] rounded-[8px] border px-3.5 text-[14px] leading-[18px] ${mode === m ? 'border-line bg-surface font-semibold text-ink' : 'border-transparent text-ink-2 hover:text-ink'}`}>
+                {tr(m === 'day' ? 'dayView' : 'weekView')}
+              </button>
+            ))}
+          </div>
         )}
       </header>
 
@@ -186,9 +197,9 @@ export default function Today() {
         </div>
       )}
 
-      {items.length === 0 ? <Empty /> : (
+      {items.length > 0 && mode === 'week' ? <Calendar embedded /> : items.length === 0 ? <Empty /> : (
         <div className="grid items-start gap-6 xl:grid-cols-[1fr_340px]">
-          <section className="rounded-lg border border-line bg-surface p-5 md:p-7" aria-labelledby="plan-h">
+          <section className="min-w-0 rounded-lg border border-line bg-surface p-5 md:p-7" aria-labelledby="plan-h">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h2 id="plan-h" className="text-h3">{isToday ? tr('todaysPlan') : viewDate.toLocaleDateString(locale, { weekday: 'long', month: 'short', day: 'numeric' })}</h2>
