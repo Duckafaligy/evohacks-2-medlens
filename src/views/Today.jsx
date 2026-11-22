@@ -165,7 +165,22 @@ export default function Today({ route }) {
   const nowIndex = isToday ? plan.findIndex((p) => slotMinutes(p.slot) > nowMin) : -2;
 
 
-  if (mode === 'week' && items.length) return <Calendar mode="week" onMode={setMode} />;
+  // The calendar (Day / Week / Month) is the Today page whenever there are medicines.
+  if (items.length) {
+    return (
+      <div className="flex flex-col gap-5">
+        {warn && (
+          <div role="alert" className={`warn-in flex flex-wrap items-center gap-3 rounded-md border px-5 py-3 ${warn.severity === 'High' ? 'border-danger/30 bg-danger-soft' : 'border-caution/30 bg-caution-soft'}`}>
+            <AlertTriangle className={`size-5 ${warn.severity === 'High' ? 'text-danger' : 'text-caution'}`} aria-hidden="true" />
+            <Chip tone={warn.severity === 'High' ? 'solidDanger' : 'caution'}>{tr(warn.severity.toLowerCase())}</Chip>
+            <span className="flex-1 font-semibold">{warn.a} + {warn.b}</span>
+            <a href="#/app/safety" className="flex items-center gap-1 font-semibold text-primary hover:underline">{tr('details')}<ArrowRight className="size-4" aria-hidden="true" /></a>
+          </div>
+        )}
+        <Calendar />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -1,5 +1,12 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  upcoming: ['Upcoming', 'Próxima', 'À venir', '待服'],
+  markAll: ['Mark all taken', 'Marcar todas como tomadas', 'Tout marquer comme pris', '全部标记为已服'],
+  prevMonth: ['Previous month', 'Mes anterior', 'Mois précédent', '上个月'],
+  nextMonth: ['Next month', 'Mes siguiente', 'Mois suivant', '下个月'],
+  previous: ['Previous', 'Anterior', 'Précédent', '上一页'],
+  next: ['Next', 'Siguiente', 'Suivant', '下一页'],
+  fridgeShort: ['Fridge card', 'Tarjeta', 'Fiche frigo', '冰箱卡片'],
   shownAsWritten: ['Shown exactly as written. Tap a highlighted word to see it in English.', 'Se muestra tal como se escribió. Toca una palabra resaltada para verla en español.', 'Affiché tel quel. Touchez un mot surligné pour le voir en français.', '按原文显示。点击高亮的词，查看中文解释。'],
   checkYourself: ['Check yourself', 'Compruébelo', 'Vérifiez-vous', '自我检查'],
   nQuestions: ['{n} questions', '{n} preguntas', '{n} questions', '{n} 道题'],
