@@ -65,7 +65,6 @@ function ReadAloud() {
 function Preferences() {
   const { tr, lang, setLang, senior, setSenior, openAuth } = useApp();
   const { items } = useCabinet();
-  const { items } = useCabinet();
   const [user, setUser] = useState(() => currentUser());
   useEffect(() => onUser(setUser), []);
   return (
@@ -105,10 +104,6 @@ function Preferences() {
         <span className="flex items-center gap-2"><Pill className="size-4 text-ink-2" aria-hidden="true" />{tr('myMeds', { n: items.length })}</span>
         <ChevronRight className="size-4 text-ink-2" aria-hidden="true" />
       </a>
-      <a href="#/app/cabinet" className="flex items-center justify-between rounded-md px-3 py-2 text-small font-semibold hover:bg-surface">
-        <span className="flex items-center gap-2"><Pill className="size-4 text-ink-2" aria-hidden="true" />{tr('myMeds', { n: items.length })}</span>
-        <ChevronRight className="size-4 text-ink-2" aria-hidden="true" />
-      </a>
       {user ? (
         <div className="flex items-center justify-between gap-2 px-3 py-2 text-small">
           <span className="truncate text-ink" title={user.email}>{user.email}</span>
@@ -131,7 +126,6 @@ export default function Sidebar({ view }) {
   const high = inter?.interactions.filter((x) => x.severity === 'High').length || 0;
   const [more, setMore] = useState(false);
   const badgeFor = (id) => (id === 'safety' ? high : 0);
-  const tab = TAB_OF[view] || view;
   const tab = TAB_OF[view] || view;
 
   return (
