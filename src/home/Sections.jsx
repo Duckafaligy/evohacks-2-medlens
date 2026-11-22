@@ -130,7 +130,7 @@ export function Problem() {
         <h2 id="problem-h" className="rv max-w-[760px] text-[30px] font-semibold leading-[36px] tracking-[-0.02em] md:text-[48px] md:leading-[56px] md:tracking-[-0.025em]">
           Medicine labels are written for doctors. <em className="text-[#7FB0FF]">Patients pay the price.</em>
         </h2>
-        <p className="rv mt-5 max-w-[720px] text-[17px] leading-[26px] text-[#C9D2E0] md:mt-10 md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>
+        <p className="rv mt-7 max-w-[720px] text-[17px] leading-[26px] text-[#C9D2E0] md:mt-10 md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>
           Most people leave the pharmacy unsure how to take what they were given. Here is how big that gap is.
         </p>
         <dl className="mt-7 grid gap-7 md:mt-10 md:grid-cols-3 md:gap-12">
@@ -166,8 +166,8 @@ function HowSteps() {
     <section id="how" ref={ref} className={`scroll-mt-24 bg-white py-12 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="how-h">
       <div className={WRAP}>
         <h2 id="how-h" className={`rv ${H2} max-w-[640px] leading-[34px]`}>Scan. Understand. Remember.</h2>
-        <p className="rv mt-4 max-w-[720px] text-[17px] leading-[26px] text-[#2A3547] md:mt-8 md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>
-          Three steps take you from a confusing label to a clear plan for today.
+        <p className="rv mt-6 max-w-[720px] text-[17px] leading-[26px] text-[#2A3547] md:mt-8 md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>
+          <R m="Three steps from a confusing label to a clear plan for today." d="Three steps take you from a confusing label to a clear plan for today." />
         </p>
         <div className="mt-6 grid items-start gap-6 md:mt-8 md:grid-cols-[1.2fr_1fr_1fr] md:gap-8">
           <article style={{ '--i': 1 }} className="rv group flex flex-col gap-2.5 md:gap-5">
@@ -223,10 +223,10 @@ function HowSteps() {
 
 /* 3b. Real discharge note → Harold's day (Paper "Real note" 5I4-0). Rendered right after How it works. */
 const U = 'font-semibold underline decoration-1';
-const LINKS = [
-  ['① BID', 'Twice a day: Morning + Evening', 'bg-primary', 'bg-primary-soft text-primary', '#1849A9'],
-  ['② QHS', 'At bedtime', 'bg-safe', 'bg-safe-soft text-safe', '#12704F'],
-  ['③ Hold if SBP < 100', 'Check your blood pressure first', 'bg-danger', 'bg-danger-soft text-danger', '#B4232A'],
+const LINKS = [ // [code, plain, line, chip, stroke, mobile code, mobile plain]
+  ['① BID', 'Twice a day: Morning + Evening', 'bg-primary', 'bg-primary-soft text-primary', '#1849A9', '① BID', '→ Morning + Evening'],
+  ['② QHS', 'At bedtime', 'bg-safe', 'bg-safe-soft text-safe', '#12704F', '② QHS', '→ Bedtime'],
+  ['③ Hold if SBP < 100', 'Check your blood pressure first', 'bg-danger', 'bg-danger-soft text-danger', '#B4232A', '③ SBP < 100', '→ Check BP first'],
 ];
 const DAY_ROW = 'flex flex-col gap-1.5 rounded-[10px] bg-canvas px-3.5 py-3 text-[15px] leading-[18px]';
 function RealNote() {
@@ -234,33 +234,33 @@ function RealNote() {
   return (
     <section ref={ref} className={`border-t border-[#EDF0F4] bg-white py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="note-h">
       <div className={WRAP}>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4 md:gap-3">
           <h2 id="note-h" className={`rv ${H2} leading-[35px]`}>See it on a <em className="text-primary">real discharge note.</em></h2>
           <p className="rv text-[17px] leading-[26px] text-[#2A3547] md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>One hospital note in, one day you can follow out.</p>
         </div>
-        <div className="mt-6 flex flex-col gap-4 md:mt-8 lg:flex-row lg:gap-0">
-          <div className="rv flex flex-1 basis-0 flex-col gap-3.5 rounded-[14px] border border-line bg-canvas p-5 md:p-7" style={{ '--i': 2 }}>
+        <div className="mt-4 flex flex-col gap-4 md:mt-8 lg:flex-row lg:gap-0">
+          <div className="rv flex flex-1 basis-0 flex-col gap-3.5 rounded-[14px] border border-line bg-canvas p-[18px] md:p-7" style={{ '--i': 2 }}>
             <p className="text-[15px] leading-[18px] text-ink-2">Discharge medications · Harold M., 78</p>
-            <p className="whitespace-pre-wrap font-mono text-[15px] leading-[26px] text-ink md:text-[17px] md:leading-[30px]">
+            <p className="whitespace-pre-wrap font-mono text-[17px] leading-[30px] text-ink">
               Furosemide 40 mg PO QD{'\n'}Lisinopril 10 mg PO QD{'\n'}<span className="font-semibold text-danger">③ Hold if SBP &lt; 100</span>{'\n'}
               Metformin 500 mg PO <span className={`${U} text-primary`}>① BID</span> c meals{'\n'}
               Atorvastatin 20 mg PO <span className={`${U} text-safe`}>② QHS</span>{'\n\n'}
               <span className="text-ink-2">Daily wt. Call if gain &gt; 2 lb/d.{'\n'}Low Na diet. Fluid &lt; 2 L/d.{'\n'}F/u cardiology 1 wk.</span>
             </p>
           </div>
-          <ul className="flex flex-col justify-center gap-2.5 lg:w-[300px] lg:shrink-0 lg:gap-[18px] lg:px-5" aria-label="What the codes mean">
-            {LINKS.map(([code, plain, line, chip, stroke], i) => (
+          <ul className="flex flex-col justify-center gap-2 lg:w-[300px] lg:shrink-0 lg:gap-[18px] lg:px-5" aria-label="What the codes mean">
+            {LINKS.map(([code, plain, line, chip, stroke, codeM, plainM], i) => (
               <li key={code} className="rv flex items-center gap-2.5" style={{ '--i': i + 3 }}>
                 <span className={`fill-in hidden h-0.5 flex-1 basis-0 lg:block ${line}`} style={{ '--d': `${300 + i * 120}ms` }} aria-hidden="true" />
-                <span className={`flex w-full flex-col gap-0.5 rounded-[10px] px-3 py-2.5 lg:w-[200px] lg:shrink-0 ${chip}`}>
-                  <span className="text-[15px] font-semibold leading-[18px]">{code}</span>
-                  <span className="text-[14px] leading-[18px] text-black">{plain}</span>
+                <span className={`flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 lg:w-[200px] lg:shrink-0 lg:flex-col lg:items-start lg:gap-0.5 ${chip}`}>
+                  <span className="text-[15px] font-semibold leading-[18px]"><R m={codeM} d={code} /></span>
+                  <span className="text-[15px] leading-[18px] text-black lg:text-[14px]"><R m={plainM} d={plain} /></span>
                 </span>
                 <svg width="16" height="16" viewBox="0 0 24 24" className="hidden shrink-0 lg:block" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke={stroke} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </li>
             ))}
           </ul>
-          <div className="rv flex flex-1 basis-0 flex-col gap-2.5 rounded-[14px] border border-line bg-white p-5 shadow-[0_16px_40px_#0F1B2D14] md:p-6" style={{ '--i': 6 }}>
+          <div className="rv flex flex-1 basis-0 flex-col gap-2.5 rounded-[14px] border border-line bg-white p-[18px] shadow-[0_16px_40px_#0F1B2D14] md:p-6" style={{ '--i': 6 }}>
             <h3 className="pb-1 text-[18px] font-semibold leading-[22px] text-black">Harold’s day</h3>
             <div className={`${DAY_ROW} border-l-4 border-primary`}>
               <p className="font-semibold text-black">Morning · 8:00 AM</p>
@@ -303,14 +303,14 @@ function FeaturesDesktop() {
           </div>
         </article>
         <article className={`${TILE_W} min-h-[240px] lg:flex-1 p-7`}>
-          <div><h3 className={T22}>Plain-language translator</h3><p className="text-[16px] leading-5 text-ink-2">Doctor shorthand becomes everyday words.</p></div>
+          <div><h3 className={T22}>Plain-language translator</h3><p className="text-[16px] leading-[28px] text-ink-2">Doctor shorthand becomes everyday words.</p></div>
           <div className="flex flex-col gap-1.5" aria-hidden="true">
             <p className="font-mono text-[16px] leading-5 text-ink-2">q8h</p>
             <p className="text-[20px] font-semibold leading-6 text-primary">Every 8 hours</p>
           </div>
         </article>
         <article className={`${TILE} min-h-[240px] lg:flex-1 border border-[#CFE7DA] bg-[#F1F9F4] p-7`}>
-          <div><h3 className={T22}>Reading-level meter</h3><p className="text-[16px] leading-5 text-[#2A3547]">Shows the text got easier: college level down to grade 5.</p></div>
+          <div><h3 className={T22}>Reading-level meter</h3><p className="text-[16px] leading-[28px] text-[#2A3547]">Shows the text got easier: college level down to grade 5.</p></div>
           <p className="text-[40px] font-semibold leading-[48px] tracking-[-0.02em] text-black">
             <span className="text-danger">{GRADE_BEFORE}</span> → <span className="text-safe">{GRADE_AFTER}</span>
           </p>
@@ -318,7 +318,7 @@ function FeaturesDesktop() {
       </div>
       <div style={{ '--i': 2 }} className="rv grid gap-5 md:grid-cols-2 lg:flex lg:h-[300px]">
         <article className={`${TILE_W} min-h-[240px] justify-start gap-[18px] p-7 md:col-span-2 lg:flex-[2_1_0%]`}>
-          <div><h3 className="text-[24px] font-semibold leading-[30px] text-black">Daily pill timeline</h3><p className="text-[16px] leading-5 text-ink-2">Every pill placed in the part of the day you take it.</p></div>
+          <div><h3 className="text-[24px] font-semibold leading-[30px] text-black">Daily pill timeline</h3><p className="text-[16px] leading-[30px] text-ink-2">Every pill placed in the part of the day you take it.</p></div>
           <div className="flex flex-1 gap-3" aria-hidden="true">
             {SLOTS.map(([label, , meds]) => (
               <div key={label} className="flex flex-1 basis-0 flex-col gap-2 rounded-[10px] bg-canvas p-3.5">
@@ -330,7 +330,7 @@ function FeaturesDesktop() {
           </div>
         </article>
         <article className={`${TILE} min-h-[240px] lg:flex-1 border border-[#F0D3B0] bg-caution-soft p-7`}>
-          <div><h3 className={T22}>Interaction check</h3><p className="text-[16px] leading-5 text-[#6E3203]">Warns you when two medicines don’t mix.</p></div>
+          <div><h3 className={T22}>Interaction check</h3><p className="text-[16px] leading-[28px] text-[#6E3203]">Warns you when two medicines don’t mix.</p></div>
           <div className="flex flex-col gap-2">
             <span className="self-start rounded-[6px] bg-caution px-2 py-[3px] text-[13px] font-semibold leading-4 text-white">Moderate</span>
             <p className="text-[17px] font-semibold leading-[22px] text-black">Furosemide + Lisinopril</p>
@@ -338,7 +338,7 @@ function FeaturesDesktop() {
           </div>
         </article>
         <article className={`${TILE} min-h-[240px] lg:flex-1 bg-primary-soft p-7`}>
-          <div><h3 className={T22}>Read aloud</h3><p className="text-[16px] leading-5 text-[#2A3547]">Hear any line spoken slowly and clearly.</p></div>
+          <div><h3 className={T22}>Read aloud</h3><p className="text-[16px] leading-[28px] text-[#2A3547]">Hear any line spoken slowly and clearly.</p></div>
           <div className="eq flex h-12 shrink-0 items-end gap-[5px]" aria-hidden="true">
             {[20, 40, 28, 48, 24, 36, 16].map((h, i) => <span key={i} className="w-2 shrink-0 rounded-[3px] bg-primary" style={{ height: h, '--i': i }} />)}
           </div>
@@ -346,27 +346,27 @@ function FeaturesDesktop() {
       </div>
       <div style={{ '--i': 3 }} className="rv grid gap-5 md:grid-cols-2 lg:h-[220px] lg:grid-cols-4">
         <article className={`${TILE_W} min-h-[200px] p-6`}>
-          <div><h3 className={T20}>4 languages</h3><p className="text-[15px] leading-[18px] text-ink-2">Switch the whole page in one tap.</p></div>
+          <div><h3 className={T20}>4 languages</h3><p className="text-[15px] leading-6 text-ink-2">Switch the whole page in one tap.</p></div>
           <div className="flex gap-1.5" aria-hidden="true">
             {['EN', 'ES', 'FR', '中文'].map((l, i) => <span key={l} className={`${CHIP} ${i ? 'border border-control text-black' : 'bg-ink text-white'}`}>{l}</span>)}
           </div>
         </article>
         <article className={`${TILE_W} min-h-[200px] p-6`}>
-          <div><h3 className={T20}>Fridge card + QR</h3><p className="text-[15px] leading-[18px] text-ink-2">Print it. Scan the QR to reopen your plan.</p></div>
+          <div><h3 className={T20}>Fridge card + QR</h3><p className="text-[15px] leading-6 text-ink-2">Print it. Scan the QR to reopen your plan.</p></div>
           <div className="flex items-center gap-3">
             <QRCodeSVG value="https://github.com/Duckafaligy/evohacks-2-medlens" size={56} level="L" marginSize={0} fgColor="#0F1B2D" aria-hidden="true" />
             <p className="text-[15px] leading-[18px] text-ink-2">Print. Stick. Scan.</p>
           </div>
         </article>
         <article className={`${TILE_W} min-h-[200px] p-6`}>
-          <div><h3 className={T20}>Calendar reminders</h3><p className="text-[15px] leading-[18px] text-ink-2">Doses land in Google or Apple Calendar.</p></div>
+          <div><h3 className={T20}>Calendar reminders</h3><p className="text-[15px] leading-6 text-ink-2">Doses land in Google or Apple Calendar.</p></div>
           <div className="flex flex-col gap-1 text-[13px] font-semibold leading-4" aria-hidden="true">
             <p className="h-[22px] rounded-[5px] border-l-[3px] border-primary bg-primary-soft pl-2 text-primary">8:00 Furosemide</p>
             <p className="h-[22px] rounded-[5px] border-l-[3px] border-safe bg-safe-soft pl-2 text-safe">21:00 Atorvastatin</p>
           </div>
         </article>
         <article className={`${TILE_W} min-h-[200px] p-6`}>
-          <div><h3 className={T20}>Teach-back quiz</h3><p className="text-[15px] leading-[18px] text-ink-2">Three quick questions to check you’ve got it.</p></div>
+          <div><h3 className={T20}>Teach-back quiz</h3><p className="text-[15px] leading-6 text-ink-2">Three quick questions to check you’ve got it.</p></div>
           <div className="flex flex-col gap-1.5" aria-hidden="true">
             <p className="text-[15px] leading-[18px] text-black">When do you take Lisinopril?</p>
             <div className="flex gap-1.5">
@@ -383,21 +383,21 @@ function FeaturesMobile() {
   return (
     <div className="rv flex flex-col gap-3 md:hidden" style={{ '--i': 1 }}>
       <article className="flex flex-col gap-3.5 rounded-[14px] p-5" style={INK_GRAD}>
-        <h3 className="text-[20px] font-semibold leading-6 text-white">Scan with camera</h3>
+        <div><h3 className="text-[20px] font-semibold leading-6 text-white">Scan with camera</h3><p className="text-[15px] leading-[18px] text-[#C9D2E0]">No typing. Your phone reads the label.</p></div>
         <div className="h-1.5 rounded-[3px] bg-[#FFFFFF2E]" aria-hidden="true"><div style={{ '--d': '240ms' }} className="fill-in h-1.5 w-[72%] rounded-[3px] bg-white" /></div>
       </article>
       <div className="flex gap-3">
         <article className={`${M_TILE} gap-2.5 border border-line bg-white`}>
-          <h3 className={M_T16}>Translator</h3>
+          <div><h3 className={M_T16}>Translator</h3><p className="text-[14px] leading-[18px] text-ink-2">Shorthand into everyday words.</p></div>
           <p className="text-[16px] font-semibold leading-5 text-primary">q8h = every 8 hours</p>
         </article>
         <article className={`${M_TILE} gap-2.5 border border-[#CFE7DA] bg-[#F1F9F4]`}>
-          <h3 className={M_T16}>Reading level</h3>
+          <div><h3 className={M_T16}>Reading level</h3><p className="text-[14px] leading-[18px] text-[#2A3547]">Proof it got easier.</p></div>
           <p className="text-[24px] font-semibold leading-[30px] text-black"><span className="text-danger">{GRADE_BEFORE}</span> → <span className="text-safe">{GRADE_AFTER}</span></p>
         </article>
       </div>
       <article className="flex flex-col gap-2 rounded-[14px] border border-line bg-white p-4">
-        <h3 className={M_T16}>Daily pill timeline</h3>
+        <div><h3 className={M_T16}>Daily pill timeline</h3><p className="text-[14px] leading-[18px] text-ink-2">Every pill in the part of the day you take it.</p></div>
         <div className="flex gap-1.5">
           {SLOTS.map(([label, short, meds]) => (
             <p key={label} className="flex-1 basis-0 rounded-[8px] bg-canvas p-2 text-[13px] font-semibold leading-4 text-black">{short} · {meds.length}</p>
@@ -406,19 +406,23 @@ function FeaturesMobile() {
       </article>
       <div className="flex gap-3">
         <article className={`${M_TILE} border border-[#F0D3B0] bg-caution-soft`}>
-          <h3 className={M_T16}>Interaction check</h3>
+          <div><h3 className={M_T16}>Interaction check</h3><p className="text-[14px] leading-[18px] text-[#6E3203]">Warns when two medicines don’t mix.</p></div>
           <span className="self-start rounded-[6px] bg-caution px-2 py-0.5 text-[12px] font-semibold leading-4 text-white">Moderate</span>
         </article>
         <article className={`${M_TILE} bg-primary-soft`}>
-          <h3 className={M_T16}>Read aloud</h3>
+          <div><h3 className={M_T16}>Read aloud</h3><p className="text-[14px] leading-[18px] text-[#2A3547]">Hear any line, slowly.</p></div>
           <div className="eq flex h-6 shrink-0 items-end gap-1" aria-hidden="true">
             {[10, 22, 14, 24].map((h, i) => <span key={i} className="w-1.5 shrink-0 rounded-[2px] bg-primary" style={{ height: h, '--i': i }} />)}
           </div>
         </article>
       </div>
-      {[['4 languages', 'Fridge card + QR'], ['Calendar reminders', 'Teach-back quiz']].map((pair) => (
-        <div key={pair[0]} className="flex gap-3">
-          {pair.map((t) => <h3 key={t} className="flex-1 basis-0 rounded-[14px] border border-line bg-white p-3.5 text-[15px] font-semibold leading-[18px] text-black">{t}</h3>)}
+      {[[['4 languages', 'One tap to switch.'], ['Fridge card + QR', 'Print it, scan to reopen.']], [['Calendar reminders', 'Doses in your calendar.'], ['Teach-back quiz', 'Check you’ve got it.']]].map((pair) => (
+        <div key={pair[0][0]} className="flex gap-3">
+          {pair.map(([t, sub]) => (
+            <article key={t} className="flex-1 basis-0 rounded-[14px] border border-line bg-white p-3.5">
+              <h3 className="text-[15px] font-semibold leading-[18px] text-black">{t}</h3><p className="text-[14px] leading-[18px] text-ink-2">{sub}</p>
+            </article>
+          ))}
         </div>
       ))}
     </div>
@@ -431,9 +435,9 @@ export function Features() {
     <section id="features" ref={ref} className={`scroll-mt-24 bg-canvas py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="features-h">
       <div className={WRAP}>
         <div ref={eqRef} className={playing ? 'playing' : ''}>
-        <div className="mb-6 flex flex-col gap-3 md:mb-12">
+        <div className="mb-6 flex flex-col gap-2.5 md:mb-12 md:gap-3">
           <h2 id="features-h" className={`rv ${H2} leading-[34px]`}>Everything on one screen.</h2>
-          <p className="rv max-w-[720px] text-[17px] leading-[26px] text-[#2A3547] md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>Ten small tools. Each one answers a question you might have about your medicine.</p>
+          <p className="rv max-w-[720px] text-[17px] leading-[26px] text-[#2A3547] md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}><R m="Ten small tools, each answering one question about your medicine." d="Ten small tools. Each one answers a question you might have about your medicine." /></p>
         </div>
         <FeaturesMobile />
         <FeaturesDesktop />
@@ -452,7 +456,7 @@ export function Warning() {
       <div className={`${WRAP} flex flex-col gap-5 md:flex-row md:items-center md:gap-10 lg:gap-20`}>
         <div className="flex flex-col gap-5 md:w-[440px] md:shrink">
           <h2 id="warn-h" className={`rv ${H2} leading-[35px]`}>Warnings, <em className="text-danger">straight from the label.</em></h2>
-          <p className="rv hidden text-[19px] leading-[29px] text-[#2A3547] md:block" style={{ '--i': 1 }}>MedLens checks your medicines against each other and shows you the FDA’s own words.</p>
+          <p className="rv text-[17px] leading-[26px] text-[#2A3547] md:text-[19px] md:leading-[29px]" style={{ '--i': 1 }}><R m="MedLens checks your medicines against each other and shows the FDA’s own words." d="MedLens checks your medicines against each other and shows you the FDA’s own words." /></p>
         </div>
         <article className="rv-r flex flex-1 flex-col gap-3.5 rounded-[14px] border border-l-[5px] border-line border-l-danger bg-white p-5 md:gap-[18px] md:border-l-[6px] md:p-8 shadow-[0_12px_32px_#0F1B2D1A] md:shadow-[0_20px_48px_#0F1B2D1A]">
           <div className="flex items-center justify-between gap-3">
@@ -484,15 +488,15 @@ export function Warning() {
 
 /* 5b. By the numbers (Paper 5JX-0), counted from the app's own data. */
 const NUMBERS = [
-  [Object.keys(LABELS).length, '', 'medicines with FDA labels saved offline'],
-  [Math.floor(GLOSSARY.length / 10) * 10, '+', 'medical terms explained in plain words'],
-  [LANGS.length, '', 'languages: English, Español, Français, 中文'],
+  [Object.keys(LABELS).length, '', 'medicines with FDA labels saved offline', 'medicines with FDA labels saved offline'],
+  [Math.floor(GLOSSARY.length / 10) * 10, '+', 'medical terms explained in plain words', 'medical terms explained'],
+  [LANGS.length, '', 'languages: English, Español, Français, 中文', 'languages'],
 ];
-function NumberCard({ n, plus, text, run, i }) {
+function NumberCard({ n, plus, text, textM, run, i }) {
   return (
-    <div className="rv flex flex-1 basis-0 flex-col gap-1.5 rounded-[14px] bg-canvas p-5 md:p-6" style={{ '--i': i + 2 }}>
-      <p className="text-[44px] font-semibold leading-[48px] tracking-[-0.03em] text-primary md:text-[56px] md:leading-[60px]">{useCount(n, run)}{plus}</p>
-      <p className="text-[17px] leading-[25px] text-black">{text}</p>
+    <div className="rv flex flex-1 basis-0 items-baseline gap-3.5 rounded-[14px] bg-canvas p-4 md:flex-col md:items-stretch md:gap-1.5 md:p-6" style={{ '--i': i + 2 }}>
+      <p className="w-16 shrink-0 text-[36px] font-semibold leading-[44px] text-primary md:w-auto md:text-[56px] md:leading-[60px] md:tracking-[-0.03em]">{useCount(n, run)}{plus}</p>
+      <p className="text-[15px] leading-[22px] text-black md:text-[17px] md:leading-[25px]"><R m={textM} d={text} /></p>
     </div>
   );
 }
@@ -500,13 +504,13 @@ function Numbers() {
   const [ref, on] = useReveal();
   return (
     <section ref={ref} className={`bg-white pb-14 md:pb-[112px] ${on ? 'in' : ''}`} aria-labelledby="numbers-h">
-      <div className={`${WRAP} flex flex-col gap-5 md:gap-7`}>
+      <div className={`${WRAP} flex flex-col gap-3.5 md:gap-7`}>
         <div className="flex flex-col gap-2">
-          <h2 id="numbers-h" className="rv text-[24px] font-semibold leading-[30px] text-black md:text-[28px] md:leading-[34px]">By the numbers</h2>
-          <p className="rv text-[17px] leading-[26px] text-[#2A3547] md:text-[18px] md:leading-[28px]" style={{ '--i': 1 }}>What MedLens already knows before you scan anything.</p>
+          <h2 id="numbers-h" className="rv text-[22px] font-semibold leading-[28px] text-black md:text-[28px] md:leading-[34px]">By the numbers</h2>
+          <p className="rv hidden text-[18px] leading-[28px] text-[#2A3547] md:block" style={{ '--i': 1 }}>What MedLens already knows before you scan anything.</p>
         </div>
-        <div className="flex flex-col gap-3 md:flex-row md:gap-5">
-          {NUMBERS.map(([n, plus, text], i) => <NumberCard key={text} n={n} plus={plus} text={text} run={on} i={i} />)}
+        <div className="flex flex-col gap-2.5 md:flex-row md:gap-5">
+          {NUMBERS.map(([n, plus, text, textM], i) => <NumberCard key={text} n={n} plus={plus} text={text} textM={textM} run={on} i={i} />)}
         </div>
       </div>
     </section>
@@ -517,7 +521,7 @@ function Numbers() {
 const PEOPLE = [
   ['Seniors', 'Harold, 78, is home after a heart stay with 4 new pills.', '/home/seniors.jpg', '50% 40%', 'An older adult pouring pills from a prescription bottle into their hand'],
   ['Caregivers', 'Mei checks her dad’s plan from across town.', '/home/caregivers.jpg', '50% 50%', 'A weekly pill organiser being filled'],
-  ['Parents', 'Sam turns “5 mL q8h” into a teaspoon, 3 times a day.', '/home/parents.jpg', '50% 70%', 'Medicine for a family'],
+  ['Parents', <R key="p" m="Sam turns 5 mL q8h into a teaspoon, 3 times a day." d="Sam turns “5 mL q8h” into a teaspoon, 3 times a day." />, '/home/parents.jpg', '50% 70%', 'Medicine for a family'],
 ];
 export function Who() {
   const [ref, on] = useReveal();
@@ -525,7 +529,7 @@ export function Who() {
     <section id="who" ref={ref} className={`scroll-mt-24 bg-canvas py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="who-h">
       <div className={WRAP}>
         <h2 id="who-h" className={`rv ${H2} leading-[35px]`}>Made for the people <em className="text-primary">holding the bottle.</em></h2>
-        <p className="rv mb-6 mt-3 max-w-[720px] text-[17px] leading-[26px] text-[#2A3547] md:mb-8 md:mt-8 md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>For anyone who manages pills, for themselves or for someone they love.</p>
+        <p className="rv mb-6 mt-2.5 max-w-[720px] text-[17px] leading-[26px] text-[#2A3547] md:mb-8 md:mt-8 md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}><R m="For anyone who manages pills for themselves or someone they love." d="For anyone who manages pills, for themselves or for someone they love." /></p>
         <div className="grid grid-cols-2 gap-3 md:h-[420px] md:grid-cols-[1.3fr_1fr_1fr_1fr] md:gap-5">
           {PEOPLE.map(([t, s, src, pos, alt], i) => (
             <article key={t} style={{ '--i': i + 1 }} className={`rv flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-line bg-white ${LIFT} ${i ? '' : 'col-span-2 md:col-span-1'}`}>
@@ -533,17 +537,17 @@ export function Who() {
                 className={`w-full shrink-0 object-cover md:h-auto md:min-h-0 md:flex-1 ${i ? 'h-[120px]' : 'h-[200px]'}`} />
               <div className={`flex flex-col md:gap-1 md:px-[22px] md:py-5 ${i ? 'px-3.5 py-3' : 'gap-0.5 px-4 py-3.5'}`}>
                 <h3 className={`font-semibold text-black md:text-[22px] md:leading-[28px] ${i ? 'text-[16px] leading-5' : 'text-[19px] leading-6'}`}>{t}</h3>
-                <p className={`text-[15px] leading-[18px] text-[#2A3547] md:block md:text-[16px] md:leading-5 ${i ? 'hidden' : ''}`}>{s}</p>
+                <p className={`leading-[18px] text-[#2A3547] md:text-[16px] md:leading-5 ${i ? 'text-[14px]' : 'text-[15px]'}`}>{s}</p>
               </div>
             </article>
           ))}
-          <article style={{ '--i': 4 }} className="rv col-span-2 flex items-center justify-between rounded-[14px] bg-ink px-4 py-[18px] text-white transition-[translate] duration-[160ms] hover:-translate-y-0.5 md:col-span-1 md:flex-col md:items-stretch md:p-[22px]">
+          <article style={{ '--i': 4 }} className="rv col-span-2 flex items-center justify-between gap-3 rounded-[14px] bg-ink px-4 py-[18px] text-white transition-[translate] duration-[160ms] hover:-translate-y-0.5 md:col-span-1 md:flex-col md:items-stretch md:p-[22px]">
             <p className="hidden whitespace-pre-line text-[30px] font-semibold leading-9 md:block" lang="mul">{'Hola.\nBonjour.\n'}<span lang="zh">你好.</span></p>
             <div className="flex flex-col gap-1">
               <h3 className="text-[19px] font-semibold leading-6 md:text-[22px] md:leading-[28px]">Newcomers</h3>
               <p className="hidden text-[16px] leading-5 text-[#C9D2E0] md:block">Ana reads her new label in Spanish on day one.</p>
             </div>
-            <p className="text-[17px] font-semibold leading-[22px] text-[#C9D2E0] md:hidden" lang="mul">Hola · Bonjour · <span lang="zh">你好</span></p>
+            <p className="text-right text-[17px] font-semibold leading-[22px] text-[#C9D2E0] md:hidden">Ana reads her label in Spanish.</p>
           </article>
         </div>
       </div>
@@ -557,10 +561,10 @@ export function Senior() {
   return (
     <section ref={ref} className={`bg-white py-12 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="senior-h">
       <div className={`${WRAP} flex flex-col gap-[18px] md:flex-row md:items-center md:gap-10 lg:gap-[72px]`}>
-        <div className="flex flex-col gap-5 md:w-[380px] md:shrink">
+        <div className="flex flex-col gap-[18px] md:w-[380px] md:shrink md:gap-5">
           <h2 id="senior-h" className={`rv ${H2} leading-[34px]`}>Bigger when you need it.</h2>
-          <p className="rv hidden text-[19px] leading-[29px] text-ink-2 md:block" style={{ '--i': 1 }}>One switch makes every screen easier to read and tap.</p>
-          <ul className="hidden flex-col gap-3 pt-1 md:flex">
+          <p className="rv text-[17px] leading-[26px] text-[#2A3547] md:text-[19px] md:leading-[29px] md:text-ink-2" style={{ '--i': 1 }}>One switch makes every screen easier to read and tap.</p>
+          <ul className="-mt-2 flex flex-col gap-2 pt-1 md:mt-0 md:gap-3">
             {['Text 25% larger', 'Buttons big enough for any hand', 'Stronger contrast for tired eyes'].map((b, i) => (
               <li key={b} className="rv flex items-center gap-2.5 text-[18px] leading-[22px] text-black" style={{ '--i': i + 2 }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" className="shrink-0" aria-hidden="true"><path d="M20 6L9 17l-5-5" fill="none" stroke="#12704F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>{b}
@@ -570,13 +574,13 @@ export function Senior() {
         </div>
         <div style={{ '--i': 1 }} className="rv relative flex min-w-0 flex-1 overflow-hidden rounded-[14px] border border-line md:h-[360px]">
           <div className="flex flex-1 basis-0 flex-col justify-center gap-1.5 bg-white p-4 md:gap-2.5 md:p-9">
-            <p className="text-[13px] leading-4 text-ink-2 md:text-[15px] md:font-semibold md:leading-[18px]"><R m="Standard" d="Before · Standard" /></p>
+            <p className="text-[13px] leading-4 text-ink-2 md:text-[15px] md:font-semibold md:leading-[18px]">Before · Standard</p>
             <p className="text-[15px] font-semibold leading-[18px] text-black md:text-[20px] md:leading-6">Lisinopril 10 mg</p>
             <p className="text-[13px] leading-4 text-ink-2 md:text-[16px] md:leading-5">1 pill · morning</p>
             <span className="hidden h-11 items-center self-start rounded-[8px] bg-primary px-4 text-[15px] font-semibold leading-[18px] text-white md:flex" aria-hidden="true">I took it</span>
           </div>
           <div className="flex grow-[1.3] basis-0 flex-col justify-center gap-1.5 border-l-[3px] border-ink bg-white p-4 md:grow md:gap-3.5 md:p-9">
-            <p className="text-[14px] font-semibold leading-[18px] text-black md:text-[16px] md:leading-5 md:text-ink"><R m="Senior Mode" d="After · Senior Mode" /></p>
+            <p className="text-[14px] font-semibold leading-[18px] text-black md:text-[16px] md:leading-5 md:text-ink">After · Senior Mode</p>
             <p className="text-[21px] font-semibold leading-[26px] text-black md:text-[32px] md:leading-[38px]">Lisinopril 10 mg</p>
             <p className="text-[17px] leading-[22px] text-black md:text-[24px] md:leading-[30px]">1 pill · morning</p>
             <span className="hidden h-16 items-center self-start rounded-[10px] bg-ink px-[26px] text-[22px] font-semibold leading-[28px] text-white md:flex" aria-hidden="true">I took it</span>
@@ -604,7 +608,7 @@ export function Privacy() {
             <path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#7FB0FF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <h2 id="privacy-h" className="rv text-[30px] font-semibold leading-[35px] tracking-[-0.02em] md:text-[48px] md:leading-[54px] md:tracking-[-0.025em]">Your health info stays on your device.</h2>
-          <p className="rv max-w-[560px] text-[17px] leading-[26px] text-[#C9D2E0] md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>Nothing to sign up for. Your medicine list stays in this browser unless you choose to save it.</p>
+          <p className="rv max-w-[560px] text-[17px] leading-[26px] text-[#C9D2E0] md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}><R m="Nothing to sign up for. Your list stays in this browser." d="Nothing to sign up for. Your medicine list stays in this browser unless you choose to save it." /></p>
         </div>
         <dl className="flex flex-col md:w-[460px] md:shrink md:pt-16">
           {PRIVACY.map(([k, v], i) => (
