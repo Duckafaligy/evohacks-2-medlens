@@ -71,6 +71,7 @@ export default function Translate({ route }) {
             <h2 id="raw-h" className="text-[18px] font-semibold leading-6">{tr('doctorWrote')}</h2>
             <span className="text-[13px] leading-4 text-ink-2">{tr('termsFound', { n: terms.length })}</span>
           </div>
+          <p className="-mt-2 text-[13px] leading-[18px] text-ink-2">{tr('shownAsWritten')}</p>
           {lines.length > 0 ? (
             <ol className="flex flex-col gap-3 rounded-md bg-canvas p-[18px] font-mono text-[14px] leading-[22px]">
               {segLines.map((segs, n) => (
@@ -117,11 +118,11 @@ export default function Translate({ route }) {
             </article>
           ))}
           <div className="flex flex-col gap-2.5 pt-3 sm:flex-row">
-            <button type="button" onClick={openFridge} className="flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-primary px-3 text-[15px] font-semibold leading-[18px] text-white hover:bg-primary/90">
+            <button type="button" onClick={openFridge} className="flex min-h-11 flex-1 items-center justify-center rounded-md bg-primary px-3 py-2 text-center text-[15px] font-semibold leading-[18px] text-white hover:bg-primary/90">
               {tr('printCard')}
             </button>
             <button type="button" disabled={!items.length} onClick={() => downloadIcs(items, { lang })}
-              className="flex h-11 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-line px-3 text-[15px] font-semibold leading-[18px] hover:bg-canvas disabled:opacity-50">
+              className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-md border border-line px-3 py-2 text-center text-[15px] font-semibold leading-[18px] hover:bg-canvas disabled:opacity-50">
               <Download className="size-[15px]" aria-hidden="true" />{tr('exportIcs')}
             </button>
           </div>

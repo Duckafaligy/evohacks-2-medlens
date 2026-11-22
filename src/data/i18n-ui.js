@@ -1,5 +1,6 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  shownAsWritten: ['Shown exactly as written. Tap a highlighted word to see it in English.', 'Se muestra tal como se escribió. Toca una palabra resaltada para verla en español.', 'Affiché tel quel. Touchez un mot surligné pour le voir en français.', '按原文显示。点击高亮的词，查看中文解释。'],
   checkYourself: ['Check yourself', 'Compruébelo', 'Vérifiez-vous', '自我检查'],
   nQuestions: ['{n} questions', '{n} preguntas', '{n} questions', '{n} 道题'],
   rightShort: ['Right', 'Correcto', 'Exact', '答对了'],
