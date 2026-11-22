@@ -13,7 +13,7 @@ await page.evaluate(async () => { // trigger lazy images
   window.scrollTo(0, 0);
 });
 await page.waitForLoadState('networkidle');
-const names = ['hero', 'problem', 'how', 'note', 'features', 'warning', 'numbers', 'who', 'senior', 'privacy', 'faq', 'cta'];
+const names = ['hero', 'problem', 'how', 'note', 'features', 'warning', 'numbers', 'who', 'senior', 'privacy', 'tools', 'faq', 'cta'];
 const els = await page.$$('main > section');
 for (let i = 0; i < els.length; i++) await els[i].screenshot({ path: `${out}/${width}-${String(i + 1).padStart(2, '0')}-${names[i] || i}.png` });
 await (await page.$('footer')).screenshot({ path: `${out}/${width}-11-footer.png` });

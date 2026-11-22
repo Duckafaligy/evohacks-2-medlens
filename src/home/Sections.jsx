@@ -562,39 +562,53 @@ export function Privacy() {
   );
 }
 
-/* 8b. Tools (rendered right after Privacy). Tags link to the real docs. */
-const TOOLS = [
-  ['Tesseract.js', 'OCR · on-device', 'https://tesseract.projectnaptha.com/', 'Reads label photos right in your browser. The photo never leaves your device.'],
-  ['Web Speech API', 'speechSynthesis', 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis', 'Read aloud in 4 languages, slowly and clearly.'],
-  ['QR code + .ics', 'qrcode.react · RFC 5545', 'https://datatracker.ietf.org/doc/html/rfc5545', 'Fridge-card QR and calendar files that open in Google or Apple Calendar.'],
-  ['Supabase', 'Postgres · Auth, RLS', 'https://supabase.com/', 'Optional account. Row-level security means only you can read your list.'],
-  ['React + Vite + Tailwind', 'Vercel', 'https://vite.dev/', 'A fast, accessible web app with nothing to install.'],
-  ['Playwright + GitHub Actions', 'CI', 'https://playwright.dev/', 'Every change is tested end to end before it ships.'],
+/* 8b. Built with (Paper "Built with" 6ZK-0), rendered right after Privacy. Tags link to the real docs. */
+const P = (d) => <path d={d} fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />;
+const TOOLS = [ // [name, text, tag, href, icon, tile]
+  [['Tesseract.js', 'Reads prescription photos right in your browser.', 'OCR · on-device', 'https://tesseract.projectnaptha.com/', P('M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8h8M7 12h10M7 16h6')],
+    ['Web Speech API', 'Powers Read aloud in 4 languages.', 'speechSynthesis', 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis', <>{P('M11 5L6 9H2v6h4l5 4V5z')}{P('M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14')}</>]],
+  [['QR code + .ics', 'Fridge card QR and calendar reminders you can download.', 'qrcode.react · RFC 5545', 'https://datatracker.ietf.org/doc/html/rfc5545', <><rect x="3" y="3" width="7" height="7" rx="1" fill="none" strokeWidth="2" /><rect x="14" y="3" width="7" height="7" rx="1" fill="none" strokeWidth="2" /><rect x="3" y="14" width="7" height="7" rx="1" fill="none" strokeWidth="2" />{P('M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3')}</>],
+    ['Supabase', 'Optional accounts, protected by row-level security.', 'Postgres · Auth', 'https://supabase.com/', <><rect x="4" y="11" width="16" height="10" rx="2" fill="none" strokeWidth="2" />{P('M8 11V7a4 4 0 0 1 8 0v4')}</>],
+    ['React + Vite + Tailwind', 'Fast, accessible interface.', 'Vercel', 'https://vite.dev/', P('M16 18l6-6-6-6M8 6l-6 6 6 6')],
+    ['Playwright + GitHub Actions', 'Every change is tested end to end before it ships.', 'CI', 'https://playwright.dev/', <><circle cx="12" cy="12" r="9" fill="none" strokeWidth="2" />{P('M8 12l3 3 5-6')}</>, true]],
 ];
 const ext = { target: '_blank', rel: 'noopener noreferrer' };
-const TAG = 'self-start rounded-[6px] border px-2 py-0.5 font-mono text-[13px] leading-[18px] transition-colors duration-[160ms]';
+function ToolCard({ tool: [name, text, tag, href, icon, ok], i }) {
+  return (
+    <article className={`rv flex flex-1 basis-0 flex-col gap-2.5 rounded-[12px] border border-line bg-white p-5 ${LIFT}`} style={{ '--i': i }}>
+      <span className={`flex size-10 shrink-0 items-center justify-center rounded-[10px] ${ok ? 'bg-safe-soft' : 'bg-primary-soft'}`} aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke={ok ? '#12704F' : '#1849A9'} strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+      </span>
+      <h3 className="text-[17px] font-semibold leading-[22px] text-black">{name}</h3>
+      <p className="text-[15px] leading-[22px] text-ink-2">{text}</p>
+      <a href={href} {...ext} className="self-start rounded-[6px] bg-canvas px-2 py-0.5 font-mono text-[12px] leading-4 text-ink-2 transition-colors duration-[160ms] hover:bg-primary-soft hover:text-primary">{tag}</a>
+    </article>
+  );
+}
 function Tools() {
   const [ref, on] = useReveal();
   return (
-    <section ref={ref} className={`bg-white py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="tools-h">
-      <div className={WRAP}>
-        <h2 id="tools-h" className={`rv ${H2} leading-[35px]`}>Built with open, <em className="text-primary">trusted tools.</em></h2>
-        <p className="rv mt-3 max-w-[720px] text-[17px] leading-[26px] text-[#2A3547] md:mt-4 md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>
-          No black boxes. Every answer comes from a public source or runs on your own device.
-        </p>
-        <div className="mt-6 grid gap-3 md:mt-10 md:grid-cols-2 md:gap-5 lg:grid-cols-4">
-          <article className={`rv flex flex-col gap-3 rounded-[14px] border border-[#BFE0E7] bg-info-soft p-5 md:col-span-2 md:p-7 ${LIFT}`} style={{ '--i': 2 }}>
-            <h3 className="text-[20px] font-semibold leading-6 text-black md:text-[24px] md:leading-[30px]">openFDA Drug Label API</h3>
-            <a href="https://open.fda.gov/apis/drug/label/" {...ext} className={`${TAG} border-[#BFE0E7] bg-white text-info hover:border-info`}>api.fda.gov</a>
-            <p className="text-[16px] leading-6 text-[#2A3547] md:text-[17px] md:leading-[26px]">Live FDA warnings, side effects and interactions. 4-second timeout with a saved snapshot, so it never breaks offline.</p>
-          </article>
-          {TOOLS.map(([name, tag, href, text], i) => (
-            <article key={name} className={`rv flex flex-col gap-3 rounded-[14px] border border-line bg-white p-5 md:p-6 ${LIFT}`} style={{ '--i': i + 3 }}>
-              <h3 className="text-[18px] font-semibold leading-[22px] text-black md:text-[20px] md:leading-6">{name}</h3>
-              <a href={href} {...ext} className={`${TAG} border-line bg-canvas text-ink-2 hover:border-control hover:text-primary`}>{tag}</a>
-              <p className="text-[15px] leading-[22px] text-ink-2">{text}</p>
+    <section ref={ref} className={`bg-canvas py-14 md:py-[112px] ${on ? 'in' : ''}`} aria-labelledby="tools-h">
+      <div className={`${WRAP} flex flex-col gap-5 md:gap-10`}>
+        <div className="flex flex-col gap-2.5 md:gap-3">
+          <h2 id="tools-h" className={`rv ${H2} leading-[35px]`}>Built with <em className="text-primary">open, trusted tools.</em></h2>
+          <p className="rv text-[17px] leading-[26px] text-[#2A3547] md:text-[20px] md:leading-[30px]" style={{ '--i': 1 }}>No paid APIs, no keys. Your data stays on your device unless you save it.</p>
+        </div>
+        <div className="flex flex-col gap-3 md:gap-5">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-5">
+            <article className={`rv flex flex-col gap-3 rounded-[12px] border border-[#BFE0E7] bg-info-soft p-5 md:flex-[2_1_0%] md:p-6 ${LIFT}`} style={{ '--i': 2 }}>
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-[10px] bg-white" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" stroke="#0E6A80">{P('M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z')}{P('M9 12l2 2 4-4')}</svg>
+              </span>
+              <h3 className="text-[18px] font-semibold leading-[22px] text-black md:text-[20px] md:leading-6">openFDA Drug Label API</h3>
+              <p className="text-[15px] leading-[22px] text-[#2A3547] md:text-[16px] md:leading-6">Live FDA warnings, side effects and interactions. 4-second timeout with a saved snapshot, so it never breaks offline.</p>
+              <a href="https://open.fda.gov/apis/drug/label/" {...ext} className="self-start rounded-[6px] bg-white px-2 py-[3px] font-mono text-[13px] leading-4 text-info transition-colors duration-[160ms] hover:bg-[#BFE0E7]">api.fda.gov</a>
             </article>
-          ))}
+            {TOOLS[0].map((tool, i) => <ToolCard key={tool[0]} tool={tool} i={i + 3} />)}
+          </div>
+          <div className="flex flex-col gap-3 md:flex-row md:gap-5">
+            {TOOLS[1].map((tool, i) => <ToolCard key={tool[0]} tool={tool} i={i + 5} />)}
+          </div>
         </div>
       </div>
     </section>
