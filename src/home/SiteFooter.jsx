@@ -49,7 +49,7 @@ const linkCls = 'inline-flex items-center gap-2 text-[#C9D2E0] transition-colors
 const Col = ({ title, children }) => (
   <nav aria-label={title} className="flex flex-col gap-2.5 md:flex-1 md:gap-3">
     <h2 className="pb-1 font-semibold text-white">{title}</h2>
-    <ul className="flex flex-col gap-2.5 md:gap-3">{children}</ul>
+    <ul className="flex flex-col gap-2.5 md:gap-3 [&>li]:flex">{children}</ul>
   </nav>
 );
 

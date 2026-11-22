@@ -365,7 +365,7 @@ export function Warning() {
           </p>
           <blockquote className="flex flex-col gap-2 rounded-[10px] bg-canvas p-3.5 md:px-5 md:py-[18px]">
             <p className="font-mono text-[13px] leading-5 text-[#2A3547] md:text-[15px] md:leading-6">
-              <R m="“Warfarin sodium can cause major or fatal bleeding.”" d="“WARNING: BLEEDING RISK. Warfarin sodium can cause major or fatal bleeding.”" />
+              <R m={'"Warfarin sodium can cause major or fatal bleeding."'} d={'"WARNING: BLEEDING RISK. Warfarin sodium can cause major or fatal bleeding."'} />
             </p>
             <span className="self-start rounded-[6px] border border-[#BFE0E7] bg-white px-2 py-0.5 text-[13px] font-semibold leading-4 text-info md:px-2.5 md:py-[3px] md:text-[14px] md:leading-[18px]">
               <R m="Source: FDA label" d="Source: FDA label · Boxed warning" />
@@ -388,7 +388,7 @@ export function Who() {
     <section id="who" className="scroll-mt-24 bg-canvas py-14 md:py-[112px]" aria-labelledby="who-h">
       <div className={WRAP}>
         <h2 id="who-h" className={`${H2} mb-6 leading-[35px] md:mb-10`}>Made for the people <em className="text-primary">holding the bottle.</em></h2>
-        <div className="grid grid-cols-2 gap-3 md:h-[420px] md:grid-cols-[1.3fr_1fr_1fr_1fr] md:gap-5">
+        <div className="grid grid-cols-2 gap-3 md:h-[420px] md:grid-cols-[1.3fr_1fr_1fr_1fr] md:gap-5 lg:grid-cols-[1.3fr_1fr_1fr_auto]">
           {PEOPLE.map(([t, s, src, pos, alt], i) => (
             <article key={t} className={`flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-line bg-white transition-all hover:-translate-y-1 hover:shadow-lg ${i ? '' : 'col-span-2 md:col-span-1'}`}>
               <img src={src} alt={alt} loading="lazy" style={{ objectPosition: pos }}
@@ -403,7 +403,7 @@ export function Who() {
             <p className="hidden whitespace-pre-line text-[30px] font-semibold leading-9 md:block" lang="mul">{'Hola.\nBonjour.\n'}<span lang="zh">你好.</span></p>
             <div className="flex flex-col gap-1">
               <h3 className="text-[19px] font-semibold leading-6 md:text-[22px] md:leading-[28px]">Newcomers</h3>
-              <p className="hidden text-[16px] leading-5 text-[#C9D2E0] md:block">Your label, in your language.</p>
+              <p className="hidden text-[16px] leading-5 text-[#C9D2E0] md:block lg:whitespace-nowrap">Your label, in your language.</p>
             </div>
             <p className="text-[17px] font-semibold leading-[22px] text-[#C9D2E0] md:hidden" lang="mul">Hola · Bonjour · <span lang="zh">你好</span></p>
           </article>
