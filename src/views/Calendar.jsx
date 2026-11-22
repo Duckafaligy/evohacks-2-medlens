@@ -379,7 +379,7 @@ export default function Calendar() {
             <div className="grad-mint rounded-lg p-4 text-safe"><p className="font-semibold">{tr('allDoneToday')}</p></div>
           )}
           <MiniMonth sel={sel} setSel={(d) => { setSel(d); }} items={scheduled} today={today} nowMin={nowMin} locale={locale} tr={tr} />
-          <div className="flex flex-col gap-1">
+          <div className="hidden flex-col gap-1 lg:flex">
             <p className="px-1 pb-1.5 text-[14px] font-semibold leading-[18px]">{tr('times')}</p>
             {usedSlots.map((s) => (
               <p key={s} className="flex h-[30px] items-center gap-2.5 px-1">
