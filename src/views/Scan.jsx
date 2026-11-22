@@ -74,7 +74,7 @@ function UploadPanel({ onImage }) {
       onDragOver={(e) => { e.preventDefault(); setOver(true); }}
       onDragLeave={() => setOver(false)}
       onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files[0]); }}
-      className={`flex min-h-[520px] flex-col items-center justify-center gap-[22px] rounded-lg border-2 border-dashed p-8 text-center transition-colors ${over ? 'border-primary bg-primary-soft' : 'bg-surface'}`}
+      className={`flex min-h-[420px] flex-col items-center justify-center gap-[22px] rounded-lg border-2 border-dashed p-5 text-center sm:min-h-[520px] sm:p-8 transition-colors ${over ? 'border-primary bg-primary-soft' : 'bg-surface'}`}
       style={over ? undefined : { borderColor: '#9AA6B8' }}
     >
       <span className="grid size-[72px] place-items-center rounded-lg bg-primary-soft text-primary" aria-hidden="true"><Upload className="size-[34px]" strokeWidth={1.8} /></span>
@@ -141,18 +141,18 @@ export default function Scan() {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">{tr('scanTitle')}</h1>
-        <div role="tablist" aria-label={tr('scanTitle')} className="flex h-10 gap-0.5 rounded-[8px] p-0.5" style={{ background: '#E9EDF2' }}>
+        <h1 className="text-[32px] font-semibold leading-10 tracking-[-0.025em] sm:text-[40px] sm:leading-[46px]">{tr('scanTitle')}</h1>
+        <div role="tablist" aria-label={tr('scanTitle')} className="flex h-10 w-full gap-0.5 rounded-[8px] p-0.5 sm:w-auto" style={{ background: '#E9EDF2' }}>
           {TABS.map(([id, key, Icon]) => (
             <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
-              className={`flex h-9 items-center gap-2 rounded-sm border px-3.5 text-[15px] leading-[18px] ${tab === id ? 'border-line bg-surface font-semibold text-ink' : 'border-transparent text-ink-2 hover:text-ink'}`}>
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border px-2 text-[14px] leading-[18px] sm:flex-none sm:gap-2 sm:px-3.5 sm:text-[15px] ${tab === id ? 'border-line bg-surface font-semibold text-ink' : 'border-transparent text-ink-2 hover:text-ink'}`}>
               <Icon className="size-4" aria-hidden="true" />{tr(key)}
             </button>
           ))}
         </div>
       </header>
 
-      <div className="grid items-start gap-6 lg:grid-cols-[1fr_360px]">
+      <div className="grid min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div role="tabpanel">
           {tab === 'camera' && <CameraPanel onImage={ocr} onFail={() => setTab('upload')} />}
           {tab === 'upload' && <UploadPanel onImage={ocr} />}

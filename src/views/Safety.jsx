@@ -163,7 +163,7 @@ export default function Safety() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">{tr('safetyCheck')}</h1>
+          <h1 className="text-[32px] font-semibold leading-10 tracking-[-0.025em] sm:text-[40px] sm:leading-[46px]">{tr('safetyCheck')}</h1>
           {res && items.length > 0 && (
             <p className="text-[17px] leading-6 text-ink-2">
               {tr('medsPairs', { n: res.checkedCount, p: res.pairCount })}{high ? ` ${tr('needsCall', { n: high })}` : ''}

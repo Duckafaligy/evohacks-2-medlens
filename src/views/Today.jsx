@@ -78,9 +78,9 @@ function MedRow({ med, slot, day, items, taken }) {
   const { tr } = useApp();
   const t = taken.find((x) => x.id === med.id && x.slot === slot);
   return (
-    <div className={`flex items-center gap-3 rounded-md border px-4 py-2.5 ${t ? 'border-line bg-surface' : 'border-line bg-surface'}`}>
+    <div className={`flex items-center gap-3 rounded-md border px-3 py-2.5 sm:px-4 ${t ? 'border-line bg-surface' : 'border-line bg-surface'}`}>
       <span className="size-2.5 shrink-0 rounded-full" style={{ background: colorFor(items, med.id) }} aria-hidden="true" />
-      <span className="min-w-0 flex-1 truncate"><span className="font-semibold">{med.name}</span> <span className="text-ink-2">{med.strength}</span></span>
+      <span className="min-w-0 flex-1 break-words leading-snug"><span className="font-semibold">{med.name}</span> <span className="text-ink-2">{med.strength}</span></span>
       <Hint med={med} />
       {t?.at && <span className="hidden text-small font-semibold text-safe md:inline">{clock(new Date(t.at))}</span>}
       <button
@@ -222,7 +222,7 @@ export default function Today({ route }) {
             </div>
 
             <ol className="relative mt-6">
-              <span className="absolute bottom-3 top-3 left-[calc(5rem+0.75rem+11px)] w-px bg-line" aria-hidden="true" />
+              <span className="absolute bottom-3 top-3 left-[calc(3.5rem+0.75rem+11px)] sm:left-[calc(5rem+0.75rem+11px)] w-px bg-line" aria-hidden="true" />
               {plan.map(({ slot, meds }, i) => {
                 const doneAll = meds.length > 0 && meds.every((m) => taken.some((t) => t.id === m.id && t.slot === slot));
                 const isNext = next?.slot === slot;
@@ -233,7 +233,7 @@ export default function Today({ route }) {
                   <Fragment key={slot}>
                     {nowIndex === i && <NowLine now={now} />}
                     <li className={`relative flex gap-3 ${meds.length ? 'py-2' : 'py-1'}`}>
-                      <span className={`w-20 shrink-0 pt-0.5 text-right ${meds.length ? 'font-semibold' : 'text-small text-ink-2'}`}>{slotTime(slot)}</span>
+                      <span className={`w-14 shrink-0 pt-0.5 text-right text-small sm:w-20 ${meds.length ? 'font-semibold sm:text-body' : 'text-ink-2'}`}>{slotTime(slot)}</span>
                       <span className="relative z-10 grid w-6 shrink-0 place-items-start justify-center pt-0.5" aria-hidden="true">
                         {!meds.length ? <span className="mt-1.5 size-2.5 rounded-full border border-control bg-surface" />
                           : doneAll ? <span className="grid size-6 place-items-center rounded-full bg-safe text-white"><Check className="size-3.5" strokeWidth={3} /></span>
@@ -274,7 +274,7 @@ export default function Today({ route }) {
             )}
           </section>
 
-          <aside className="space-y-4">
+          <aside className="order-first space-y-4 xl:order-none">
             {isToday && (next ? (
               <div className="rounded-lg bg-primary p-6 text-white" aria-live="polite">
                 <p className="opacity-90">{tr('nextDoseIn', { t: '' }).trim()}</p>
@@ -290,8 +290,9 @@ export default function Today({ route }) {
                 <Volume2 className="size-5" aria-hidden="true" />{tr('readMyDay')}
               </button>
             )}
-            <MonthCalendar items={items} now={now} />
+            <div className="hidden xl:block"><MonthCalendar items={items} now={now} /></div>
           </aside>
+          <div className="xl:hidden"><MonthCalendar items={items} now={now} /></div>
         </div>
       )}
     </div>
@@ -302,7 +303,7 @@ function NowLine({ now }) {
   const { tr } = useApp();
   return (
     <li className="relative flex items-center gap-3 py-1" aria-label={`${tr('now')} ${clock(now)}`}>
-      <span className="w-20 shrink-0 text-right text-small font-semibold text-danger">{clock(now)}</span>
+      <span className="w-14 shrink-0 text-right text-small font-semibold text-danger sm:w-20">{clock(now)}</span>
       <span className="relative z-10 grid w-6 shrink-0 place-items-center" aria-hidden="true"><span className="size-2.5 rounded-full bg-danger" /></span>
       <span className="h-0.5 flex-1 bg-danger" aria-hidden="true" />
       <span className="text-small font-semibold text-danger">{tr('now')}</span>

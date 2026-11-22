@@ -30,7 +30,7 @@ export default function Translate({ route }) {
   if (!lines.length && !items.length) {
     return (
       <div className="flex flex-col gap-6">
-        <h1 className="text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">{tr('translateTitle')}</h1>
+        <h1 className="text-[32px] font-semibold leading-10 tracking-[-0.025em] sm:text-[40px] sm:leading-[46px]">{tr('translateTitle')}</h1>
         <div className={CARD}>
           <p className="text-lead">{tr('translateEmpty')}</p>
           <Button className="mt-5" onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('navScan')}</Button>
@@ -52,7 +52,7 @@ export default function Translate({ route }) {
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-[40px] font-semibold leading-[46px] tracking-[-0.025em]">{tr('translateTitle')}</h1>
+          <h1 className="text-[32px] font-semibold leading-10 tracking-[-0.025em] sm:text-[40px] sm:leading-[46px]">{tr('translateTitle')}</h1>
           <p className="text-[17px] leading-[22px] text-ink-2">{tr('tapWord')}</p>
         </div>
         {raw && after > 0 && (
@@ -116,7 +116,7 @@ export default function Translate({ route }) {
               </div>
             </article>
           ))}
-          <div className="flex gap-2.5 pt-3">
+          <div className="flex flex-col gap-2.5 pt-3 sm:flex-row">
             <button type="button" onClick={openFridge} className="flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-primary px-3 text-[15px] font-semibold leading-[18px] text-white hover:bg-primary/90">
               {tr('printCard')}
             </button>
