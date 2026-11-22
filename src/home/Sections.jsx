@@ -1,25 +1,16 @@
 // Homepage sections (English copy). Composed in src/views/Home.jsx.
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import {
-  Camera, Check, ChevronDown, Lock, Volume2, AlertTriangle, CalendarDays, Languages, Printer, CircleHelp, Gauge, ListChecks,
-} from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { useApp } from '../components/ctx.js';
 import { highlightTerms } from '../lib/parse.js';
 import { fkGrade } from '../lib/readability.js';
 import { SCENARIOS } from '../data/scenarios.js';
-import { PHOTOS } from '../data/links.js';
 
 const CARDIAC = SCENARIOS[0];
 const GRADE_BEFORE = Math.round(fkGrade(CARDIAC.raw));
 const GRADE_AFTER = Math.max(1, Math.round(fkGrade(CARDIAC.meds.map((m) => m.plain.en).join(' '))));
 const SLOT_WORDS = { morning: 'each morning', noon: 'at noon', evening: 'each evening', bedtime: 'at bedtime' };
-
-const Section = ({ id, className = '', children, label }) => (
-  <section id={id} aria-label={label} className={`scroll-mt-24 px-4 py-20 md:px-6 md:py-28 ${className}`}>
-    <div className="mx-auto max-w-6xl">{children}</div>
-  </section>
-);
 
 const DOT_SHADOW = { boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,.18)' };
 /* 1. Hero — ported from Paper "Homepage · Desktop" › Hero (2NS-0). */
@@ -100,23 +91,33 @@ export function Hero() {
   );
 }
 
+/* Sections 2–10 are ported value-for-value from Paper "MedLens" › Homepage · Desktop (2MH-0, ≥768px)
+   and Homepage · Mobile (3A0-0, <768px). 1152px content column = max-w-[1200px] + px-6. */
+const WRAP = 'mx-auto w-full max-w-[1200px] px-4 md:px-6';
+const H2 = 'font-semibold text-black text-[30px] tracking-[-0.02em] md:text-[48px] md:leading-[54px] md:tracking-[-0.025em]';
+const INK_GRAD = { backgroundImage: 'linear-gradient(160deg, #2B3442 0%, #161C26 100%)' };
+/** Mobile copy / desktop copy (the boards word some lines differently). */
+const R = ({ m, d }) => <><span className="md:hidden">{m}</span><span className="hidden md:inline">{d}</span></>;
+
 /* 2. The problem */
 const STATS = [
-  ['12%', 'of U.S. adults have proficient health literacy.', 'U.S. Dept. of Education, National Assessment of Adult Literacy, 2003'],
-  ['72%', 'of patients leaving the hospital could not list all their medicines.', 'Makaryus & Friedman, Mayo Clinic Proceedings, 2005'],
-  ['1.5M+', 'emergency visits each year in the U.S. for adverse drug events.', 'CDC, Medication Safety Program'],
+  ['12%', 'of US adults have proficient health literacy.', 'NCES, 2003', 'NCES, National Assessment of Adult Literacy, 2003'],
+  ['72%', 'of discharged patients could not list all their medicines.', 'Mayo Clinic Proceedings, 2005', 'Makaryus & Friedman, Mayo Clinic Proceedings, 2005'],
+  ['1.5M+', 'ER visits each year for adverse drug events.', 'CDC', 'CDC, Medication Safety Program'],
 ];
 export function Problem() {
   return (
-    <section className="grad-ink px-4 py-20 text-white md:px-6 md:py-24" aria-labelledby="problem-h">
-      <div className="mx-auto max-w-6xl">
-        <h2 id="problem-h" className="max-w-2xl text-h2 leading-tight md:text-h1">Medicine labels are written for doctors. <em className="text-[#8FB2F0]">Patients pay the price.</em></h2>
-        <dl className="mt-12 grid gap-10 md:grid-cols-3">
-          {STATS.map(([n, text, src]) => (
-            <div key={n}>
-              <dt className="text-display leading-none">{n}</dt>
-              <dd className="mt-3 text-lead opacity-90">{text}</dd>
-              <dd className="mt-2 text-[13px] opacity-60">{src}</dd>
+    <section className="bg-ink py-14 text-white md:py-[112px]" aria-labelledby="problem-h">
+      <div className={WRAP}>
+        <h2 id="problem-h" className="max-w-[760px] text-[30px] font-semibold leading-[36px] tracking-[-0.02em] md:text-[48px] md:leading-[56px] md:tracking-[-0.025em]">
+          Medicine labels are written for doctors. <em className="text-[#7FB0FF]">Patients pay the price.</em>
+        </h2>
+        <dl className="mt-7 grid gap-7 md:mt-14 md:grid-cols-3 md:gap-12">
+          {STATS.map(([n, text, srcM, srcD]) => (
+            <div key={n} className="flex flex-col gap-1.5 border-t border-[#2B3A52] pt-[18px] md:gap-3 md:pt-6">
+              <dt className="text-[48px] font-semibold leading-[52px] md:text-[72px] md:leading-[76px] md:tracking-[-0.03em]">{n}</dt>
+              <dd className="text-[17px] leading-[25px] text-[#DCE4F0] md:text-[19px] md:leading-[28px]">{text}</dd>
+              <dd className="text-[13px] leading-4 text-[#8C9AB2]"><R m={srcM} d={srcD} /></dd>
             </div>
           ))}
         </dl>
@@ -126,195 +127,342 @@ export function Problem() {
 }
 
 /* 3. How it works */
+const STEP_TITLE = 'text-[22px] font-semibold leading-[28px] text-black';
+const STEP_TEXT = 'text-[17px] leading-[26px] text-ink-2';
+const STEP_CARD = 'h-[220px] shrink-0 rounded-[12px] transition-transform group-hover:-translate-y-1 md:h-[280px]';
 export function How() {
   return (
-    <Section id="how" label="How it works">
-      <h2 className="text-h2 md:text-h1">Scan. Understand. Remember.</h2>
-      <div className="mt-10 grid gap-6 md:grid-cols-3">
-        <article className="group">
-          <div className="grad-ink grid h-56 place-items-center rounded-lg p-6 transition-transform group-hover:-translate-y-1" aria-hidden="true">
-            <div className="relative grid h-40 w-28 place-items-center rounded-md border-2 border-white/80">
-              <div className="w-20 space-y-1.5 rounded-sm bg-white/90 p-2"><div className="h-1.5 w-12 rounded-sm bg-primary" /><div className="h-1 rounded-sm bg-ink-2/50" /><div className="h-1 w-10 rounded-sm bg-ink-2/50" /></div>
-              <div className="absolute -bottom-6 h-1 w-40 overflow-hidden rounded-sm bg-white/20"><div className="bar-fill h-full w-3/4 bg-white" /></div>
+    <section id="how" className="scroll-mt-24 bg-white py-12 md:py-[112px]" aria-labelledby="how-h">
+      <div className={WRAP}>
+        <h2 id="how-h" className={`${H2} max-w-[640px] leading-[34px]`}>Scan. Understand. Remember.</h2>
+        <div className="mt-6 grid items-start gap-6 md:mt-12 md:grid-cols-[1.2fr_1fr_1fr] md:gap-8">
+          <article className="group flex flex-col gap-2.5 md:gap-5">
+            <div className={`${STEP_CARD} relative flex items-center justify-center`} style={INK_GRAD} aria-hidden="true">
+              <div className="flex h-[220px] w-[180px] items-center justify-center rounded-[12px] border-[3px] border-white">
+                <div className="flex h-[90px] w-[140px] flex-col gap-[7px] rounded-[6px] bg-[#FFFFFFEB] p-3">
+                  <div className="h-[7px] w-[60%] rounded-[3px] bg-primary" />
+                  <div className="h-[5px] w-[90%] rounded-[3px] bg-[#9AA4B2]" />
+                  <div className="h-[5px] w-[75%] rounded-[3px] bg-[#9AA4B2]" />
+                </div>
+              </div>
+              <div className="absolute inset-x-5 bottom-[18px] h-1.5 rounded-[3px] bg-[#FFFFFF33]">
+                <div className="bar-fill h-1.5 w-[64%] rounded-[3px] bg-white" />
+              </div>
             </div>
-          </div>
-          <h3 className="mt-4 text-h3">Scan</h3><p className="text-ink-2">Point your camera at the label.</p>
-        </article>
-        <article className="group">
-          <div className="grid h-56 place-items-center rounded-lg bg-primary-soft p-6 transition-transform group-hover:-translate-y-1" aria-hidden="true">
-            <div className="w-full max-w-xs">
-              <p className="font-mono text-[14px]">Metformin 500 mg PO <span className="text-primary underline underline-offset-4">BID</span></p>
-              <div className="mt-3 rounded-md border border-line bg-surface p-3 shadow-sm"><p className="font-semibold text-primary">Twice a day</p><p className="text-small text-ink-2">With breakfast and dinner</p></div>
+            <h3 className={STEP_TITLE}>Scan</h3>
+            <p className={STEP_TEXT}>Point your camera at the label.</p>
+          </article>
+          <article className="group flex flex-col gap-2.5 md:gap-5">
+            <div className={`${STEP_CARD} flex flex-col justify-center gap-3.5 bg-[#EAF1FC] p-7`} aria-hidden="true">
+              <p className="font-mono text-[18px] font-medium leading-[22px] text-ink-2">
+                Metformin 500 mg PO <span className="font-semibold text-primary underline decoration-1">BID</span>
+              </p>
+              <div className="flex flex-col gap-1 rounded-[10px] border border-line bg-white p-4" style={{ boxShadow: '0 12px 24px #0F1B2D1A' }}>
+                <p className="text-[20px] font-semibold leading-6 text-primary">Twice a day</p>
+                <p className="text-[16px] leading-5 text-ink-2">With breakfast and dinner</p>
+              </div>
             </div>
-          </div>
-          <h3 className="mt-4 text-h3">Understand</h3><p className="text-ink-2">Tap any blue word.</p>
-        </article>
-        <article className="group">
-          <div className="grad-mint grid h-56 place-items-center rounded-lg p-6 transition-transform group-hover:-translate-y-1" aria-hidden="true">
-            <div className="w-full max-w-xs space-y-2">
-              {[['8:00 AM', '3 pills', true], ['6:00 PM', '1 pill', false], ['9:00 PM', '1 pill', false]].map(([t, n, d]) => (
-                <div key={t} className="flex items-center gap-3 rounded-md bg-surface px-3 py-2 text-small">
-                  <span className="font-semibold">{t}</span><span className="flex-1 text-ink-2">{n}</span>
-                  <span className={`grid size-5 place-items-center rounded-sm ${d ? 'bg-safe text-white' : 'border border-control'}`}>{d && <Check className="size-3.5" />}</span>
+            <h3 className={STEP_TITLE}>Understand</h3>
+            <p className={STEP_TEXT}>Tap any blue word.</p>
+          </article>
+          <article className="group flex flex-col gap-2.5 md:gap-5">
+            <div className={`${STEP_CARD} flex flex-col justify-center gap-2.5 bg-[#F1F9F4] p-7`} aria-hidden="true">
+              {[['8:00 AM', '3 pills', true], ['6:00 PM', '1 pill', false], ['9:00 PM', '1 pill', false]].map(([t, n, done]) => (
+                <div key={t} className="flex items-center justify-between rounded-[8px] border border-line bg-white px-3.5 py-3">
+                  <span className="text-[16px] font-semibold leading-5 text-black">{t}</span>
+                  <span className="text-[15px] leading-[18px] text-ink-2">{n}</span>
+                  <span className={`size-6 shrink-0 rounded-[6px] ${done ? 'bg-safe' : 'border-2 border-[#9AA4B2]'}`} />
                 </div>
               ))}
             </div>
-          </div>
-          <h3 className="mt-4 text-h3">Remember</h3><p className="text-ink-2">A daily plan, a fridge card, reminders.</p>
-        </article>
+            <h3 className={STEP_TITLE}>Remember</h3>
+            <p className={STEP_TEXT}>A daily plan, a fridge card, reminders.</p>
+          </article>
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
 /* 4. Feature bento */
-const Tile = ({ className = '', title, sub, Icon, children }) => (
-  <article className={`flex min-h-48 flex-col rounded-lg border border-line p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${className}`}>
-    <div className="flex items-start justify-between gap-2">
-      <div><h3 className="font-semibold">{title}</h3>{sub && <p className="text-small opacity-75">{sub}</p>}</div>
-      {Icon && <Icon className="size-5 shrink-0 opacity-60" aria-hidden="true" />}
-    </div>
-    <div className="mt-auto pt-4" aria-hidden="true">{children}</div>
-  </article>
-);
-export function Features() {
+const SLOTS = [['morning', 'Morning', 'AM'], ['noon', 'Noon', 'Noon'], ['evening', 'Evening', 'PM'], ['bedtime', 'Bedtime', 'Bed']]
+  .map(([k, label, short]) => [label, short, CARDIAC.meds.filter((m) => m.slots.includes(k)).map((m) => `${m.name} ${parseInt(m.dose, 10)}`)]);
+const TILE = 'flex flex-col justify-between rounded-[14px] transition-all duration-200 hover:-translate-y-1 hover:shadow-lg';
+const TILE_W = `${TILE} border border-line bg-white`;
+const T22 = 'text-[22px] font-semibold leading-[28px] text-black';
+const T20 = 'text-[20px] font-semibold leading-6 text-black';
+const CHIP = 'rounded-[6px] px-2 py-1 text-[14px] font-semibold leading-[18px]';
+const M_TILE = 'flex flex-1 basis-0 flex-col gap-2 rounded-[14px] p-4';
+const M_T16 = 'text-[16px] font-semibold leading-5 text-black';
+function FeaturesDesktop() {
   return (
-    <Section id="features" label="Features" className="bg-surface">
-      <h2 className="text-h2 md:text-h1">Everything on one screen.</h2>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Tile className="grad-ink border-transparent text-white sm:col-span-2" title="Scan with camera" sub="Point. Capture. Done." Icon={Camera}>
-          <div className="flex items-center gap-3 text-small"><div className="h-1.5 flex-1 overflow-hidden rounded-sm bg-white/20"><div className="bar-fill h-full w-[72%] bg-white" /></div>Reading label 72%</div>
-        </Tile>
-        <Tile className="bg-surface" title="Plain-language translator" Icon={Languages}>
-          <p className="font-mono text-small text-ink-2">q8h</p><p className="text-lead font-semibold text-primary">Every 8 hours</p>
-        </Tile>
-        <Tile className="grad-mint" title="Reading-level meter" Icon={Gauge}>
-          <p className="text-h2 font-semibold"><span className="text-danger">{GRADE_BEFORE}</span> → <span className="text-safe">{GRADE_AFTER}</span></p>
-        </Tile>
-        <Tile className="bg-surface sm:col-span-2" title="Daily pill timeline" Icon={ListChecks}>
-          <div className="grid grid-cols-4 gap-2 text-[12px]">
-            {[['Morning', 'Furosemide 40\nLisinopril 10\nMetformin 500'], ['Noon', 'Free'], ['Evening', 'Metformin 500'], ['Bedtime', 'Atorvastatin 20']].map(([s, m]) => (
-              <div key={s} className="rounded-md bg-canvas p-2"><p className="font-semibold">{s}</p><p className="whitespace-pre-line text-ink-2">{m}</p></div>
+    <div className="hidden flex-col gap-5 md:flex">
+      <div className="grid gap-5 md:grid-cols-2 lg:flex lg:h-[300px]">
+        <article className={`${TILE} min-h-[240px] p-7 text-white md:col-span-2 lg:flex-[2_1_0%]`} style={INK_GRAD}>
+          <div className="flex flex-col gap-1.5">
+            <h3 className="text-[24px] font-semibold leading-[30px]">Scan with camera</h3>
+            <p className="text-[17px] leading-[22px] text-[#C9D2E0]">Point. Capture. Done.</p>
+          </div>
+          <div className="flex items-center gap-3.5" aria-hidden="true">
+            <div className="h-2 flex-1 rounded-[4px] bg-[#FFFFFF2E]"><div className="bar-fill h-2 w-[72%] rounded-[4px] bg-white" /></div>
+            <span className="text-[15px] font-semibold leading-[18px]">Reading label 72%</span>
+          </div>
+        </article>
+        <article className={`${TILE_W} min-h-[240px] lg:flex-1 p-7`}>
+          <h3 className={T22}>Plain-language translator</h3>
+          <div className="flex flex-col gap-1.5" aria-hidden="true">
+            <p className="font-mono text-[16px] leading-5 text-ink-2">q8h</p>
+            <p className="text-[20px] font-semibold leading-6 text-primary">Every 8 hours</p>
+          </div>
+        </article>
+        <article className={`${TILE} min-h-[240px] lg:flex-1 border border-[#CFE7DA] bg-[#F1F9F4] p-7`}>
+          <h3 className={T22}>Reading-level meter</h3>
+          <p className="text-[40px] font-semibold leading-[48px] tracking-[-0.02em] text-black">
+            <span className="text-danger">{GRADE_BEFORE}</span> → <span className="text-safe">{GRADE_AFTER}</span>
+          </p>
+        </article>
+      </div>
+      <div className="grid gap-5 md:grid-cols-2 lg:flex lg:h-[300px]">
+        <article className={`${TILE_W} min-h-[240px] justify-start gap-[18px] p-7 md:col-span-2 lg:flex-[2_1_0%]`}>
+          <h3 className="text-[24px] font-semibold leading-[30px] text-black">Daily pill timeline</h3>
+          <div className="flex flex-1 gap-3" aria-hidden="true">
+            {SLOTS.map(([label, , meds]) => (
+              <div key={label} className="flex flex-1 basis-0 flex-col gap-2 rounded-[10px] bg-canvas p-3.5">
+                <p className="text-[15px] font-semibold leading-[18px] text-black">{label}</p>
+                {meds.length ? meds.map((m) => <p key={m} className="text-[14px] leading-[18px] text-black">{m}</p>)
+                  : <p className="text-[14px] leading-[18px] text-ink-2">Free</p>}
+              </div>
             ))}
           </div>
-        </Tile>
-        <Tile className="grad-warn" title="Interaction check" Icon={AlertTriangle}>
-          <span className="rounded-sm bg-caution px-1.5 py-0.5 text-[12px] font-semibold text-white">Moderate</span>
-          <p className="mt-2 font-semibold">Furosemide + Lisinopril</p><p className="text-small text-ink-2">Dizziness, low blood pressure</p>
-        </Tile>
-        <Tile className="bg-primary-soft" title="Read aloud" Icon={Volume2}>
-          <div className="flex h-10 items-end gap-1">{[40, 70, 100, 60, 85, 45, 75].map((h, i) => <span key={i} className="w-2 rounded-sm bg-primary" style={{ height: `${h}%` }} />)}</div>
-        </Tile>
-        <Tile className="bg-surface" title="4 languages">
-          <div className="flex gap-1.5">{['EN', 'ES', 'FR', '中文'].map((l, i) => <span key={l} className={`rounded-sm px-2 py-1 text-small font-semibold ${i ? 'bg-canvas' : 'bg-ink text-white'}`}>{l}</span>)}</div>
-        </Tile>
-        <Tile className="bg-surface" title="Fridge card + QR" Icon={Printer}>
-          <div className="flex items-center gap-3"><QRCodeSVG value="https://github.com/Duckafaligy/evohacks-2-medlens" size={48} level="L" marginSize={0} /><p className="text-small text-ink-2">Print. Stick. Scan.</p></div>
-        </Tile>
-        <Tile className="bg-surface" title="Calendar reminders" Icon={CalendarDays}>
-          <div className="space-y-1 text-[12px]"><p className="rounded-sm border-l-[3px] border-primary bg-primary-soft px-2 py-1">8:00 Furosemide</p><p className="rounded-sm border-l-[3px] border-ink-2 bg-canvas px-2 py-1">21:00 Atorvastatin</p></div>
-        </Tile>
-        <Tile className="bg-surface" title="Teach-back quiz" Icon={CircleHelp}>
-          <p className="text-small text-ink-2">When do you take Lisinopril?</p>
-          <div className="mt-2 flex gap-1.5 text-[12px]"><span className="rounded-sm bg-safe px-2 py-1 font-semibold text-white">Morning</span><span className="rounded-sm bg-canvas px-2 py-1">Bedtime</span></div>
-        </Tile>
+        </article>
+        <article className={`${TILE} min-h-[240px] lg:flex-1 border border-[#F0D3B0] bg-caution-soft p-7`}>
+          <h3 className={T22}>Interaction check</h3>
+          <div className="flex flex-col gap-2">
+            <span className="self-start rounded-[6px] bg-caution px-2 py-[3px] text-[13px] font-semibold leading-4 text-white">Moderate</span>
+            <p className="text-[17px] font-semibold leading-[22px] text-black">Furosemide + Lisinopril</p>
+            <p className="text-[15px] leading-[18px] text-[#6E3203]">Dizziness, low blood pressure</p>
+          </div>
+        </article>
+        <article className={`${TILE} min-h-[240px] lg:flex-1 bg-primary-soft p-7`}>
+          <h3 className={T22}>Read aloud</h3>
+          <div className="flex h-12 shrink-0 items-end gap-[5px]" aria-hidden="true">
+            {[20, 40, 28, 48, 24, 36, 16].map((h, i) => <span key={i} className="w-2 shrink-0 rounded-[3px] bg-primary" style={{ height: h }} />)}
+          </div>
+        </article>
       </div>
-    </Section>
+      <div className="grid gap-5 md:grid-cols-2 lg:h-[220px] lg:grid-cols-4">
+        <article className={`${TILE_W} min-h-[200px] p-6`}>
+          <h3 className={T20}>4 languages</h3>
+          <div className="flex gap-1.5" aria-hidden="true">
+            {['EN', 'ES', 'FR', '中文'].map((l, i) => <span key={l} className={`${CHIP} ${i ? 'border border-control text-black' : 'bg-ink text-white'}`}>{l}</span>)}
+          </div>
+        </article>
+        <article className={`${TILE_W} min-h-[200px] p-6`}>
+          <h3 className={T20}>Fridge card + QR</h3>
+          <div className="flex items-center gap-3">
+            <QRCodeSVG value="https://github.com/Duckafaligy/evohacks-2-medlens" size={56} level="L" marginSize={0} fgColor="#0F1B2D" aria-hidden="true" />
+            <p className="text-[15px] leading-[18px] text-ink-2">Print. Stick. Scan.</p>
+          </div>
+        </article>
+        <article className={`${TILE_W} min-h-[200px] p-6`}>
+          <h3 className={T20}>Calendar reminders</h3>
+          <div className="flex flex-col gap-1 text-[13px] font-semibold leading-4" aria-hidden="true">
+            <p className="h-[22px] rounded-[5px] border-l-[3px] border-primary bg-primary-soft pl-2 text-primary">8:00 Furosemide</p>
+            <p className="h-[22px] rounded-[5px] border-l-[3px] border-safe bg-safe-soft pl-2 text-safe">21:00 Atorvastatin</p>
+          </div>
+        </article>
+        <article className={`${TILE_W} min-h-[200px] p-6`}>
+          <h3 className={T20}>Teach-back quiz</h3>
+          <div className="flex flex-col gap-1.5" aria-hidden="true">
+            <p className="text-[15px] leading-[18px] text-black">When do you take Lisinopril?</p>
+            <div className="flex gap-1.5">
+              <span className={`${CHIP} bg-safe px-2.5 text-white`}>Morning</span>
+              <span className={`${CHIP} border border-control px-2.5 font-normal text-black`}>Bedtime</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  );
+}
+function FeaturesMobile() {
+  return (
+    <div className="flex flex-col gap-3 md:hidden">
+      <article className="flex flex-col gap-3.5 rounded-[14px] p-5" style={INK_GRAD}>
+        <h3 className="text-[20px] font-semibold leading-6 text-white">Scan with camera</h3>
+        <div className="h-1.5 rounded-[3px] bg-[#FFFFFF2E]" aria-hidden="true"><div className="bar-fill h-1.5 w-[72%] rounded-[3px] bg-white" /></div>
+      </article>
+      <div className="flex gap-3">
+        <article className={`${M_TILE} gap-2.5 border border-line bg-white`}>
+          <h3 className={M_T16}>Translator</h3>
+          <p className="text-[16px] font-semibold leading-5 text-primary">q8h = every 8 hours</p>
+        </article>
+        <article className={`${M_TILE} gap-2.5 border border-[#CFE7DA] bg-[#F1F9F4]`}>
+          <h3 className={M_T16}>Reading level</h3>
+          <p className="text-[24px] font-semibold leading-[30px] text-black"><span className="text-danger">{GRADE_BEFORE}</span> → <span className="text-safe">{GRADE_AFTER}</span></p>
+        </article>
+      </div>
+      <article className="flex flex-col gap-2 rounded-[14px] border border-line bg-white p-4">
+        <h3 className={M_T16}>Daily pill timeline</h3>
+        <div className="flex gap-1.5">
+          {SLOTS.map(([label, short, meds]) => (
+            <p key={label} className="flex-1 basis-0 rounded-[8px] bg-canvas p-2 text-[13px] font-semibold leading-4 text-black">{short} · {meds.length}</p>
+          ))}
+        </div>
+      </article>
+      <div className="flex gap-3">
+        <article className={`${M_TILE} border border-[#F0D3B0] bg-caution-soft`}>
+          <h3 className={M_T16}>Interaction check</h3>
+          <span className="self-start rounded-[6px] bg-caution px-2 py-0.5 text-[12px] font-semibold leading-4 text-white">Moderate</span>
+        </article>
+        <article className={`${M_TILE} bg-primary-soft`}>
+          <h3 className={M_T16}>Read aloud</h3>
+          <div className="flex h-6 shrink-0 items-end gap-1" aria-hidden="true">
+            {[10, 22, 14, 24].map((h, i) => <span key={i} className="w-1.5 shrink-0 rounded-[2px] bg-primary" style={{ height: h }} />)}
+          </div>
+        </article>
+      </div>
+      {[['4 languages', 'Fridge card + QR'], ['Calendar reminders', 'Teach-back quiz']].map((pair) => (
+        <div key={pair[0]} className="flex gap-3">
+          {pair.map((t) => <h3 key={t} className="flex-1 basis-0 rounded-[14px] border border-line bg-white p-3.5 text-[15px] font-semibold leading-[18px] text-black">{t}</h3>)}
+        </div>
+      ))}
+    </div>
+  );
+}
+export function Features() {
+  return (
+    <section id="features" className="scroll-mt-24 bg-canvas py-14 md:py-[112px]" aria-labelledby="features-h">
+      <div className={WRAP}>
+        <h2 id="features-h" className={`${H2} mb-6 leading-[34px] md:mb-12`}>Everything on one screen.</h2>
+        <FeaturesMobile />
+        <FeaturesDesktop />
+      </div>
+    </section>
   );
 }
 
 /* 5. Warnings from the label */
 export function Warning() {
   return (
-    <Section label="Safety warnings">
-      <div className="grid items-center gap-10 md:grid-cols-2">
-        <div>
-          <h2 className="text-h2 leading-tight md:text-h1">Warnings, <em className="text-danger">straight from the label.</em></h2>
-          <p className="mt-4 max-w-md text-lead text-ink-2">Every alert links back to the FDA drug label it came from.</p>
+    <section className="bg-white py-14 md:py-[112px]" aria-labelledby="warn-h">
+      <div className={`${WRAP} flex flex-col gap-5 md:flex-row md:items-center md:gap-10 lg:gap-20`}>
+        <div className="flex flex-col gap-5 md:w-[440px] md:shrink">
+          <h2 id="warn-h" className={`${H2} leading-[35px]`}>Warnings, <em className="text-danger">straight from the label.</em></h2>
+          <p className="hidden text-[19px] leading-[29px] text-[#2A3547] md:block">Every alert links to the FDA drug label it came from.</p>
         </div>
-        <article className="rounded-lg border border-line border-l-4 border-l-danger bg-surface p-6 shadow-xl transition-transform hover:-translate-y-1">
+        <article className="flex flex-1 flex-col gap-3.5 rounded-[14px] border border-l-[5px] border-line border-l-danger bg-white p-5 transition-transform hover:-translate-y-1 md:gap-[18px] md:border-l-[6px] md:p-8 shadow-[0_12px_32px_#0F1B2D1A] md:shadow-[0_20px_48px_#0F1B2D1A]">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="text-h3">Warfarin + Aspirin</h3>
-            <span className="rounded-sm bg-danger px-2 py-0.5 text-small font-semibold text-white">High</span>
+            <h3 className="text-[20px] font-semibold leading-6 text-black md:text-[28px] md:leading-[34px]">Warfarin + Aspirin</h3>
+            <span className="rounded-[6px] bg-danger px-2.5 py-[3px] text-[13px] font-semibold leading-4 text-white md:px-3 md:py-[5px] md:text-[15px] md:leading-[18px]">High</span>
           </div>
-          <p className="mt-3 text-lead">Aspirin plus warfarin raises the risk of <span className="text-danger">bleeding</span>. Only take both if your doctor told you to.</p>
-          <blockquote className="mt-4 rounded-md bg-canvas p-4 font-mono text-small text-ink-2">“WARNING: BLEEDING RISK. Warfarin sodium can cause major or fatal bleeding.”</blockquote>
-          <p className="mt-3 inline-block rounded-sm bg-info-soft px-2 py-0.5 text-[12px] font-semibold text-info">Source: FDA label · Boxed warning</p>
+          <div className="hidden gap-1 md:flex" aria-hidden="true">
+            {[0, 1, 2].map((i) => <span key={i} className="h-2 flex-1 rounded-[3px] bg-danger" />)}
+          </div>
+          <p className="text-[17px] leading-[25px] text-black md:text-[20px] md:leading-[30px]">
+            <R m={<>Higher risk of <em className="text-danger">serious bleeding</em>. Call your doctor first.</>}
+              d={<>Taking both raises your risk of <em className="text-danger">serious bleeding</em>. Call your doctor before taking aspirin.</>} />
+          </p>
+          <blockquote className="flex flex-col gap-2 rounded-[10px] bg-canvas p-3.5 md:px-5 md:py-[18px]">
+            <p className="font-mono text-[13px] leading-5 text-[#2A3547] md:text-[15px] md:leading-6">
+              <R m="“Warfarin sodium can cause major or fatal bleeding.”" d="“WARNING: BLEEDING RISK. Warfarin sodium can cause major or fatal bleeding.”" />
+            </p>
+            <span className="self-start rounded-[6px] border border-[#BFE0E7] bg-white px-2 py-0.5 text-[13px] font-semibold leading-4 text-info md:px-2.5 md:py-[3px] md:text-[14px] md:leading-[18px]">
+              <R m="Source: FDA label" d="Source: FDA label · Boxed warning" />
+            </span>
+          </blockquote>
         </article>
       </div>
-    </Section>
+    </section>
   );
 }
 
-/* 6. Who it's for */
+/* 6. Who it's for — photos self-hosted from the Paper file (public/home). */
 const PEOPLE = [
-  ['Seniors', 'Big text. One tap to hear it.', PHOTOS.seniors, 'Medicine in an older adult’s hands'],
-  ['Caregivers', 'Share the plan with family.', PHOTOS.caregivers, 'Medicines organised by a caregiver'],
-  ['Parents', 'mL and teaspoons, done right.', PHOTOS.parents, 'Medicine for a family'],
+  ['Seniors', 'Big text. One tap to hear it.', '/home/seniors.jpg', '50% 40%', 'An older adult pouring pills from a prescription bottle into their hand'],
+  ['Caregivers', 'Share the plan with family.', '/home/caregivers.jpg', '50% 50%', 'A weekly pill organiser being filled'],
+  ['Parents', 'mL to teaspoons, done right.', '/home/parents.jpg', '50% 70%', 'Medicine for a family'],
 ];
 export function Who() {
   return (
-    <Section id="who" label="Who it's for" className="bg-surface">
-      <h2 className="text-h2 md:text-h1">Made for the people <em className="text-primary">holding the bottle.</em></h2>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {PEOPLE.map(([t, s, src, alt]) => (
-          <article key={t} className="overflow-hidden rounded-lg border border-line bg-surface transition-all hover:-translate-y-1 hover:shadow-lg">
-            <img src={src} alt={alt} width="600" height="600" loading="lazy" className="aspect-square w-full object-cover" />
-            <div className="p-4"><h3 className="font-semibold">{t}</h3><p className="text-small text-ink-2">{s}</p></div>
+    <section id="who" className="scroll-mt-24 bg-canvas py-14 md:py-[112px]" aria-labelledby="who-h">
+      <div className={WRAP}>
+        <h2 id="who-h" className={`${H2} mb-6 leading-[35px] md:mb-10`}>Made for the people <em className="text-primary">holding the bottle.</em></h2>
+        <div className="grid grid-cols-2 gap-3 md:h-[420px] md:grid-cols-[1.3fr_1fr_1fr_1fr] md:gap-5">
+          {PEOPLE.map(([t, s, src, pos, alt], i) => (
+            <article key={t} className={`flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-line bg-white transition-all hover:-translate-y-1 hover:shadow-lg ${i ? '' : 'col-span-2 md:col-span-1'}`}>
+              <img src={src} alt={alt} loading="lazy" style={{ objectPosition: pos }}
+                className={`w-full shrink-0 object-cover md:h-auto md:min-h-0 md:flex-1 ${i ? 'h-[120px]' : 'h-[200px]'}`} />
+              <div className={`flex flex-col md:gap-1 md:px-[22px] md:py-5 ${i ? 'px-3.5 py-3' : 'gap-0.5 px-4 py-3.5'}`}>
+                <h3 className={`font-semibold text-black md:text-[22px] md:leading-[28px] ${i ? 'text-[16px] leading-5' : 'text-[19px] leading-6'}`}>{t}</h3>
+                <p className={`text-[15px] leading-[18px] text-[#2A3547] md:block md:text-[16px] md:leading-5 ${i ? 'hidden' : ''}`}>{s}</p>
+              </div>
+            </article>
+          ))}
+          <article className="col-span-2 flex items-center justify-between rounded-[14px] bg-ink px-4 py-[18px] text-white transition-transform hover:-translate-y-1 md:col-span-1 md:flex-col md:items-stretch md:p-[22px]">
+            <p className="hidden whitespace-pre-line text-[30px] font-semibold leading-9 md:block" lang="mul">{'Hola.\nBonjour.\n'}<span lang="zh">你好.</span></p>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-[19px] font-semibold leading-6 md:text-[22px] md:leading-[28px]">Newcomers</h3>
+              <p className="hidden text-[16px] leading-5 text-[#C9D2E0] md:block">Your label, in your language.</p>
+            </div>
+            <p className="text-[17px] font-semibold leading-[22px] text-[#C9D2E0] md:hidden" lang="mul">Hola · Bonjour · <span lang="zh">你好</span></p>
           </article>
-        ))}
-        <article className="grad-ink flex min-h-80 flex-col justify-between rounded-lg p-6 text-white transition-transform hover:-translate-y-1">
-          <p className="text-h2 leading-tight" lang="mul">Hola.<br />Bonjour.<br /><span lang="zh">你好。</span></p>
-          <div><h3 className="font-semibold">Newcomers</h3><p className="text-small opacity-80">Your label, in your language.</p></div>
-        </article>
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
 /* 7. Senior Mode before/after */
-function PillCard({ big }) {
-  return (
-    <div className={`rounded-md border border-line bg-surface ${big ? 'p-6' : 'p-4'}`}>
-      <p className={big ? 'text-small font-semibold' : 'text-[12px] text-ink-2'}>{big ? 'Senior Mode' : 'Standard'}</p>
-      <p className={`font-semibold ${big ? 'text-h2' : 'text-body'}`}>Lisinopril 10 mg</p>
-      <p className={big ? 'text-lead' : 'text-small text-ink-2'}>1 pill · morning</p>
-      <span className={`mt-3 inline-flex items-center rounded-md font-semibold text-white ${big ? 'h-14 bg-ink px-6 text-lead' : 'h-8 bg-primary px-3 text-small'}`}>I took it</span>
-    </div>
-  );
-}
 export function Senior() {
   return (
-    <Section label="Senior Mode">
-      <div className="grid items-center gap-10 md:grid-cols-[1fr_1.4fr]">
-        <div>
-          <h2 className="text-h2 leading-tight md:text-h1">Bigger when you need it.</h2>
-          <p className="mt-4 text-lead text-ink-2">Senior Mode: larger text, stronger contrast, bigger buttons.</p>
+    <section className="bg-white py-12 md:py-[112px]" aria-labelledby="senior-h">
+      <div className={`${WRAP} flex flex-col gap-[18px] md:flex-row md:items-center md:gap-10 lg:gap-[72px]`}>
+        <div className="flex flex-col gap-5 md:w-[380px] md:shrink">
+          <h2 id="senior-h" className={`${H2} leading-[34px]`}>Bigger when you need it.</h2>
+          <p className="hidden text-[19px] leading-[29px] text-ink-2 md:block">Senior Mode: larger text, stronger contrast, bigger buttons.</p>
         </div>
-        <div className="relative grid overflow-hidden rounded-lg border border-line bg-surface sm:grid-cols-2">
-          <div className="grid place-items-center bg-canvas p-6"><div className="w-full max-w-[220px]"><PillCard /></div></div>
-          <div className="grid place-items-center p-6"><div className="w-full"><PillCard big /></div></div>
-          <span className="absolute left-1/2 top-1/2 hidden size-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-ink bg-surface text-[12px] font-semibold sm:grid" aria-hidden="true">⇆</span>
-          <span className="absolute inset-y-0 left-1/2 hidden w-0.5 -translate-x-1/2 bg-ink sm:block" aria-hidden="true" />
+        <div className="relative flex min-w-0 flex-1 overflow-hidden rounded-[14px] border border-line md:h-[360px]">
+          <div className="flex flex-1 basis-0 flex-col justify-center gap-1.5 bg-white p-4 md:gap-2.5 md:p-9">
+            <p className="text-[13px] leading-4 text-ink-2 md:text-[14px] md:leading-[18px]">Standard</p>
+            <p className="text-[15px] font-semibold leading-[18px] text-black md:text-[20px] md:leading-6">Lisinopril 10 mg</p>
+            <p className="text-[13px] leading-4 text-ink-2 md:text-[16px] md:leading-5">1 pill · morning</p>
+            <span className="hidden h-11 items-center self-start rounded-[8px] bg-primary px-4 text-[15px] font-semibold leading-[18px] text-white md:flex" aria-hidden="true">I took it</span>
+          </div>
+          <div className="flex grow-[1.3] basis-0 flex-col justify-center gap-1.5 border-l-[3px] border-ink bg-white p-4 md:grow md:gap-3.5 md:p-9">
+            <p className="text-[14px] font-semibold leading-[18px] text-black md:text-[16px] md:leading-5">Senior Mode</p>
+            <p className="text-[21px] font-semibold leading-[26px] text-black md:text-[32px] md:leading-[38px]">Lisinopril 10 mg</p>
+            <p className="text-[17px] leading-[22px] text-black md:text-[24px] md:leading-[30px]">1 pill · morning</p>
+            <span className="hidden h-16 items-center self-start rounded-[10px] bg-ink px-[26px] text-[22px] font-semibold leading-[28px] text-white md:flex" aria-hidden="true">I took it</span>
+          </div>
+          <span className="absolute left-[calc(50%-20px)] top-[calc(50%-20px)] hidden size-10 items-center justify-center rounded-[10px] bg-ink md:flex" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M9 18l-6-6 6-6M15 6l6 6-6 6" fill="none" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </span>
         </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
 /* 8. Privacy */
-const PRIVACY = [['Account', 'Optional'], ['Photos', 'Read on your device'], ['Sent to the FDA', 'Medicine names only'], ['Tracking', 'None']];
+const PRIVACY = [['Account', 'Not needed'], ['Sent to the FDA', 'Medicine names only'], ['Tracking', 'None']];
 export function Privacy() {
   return (
-    <section id="privacy" className="grad-ink scroll-mt-24 px-4 py-20 text-white md:px-6" aria-labelledby="privacy-h">
-      <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-2">
-        <div>
-          <Lock className="size-8 text-[#8FB2F0]" aria-hidden="true" />
-          <h2 id="privacy-h" className="mt-4 text-h2 leading-tight">Your health info stays on your device.</h2>
+    <section id="privacy" className="scroll-mt-24 py-12 text-white md:py-[112px]" aria-labelledby="privacy-h"
+      style={{ backgroundImage: 'linear-gradient(160deg, #16243A 0%, #0F1B2D 100%)' }}>
+      <div className={`${WRAP} flex flex-col gap-[18px] md:flex-row md:items-start md:gap-10 lg:gap-20`}>
+        <div className="flex flex-1 flex-col gap-[18px] md:gap-5">
+          <svg className="size-8 md:size-10" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="11" width="16" height="10" rx="2" fill="none" stroke="#7FB0FF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#7FB0FF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <h2 id="privacy-h" className="text-[30px] font-semibold leading-[35px] tracking-[-0.02em] md:text-[48px] md:leading-[54px] md:tracking-[-0.025em]">Your health info stays on your device.</h2>
         </div>
-        <dl className="divide-y divide-white/15 self-center">
+        <dl className="flex flex-col md:w-[460px] md:shrink md:pt-16">
           {PRIVACY.map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-4 py-4"><dt className="opacity-75">{k}</dt><dd className="font-semibold">{v}</dd></div>
+            <div key={k} className="flex justify-between gap-4 border-b border-[#2B3A52] py-3.5 text-[16px] leading-5 last:border-b-0 md:py-[18px] md:text-[18px] md:leading-[22px]">
+              <dt>{k}</dt><dd className="font-semibold">{v}</dd>
+            </div>
           ))}
         </dl>
       </div>
@@ -324,33 +472,39 @@ export function Privacy() {
 
 /* 9. FAQ (single open) */
 const FAQS = [
-  ['Is this medical advice?', 'No. MedLens explains what your label says in plain words. Always check with your pharmacist or doctor before changing how you take a medicine.'],
-  ['Where does the drug data come from?', 'Warnings, side effects and interaction text come from official FDA drug labels through the openFDA API. A saved copy of those labels is used if you are offline.'],
+  [<R key="q" m="Is this medical advice?" d="Is this medical advice?" />,
+    <R key="a" m={<>No. It explains your label. <em className="text-primary">Always check with your pharmacist or doctor.</em></>}
+      d={<>No. MedLens explains what your label says. <em className="text-primary">Always check with your pharmacist or doctor.</em></>} />],
+  [<R key="q" m="Where does the data come from?" d="Where does the drug data come from?" />,
+    'Warnings, side effects and interaction text come from official FDA drug labels through the openFDA API. A saved copy of those labels is used if you are offline.'],
   ['Is my information stored?', 'Your medicine list is kept in your browser on this device. If you choose to create an account, your list is synced to it so only you can see it. Label photos are read on your device and never uploaded.'],
   ['Does it work offline?', 'Mostly. Your plan, fridge card and saved label copies work without internet. Live FDA lookups and the first photo scan need a connection.'],
-  ['Which languages are supported?', 'English, Spanish, French and Simplified Chinese — for the instructions, the buttons and read-aloud.'],
+  [<R key="q" m="Which languages?" d="Which languages are supported?" />, 'English, Spanish, French and Simplified Chinese — for the instructions, the buttons and read-aloud.'],
 ];
 export function Faq() {
   const [open, setOpen] = useState(0);
   return (
-    <Section id="faq" label="FAQ">
-      <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
-        <h2 className="text-h2 leading-tight md:text-h1">Questions, answered.</h2>
-        <div className="divide-y divide-line border-y border-line">
+    <section id="faq" className="scroll-mt-24 bg-white py-14 md:py-[112px]" aria-labelledby="faq-h">
+      <div className={`${WRAP} flex flex-col md:flex-row md:gap-10 lg:gap-20`}>
+        <h2 id="faq-h" className={`${H2} pb-4 leading-[34px] md:w-[360px] md:shrink-0 md:pb-0 lg:w-[360px]`}>Questions, answered.</h2>
+        <div className="flex flex-1 flex-col">
           {FAQS.map(([q, a], i) => (
-            <div key={q}>
+            <div key={i} className="border-b border-line py-[18px] md:py-6">
               <h3>
                 <button type="button" onClick={() => setOpen(open === i ? -1 : i)} aria-expanded={open === i} aria-controls={`faq-${i}`}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left text-lead font-semibold">
-                  {q}<ChevronDown className={`size-5 shrink-0 transition-transform duration-200 ${open === i ? 'rotate-180' : ''}`} aria-hidden="true" />
+                  className="flex w-full items-center justify-between gap-4 text-left text-[18px] font-semibold leading-[22px] text-black md:text-[21px] md:leading-[26px]">
+                  {q}
+                  <svg className="size-5 shrink-0 md:size-[22px]" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d={open === i ? 'M5 12h14' : 'M12 5v14M5 12h14'} fill="none" stroke={open === i ? '#1849A9' : '#46536A'} strokeWidth="2.2" strokeLinecap="round" />
+                  </svg>
                 </button>
               </h3>
-              <div id={`faq-${i}`} hidden={open !== i} className="pop pb-5 text-ink-2">{a}</div>
+              <div id={`faq-${i}`} hidden={open !== i} className="pop mt-2.5 max-w-[620px] text-[16px] leading-6 text-[#2A3547] md:mt-3 md:text-[18px] md:leading-[28px]">{a}</div>
             </div>
           ))}
         </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
@@ -358,13 +512,15 @@ export function Faq() {
 export function Cta() {
   const { tryExample } = useApp();
   return (
-    <section className="bg-primary px-4 py-20 text-center text-white md:px-6" aria-labelledby="cta-h">
-      <h2 id="cta-h" className="mx-auto max-w-2xl text-h2 leading-tight md:text-h1">Make sense of your next prescription.</h2>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <a href="#/app/today" className="btn inline-flex items-center rounded-md bg-white px-6 font-semibold text-primary transition-transform hover:-translate-y-0.5">Open MedLens</a>
-        <button type="button" onClick={() => tryExample(CARDIAC.id)} className="btn rounded-md border border-white/60 px-6 font-semibold transition-transform hover:-translate-y-0.5">Try an example</button>
+    <section className="py-14 text-white md:py-[120px]" aria-labelledby="cta-h" style={{ backgroundImage: 'linear-gradient(135deg, #1849A9 0%, #123A8A 100%)' }}>
+      <div className={`${WRAP} flex flex-col gap-5 md:items-center md:gap-7`}>
+        <h2 id="cta-h" className="max-w-[900px] text-[34px] font-semibold leading-[39px] tracking-[-0.02em] md:text-center md:text-[60px] md:leading-[66px] md:tracking-[-0.03em]">Make sense of your next prescription.</h2>
+        <div className="flex flex-col gap-5 md:flex-row md:gap-3">
+          <a href="#/app/today" className="flex h-14 items-center justify-center rounded-[10px] bg-white px-7 text-[18px] font-semibold leading-[22px] text-primary transition-transform hover:-translate-y-0.5 md:h-[58px]">Open MedLens</a>
+          <button type="button" onClick={() => tryExample(CARDIAC.id)} className="flex h-14 items-center justify-center rounded-[10px] border-[1.5px] border-[#FFFFFF8C] px-6 text-[18px] font-semibold leading-[22px] transition-transform hover:-translate-y-0.5 md:h-[58px]">Try an example</button>
+        </div>
+        <p className="hidden text-[15px] leading-[18px] text-[#C9D8F5] md:block">Free · No sign-up · Data from openFDA</p>
       </div>
-      <p className="mt-4 text-small opacity-80">Free · No sign-up · Data from openFDA</p>
     </section>
   );
 }

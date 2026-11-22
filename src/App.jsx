@@ -3,7 +3,7 @@ import { AppCtx, useHash } from './components/ctx.js';
 import Sidebar from './components/Sidebar.jsx';
 import FridgeCard from './components/FridgeCard.jsx';
 import AuthModal from './components/AuthModal.jsx';
-import { Footer } from './components/ui.jsx';
+import { TopBar, AppFooter } from './components/Shell.jsx';
 import Home from './views/Home.jsx';
 import Today from './views/Today.jsx';
 import Scan from './views/Scan.jsx';
@@ -62,7 +62,7 @@ export default function App() {
     lang, setLang, senior, setSenior, raw, setRaw,
     tr: (key, vars) => t(lang, key, vars),
     go: (view) => { window.location.hash = `#/app/${view}`; },
-    tryExample: (id) => { setRaw(loadExample(id)); window.location.hash = '#/app/today'; },
+    tryExample: (id, nav = true) => { setRaw(loadExample(id)); if (nav) window.location.hash = '#/app/today'; },
     openFridge: () => setFridge(true),
     openAuth: () => setAuth(true),
   }), [lang, setLang, senior, setSenior, raw, setRaw]);
@@ -89,9 +89,10 @@ export default function App() {
       {View ? (
         <div className="min-h-screen md:flex">
           <Sidebar view={view} />
-          <main id="main" tabIndex={-1} className="min-w-0 flex-1 px-4 pb-28 pt-6 outline-none md:px-12 md:pb-10 md:pt-10">
+          <main id="main" tabIndex={-1} className="flex min-h-screen min-w-0 flex-1 flex-col gap-6 px-4 pb-28 pt-5 outline-none md:px-10 md:pb-8">
+            <TopBar />
             <View key={view} />
-            <Footer />
+            <AppFooter />
           </main>
         </div>
       ) : (

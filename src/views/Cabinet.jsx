@@ -42,6 +42,8 @@ export default function Cabinet() {
   const { items } = useCabinet();
   const [openId, setOpenId] = useState(null);
   const open = items.find((i) => i.id === openId);
+  const q = decodeURIComponent(window.location.hash.split('?q=')[1] || '').toLowerCase();
+  const shown = q ? items.filter((i) => `${i.name} ${i.generic}`.toLowerCase().includes(q)) : items;
 
   return (
     <div className="space-y-8">
@@ -53,7 +55,7 @@ export default function Cabinet() {
         <div className="grad-calm rounded-lg p-8"><p className="text-lead">{tr('emptyTitle')}</p></div>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {items.map((m, i) => (
+          {shown.map((m, i) => (
             <li key={m.id} className="rise" style={{ '--i': i }}>
               <button type="button" onClick={() => setOpenId(m.id)}
                 className="flex h-full w-full flex-col gap-3 rounded-lg border border-line bg-surface p-5 text-left transition-shadow hover:shadow-md">

@@ -37,7 +37,24 @@ export function addToCabinet(meds) {
 export function loadExample(id) {
   const sc = SCENARIOS.find((s) => s.id === id) || SCENARIOS[0];
   cabinet.clear();
-  addToCabinet(sc.meds.map((m) => ({ ...m, ex: `${sc.id}:${m.id}` })));
+  // Examples only: started 6 days ago with a realistic history (all taken, one missed evening dose).
+  const start = new Date();
+  start.setDate(start.getDate() - 6);
+  start.setHours(9, 0, 0, 0);
+  const saved = addToCabinet(sc.meds.map((m) => ({ ...m, ex: `${sc.id}:${m.id}`, scannedAt: start.toISOString() })));
+  const missed = new Date();
+  missed.setDate(missed.getDate() - 4);
+  const missedDay = localDay(missed);
+  for (let back = 6; back >= 1; back--) {
+    const d = new Date();
+    d.setDate(d.getDate() - back);
+    const day = localDay(d);
+    for (const m of saved) {
+      for (const slot of m.slots || []) {
+        if (activeOn(m, day) && !(day === missedDay && slot === 'evening')) cabinet.markTaken(m.id, day, slot);
+      }
+    }
+  }
   return sc.raw;
 }
 

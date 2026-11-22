@@ -1,5 +1,6 @@
 // App UI strings: key -> [en, es, fr, zh]. Merged into STRINGS by i18n.js.
 export const UI = {
+  searchMeds: ['Search medicines', 'Buscar medicinas', 'Chercher un médicament', '搜索药物'],
   mode_day: ['Day', 'Día', 'Jour', '日'],
   mode_week: ['Week', 'Semana', 'Semaine', '周'],
   mode_month: ['Month', 'Mes', 'Mois', '月'],

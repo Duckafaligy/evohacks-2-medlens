@@ -1,9 +1,10 @@
 import { Fragment, useState } from 'react';
 import {
-  AlertTriangle, ArrowRight, Check, ChevronLeft, ChevronRight, Droplet, Utensils, Clock, Ban, ScanLine, Printer, Heart, Baby, Lock, Activity, Volume2,
+  AlertTriangle, ArrowRight, Check, ChevronLeft, ChevronRight, Droplet, Utensils, Clock, Ban, ScanLine, Heart, Baby, Lock, Activity, Volume2,
 } from 'lucide-react';
 import { useApp, useCabinet, useInteractions, useNow } from '../components/ctx.js';
 import { Button, Chip, FoodChips } from '../components/ui.jsx';
+import { ExampleSwitcher } from '../components/Shell.jsx';
 import * as cabinet from '../lib/cabinet.js';
 import { SLOTS, slotTime, nextDose, localDay, colorFor, activeOn, slotMinutes, scheduleSpeech } from '../lib/app.js';
 import { SCENARIOS } from '../data/scenarios.js';
@@ -140,7 +141,7 @@ function MonthCalendar({ items, now }) {
 }
 
 export default function Today() {
-  const { tr, lang, go, openFridge, senior } = useApp();
+  const { tr, lang, senior } = useApp();
   const { items } = useCabinet();
   const now = useNow();
   const [offset, setOffset] = useState(0);
@@ -165,13 +166,7 @@ export default function Today() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
-        <p className="text-ink-2">{now.toLocaleDateString(locale, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
-        <div className="flex gap-2">
-          {items.length > 0 && <Button variant="secondary" onClick={openFridge}><Printer className="size-5" aria-hidden="true" />{tr('printCard')}</Button>}
-          <Button onClick={() => go('scan')}><ScanLine className="size-5" aria-hidden="true" />{tr('scanTitle')}</Button>
-        </div>
-      </div>
+      {items.length > 0 && <ExampleSwitcher />}
 
       <header>
         <h1 className="text-h2 md:text-h1">{tr(greet)}</h1>
