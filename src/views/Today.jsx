@@ -78,6 +78,7 @@ function MonthCalendar({ items, now }) {
     const n = sched.filter(([id, s]) => tk.some((x) => x.id === id && x.slot === s)).length;
     return { d, day, state: n === sched.length ? 'all' : 'partial', due: sched.length, done: n };
   });
+  const hasHistory = cells.some((c) => c.day < today && c.due);
   const due = cells.reduce((a, c) => a + (c.due || 0), 0);
   const done = cells.reduce((a, c) => a + (c.done || 0), 0);
   const dot = { all: 'bg-safe', partial: 'bg-caution', future: 'bg-control', none: '' };
@@ -86,7 +87,7 @@ function MonthCalendar({ items, now }) {
     <section className="rounded-lg border border-line bg-surface p-5" aria-labelledby="month-h">
       <div className="flex items-baseline justify-between">
         <h2 id="month-h" className="text-lead font-semibold">{now.toLocaleDateString(locale, { month: 'long' })}</h2>
-        {due > 0 && <span className="text-small font-semibold text-safe">{tr('onTime', { n: Math.round((done / due) * 100) })}</span>}
+        {hasHistory && due > 0 && <span className="text-small font-semibold text-safe">{tr('onTime', { n: Math.round((done / due) * 100) })}</span>}
       </div>
       <div className="mt-3 grid grid-cols-7 gap-y-1 text-center text-small">
         {weekdays.map((w, i) => <span key={i} className="pb-1 text-ink-2" aria-hidden="true">{w}</span>)}

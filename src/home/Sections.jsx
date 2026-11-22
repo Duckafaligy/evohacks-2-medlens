@@ -31,6 +31,14 @@ const PrimaryCta = () => {
   );
 };
 
+/** macOS-style window controls for browser frames. */
+const DOT_SHADOW = { boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,.18)' };
+const WindowDots = () => (
+  <span className="flex shrink-0 gap-2">
+    {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => <span key={c} className="size-3 rounded-full" style={{ background: c, ...DOT_SHADOW }} />)}
+  </span>
+);
+
 /* 1. Hero with a working mini translator */
 export function Hero() {
   const lines = CARDIAC.raw.split('\n').filter((l) => /mg/.test(l));
@@ -50,9 +58,13 @@ export function Hero() {
         <p className="mt-4 text-small text-ink-2">Free · No sign-up · Data from openFDA</p>
 
         <div className="rise mx-auto mt-12 max-w-5xl overflow-hidden rounded-lg border border-line bg-surface text-left shadow-2xl shadow-primary/10" style={{ '--i': 3 }}>
-          <div className="flex items-center gap-2 border-b border-line bg-canvas px-4 py-2.5" aria-hidden="true">
-            <span className="size-2.5 rounded-full bg-control" /><span className="size-2.5 rounded-full bg-control" /><span className="size-2.5 rounded-full bg-control" />
-            <span className="mx-auto rounded-sm bg-surface px-3 py-0.5 text-[12px] text-ink-2">medlens.app/translate</span>
+          <div className="flex items-center gap-3 border-b border-line bg-canvas px-4 py-2.5" aria-hidden="true">
+            <WindowDots />
+            <span className="mx-auto flex min-w-0 max-w-[70%] items-center gap-1.5 rounded-md bg-surface px-3 py-1 text-[12px] text-ink-2">
+              <Lock className="size-3 shrink-0" />
+              <span className="truncate">evohacks-2-medlens.vercel.app/#/app/translate</span>
+            </span>
+            <span className="w-[52px] shrink-0" />
           </div>
           <div className="grid md:grid-cols-2">
             <div className="border-b border-line p-6 md:border-b-0 md:border-r">
