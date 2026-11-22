@@ -115,7 +115,7 @@ export default function HeroDemo() {
       <div ref={rootRef} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
         className="relative flex flex-col overflow-hidden rounded-[14px] border border-line bg-surface text-left shadow-[0_12px_32px_#1849A914]">
         <div className="flex h-9 shrink-0 items-center gap-1.5 border-b border-[#EDF0F4] px-3.5" aria-hidden="true">
-          {[0, 1, 2].map((i) => <span key={i} className="size-[9px] shrink-0 rounded-full bg-[#E5E7EB]" />)}
+          {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => <span key={c} className="size-2.5 shrink-0 rounded-full" style={{ background: c, boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,.18)' }} />)}
           <span className="flex flex-1 justify-center pr-[39px]">
             <span className="rounded-[6px] bg-canvas px-2.5 py-0.5 text-[12px] leading-4 text-ink-2">medlens.app/{url}</span>
           </span>
